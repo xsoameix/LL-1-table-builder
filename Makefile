@@ -1,6 +1,6 @@
 CC = cc
 BIN = main
-OBJ = main.o Lib.o List.o Set.o
+OBJ = main.o Lib.o List.o Set.o Follow.o
 CFLAGS = -std=c99
 
 $(BIN): $(OBJ)
@@ -13,5 +13,7 @@ List.o:
 	$(CC) -o List.o $(CFLAGS) -c List.c
 Set.o:
 	$(CC) -o Set.o $(CFLAGS) -c Set.c
+Follow.o:
+	$(CC) -o Follow.o $(CFLAGS) -c Follow.c
 clean:
 	rm $(BIN) $(OBJ)
