@@ -4,9 +4,6 @@
 #include "List.h"
 #include "Set.h"
 
-int nodeLen;
-Set done;
-
 extern Node** initFollow();
 extern void DFS(Node *node);
 extern void unvisit(Node **node);

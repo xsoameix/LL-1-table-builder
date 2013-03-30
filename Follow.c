@@ -1,5 +1,8 @@
 #include "Follow.h"
 
+int nodeLen;
+Set done;
+
 //Nodes array
 Node** initFollow() {
         Node** n = newNodeArray(nodeLen);
