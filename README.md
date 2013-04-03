@@ -8,7 +8,7 @@ A tool to build LL(1) table by inputting a bunch of production.
 Simply run:
 
     make
-    ./main
+    cd app && ./main
 
 or clean the object files and binary files:
 
