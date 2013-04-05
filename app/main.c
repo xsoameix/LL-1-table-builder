@@ -1,16 +1,10 @@
 #include <stdio.h>
 #include "Lib.h"
 #include "Scanner.h"
-//#include "follow/Follow.h"
+#include "Parser.h"
 
 int main() {
         char *file = fileToStr("test.syntax");
-        Token *token = NULL;
-        token = scan(file);
-        while(token != NULL) {
-                printf("%s\n", token->id);
-                token = scan(file);
-        }
-        //follow(5);
+        parse(file);
         return 0;
 }

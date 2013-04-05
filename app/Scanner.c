@@ -12,13 +12,20 @@ Token* scan(char *string) {
 
         int type;
         if(strncmp(&string[forward], "->", 2) == 0) { // "->" == 2 chars
-                forward += 2; // "->" == 2 chars
                 type = ARROW;
+                forward += 2; // "->" == 2 chars
+        } else if(string[forward] == '|') {
+                type = OR;
+                forward++;
         } else if(isalpha(string[forward]) || ispunct(string[forward])) {
+                if(forward == 0 || string[forward - 1] == 0x0A || string[forward - 1] == 0x0D) {
+                        type = NT;
+                } else {
+                        type = TOKEN;
+                }
                 while(isalpha(string[forward]) || ispunct(string[forward])) {
                         forward++;
                 }
-                type = TOKEN;
         } else if(string[lexemeBegin] == '\0') {
                 return NULL;
         }
