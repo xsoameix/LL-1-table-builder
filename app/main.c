@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "Lib.h"
-#include "Scanner.h"
 #include "Parser.h"
 
 int main() {

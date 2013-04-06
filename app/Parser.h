@@ -1,5 +1,9 @@
+#ifndef PARSER_H
+#define PARSER_H
+
 #include <stdio.h>
 #include "Scanner.h"
+#include "ParserTree.h"
 
 extern void parse(char *file);
 extern void parse_PS();
@@ -11,4 +15,5 @@ extern void syntaxError();
 extern void match(int c);
 extern void next();
 extern void syntaxError();
-extern void printSpaces();
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef FOLLOE_H
+#define FOLLOE_H
+
 #include <stdio.h>
 #include <stdbool.h>
 #include "Lib.h"
@@ -9,3 +12,5 @@ extern void DFS(Node *node);
 extern void unvisit(Node **node);
 extern void traversal(Node **node);
 extern void follow(int nodeLength);
+
+#endif
