@@ -11,22 +11,22 @@ Token* scan(char *string) {
         }
 
         int type;
-        if(strncmp(&string[forward], "->", 2) == 0) { // "->" == 2 chars
+        if(isArrow(string, forward)) {
                 type = ARROW;
                 forward += 2; // "->" == 2 chars
-        } else if(string[forward] == '|') {
+        } else if(isOr(string, forward)) {
                 type = OR;
                 forward++;
-        } else if(isalpha(string[forward]) || ispunct(string[forward])) {
-                if(forward == 0 || string[forward - 1] == 0x0A || string[forward - 1] == 0x0D) {
+        } else if(isAlphaOrPunct(string, forward)) {
+                if(isAtNewLine(string, forward)) {
                         type = NT;
                 } else {
                         type = TOKEN;
                 }
-                while(isalpha(string[forward]) || ispunct(string[forward])) {
+                while(isAlphaOrPunct(string, forward)) {
                         forward++;
                 }
-        } else if(string[lexemeBegin] == '\0') {
+        } else if(isEOF(string, lexemeBegin)) {
                 return NULL;
         }
 
@@ -36,4 +36,24 @@ Token* scan(char *string) {
 
         lexemeBegin = forward;
         return token;
+}
+
+bool isArrow(char *s, int offset) {
+        return strncmp(&s[offset], "->", 2) == 0; // "->" == 2 chars
+}
+
+bool isOr(char *s, int offset) {
+        return s[offset] == '|';
+}
+
+bool isAlphaOrPunct(char *s, int offset) {
+        return isalpha(s[offset]) || ispunct(s[offset]);
+}
+
+bool isAtNewLine(char *s, int offset) {
+        return offset == 0 || s[offset - 1] == 0x0A || s[offset - 1] == 0x0D;
+}
+
+bool isEOF(char *s, int offset) {
+        return s[offset] == '\0';
 }
