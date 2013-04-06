@@ -6,8 +6,11 @@
 #include <string.h>
 #include <stdio.h>
 
+#define MAX_LEN 512
+
 extern void* newMemory(int size);
 extern char* fileToStr(char *filename);
 extern char* newSubStr(char *str, int offset, int len);
+extern char* newSpaces(int len);
 
 #endif

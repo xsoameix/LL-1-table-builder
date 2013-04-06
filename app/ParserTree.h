@@ -3,9 +3,11 @@
 
 #include <stdio.h>
 #include "Token.h"
+#include "Lib.h"
 
 extern void buildTree(void (*parseFunc)(), char *treeType);
 extern void addLeaf(Token *token);
-extern void printSpaces();
+extern void printTreeType(char *treeType);
+extern void printLeafId(char *id);
 
 #endif

@@ -1,25 +1,27 @@
 #include "ParserTree.h"
 
-int space = 0;
+int level = 0;
 
 void buildTree(void (*parseFunc)(), char *treeType) {
-        printSpaces();
-        printf("parse_%s\n", treeType);
+        printTreeType(treeType);
+        level++;
 
         // Simulate a tree
         //push(treeType);
         (*parseFunc)();
         //pop(treeType);
 
-        space--;
+        level--;
 }
 
 void addLeaf(Token *token) {
+        printLeafId(token->id);
 }
 
-void printSpaces() {
-        for(int i = 0; i < space; i++) {
-                printf("\t");
-        }
-        space++;
+void printTreeType(char *treeType) {
+        printf("%s%s\n", newSpaces(level), treeType);
+}
+
+void printLeafId(char *id) {
+        printf("%s\"%s\"\n", newSpaces(level), id);
 }

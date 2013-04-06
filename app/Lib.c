@@ -33,3 +33,12 @@ char* newSubStr(char *str, int offset, int len) {
         newStr[len] = '\0';
         return newStr;
 }
+
+char spaces[MAX_LEN];
+
+char* newSpaces(int len) {
+        assert(len < MAX_LEN);
+        memset(spaces, ' ', MAX_LEN);
+        spaces[len] = '\0';
+        return spaces;
+}

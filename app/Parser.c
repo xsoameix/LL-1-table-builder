@@ -77,7 +77,6 @@ void next() {
                 lookahead = EOF;
         } else {
                 lookahead = lookaheadToken->type;
-                printf("lookahead: %s\n", lookaheadToken->id);
         }
 }
 
