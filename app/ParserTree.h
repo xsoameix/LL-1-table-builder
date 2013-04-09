@@ -4,10 +4,31 @@
 #include <stdio.h>
 #include "Token.h"
 #include "Lib.h"
+#include "Array.h"
 
-extern void buildTree(void (*parseFunc)(), char *treeType);
+typedef struct _Tree Tree;
+struct _Tree {
+        char *id;
+
+        Tree *parent;
+
+        // NonTerminal
+        Array *child;
+
+        // Terminal
+        Array *leaves;
+};
+
+extern void buildRoot(void (*parseFunc)(), char *id);
+extern void buildTree(void (*parseFunc)(), char *id);
+extern void addChild(char *id);
 extern void addLeaf(Token *token);
-extern void printTreeType(char *treeType);
-extern void printLeafId(char *id);
+extern Tree* getRoot();
+
+void enterTree();
+void leaveTree();
+Tree* newTree(char *id);
+void printTreeType(char *treeType);
+void printLeafId(char *id);
 
 #endif

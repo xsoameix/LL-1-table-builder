@@ -16,7 +16,7 @@ int lookahead;
 void parse(char *file) {
         scanningFile = file;
         next();
-        buildTree(&parse_PS, "PS");
+        buildRoot(&parse_PS, "PS");
 }
 
 void parse_PS() {

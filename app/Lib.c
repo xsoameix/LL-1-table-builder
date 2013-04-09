@@ -7,6 +7,11 @@ void* newMemory(int size) {
         return ptr;
 }
 
+void* freeMemory(void *ptr) {
+        assert(ptr != NULL);
+        free(ptr);
+}
+
 char* fileToStr(char *filename) {
         FILE *file = fopen(filename, "rb");
         assert(file != NULL);
