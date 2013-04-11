@@ -13,10 +13,12 @@ char *scanningFile;
 Token *lookaheadToken;
 int lookahead;
 
-void parse(char *file) {
+Tree* parse(char *file) {
         scanningFile = file;
         next();
-        buildRoot(&parse_PS, "PS");
+        Tree *t = buildRoot(&parse_PS, "PS");
+        freeMemory(file);
+        return t;
 }
 
 void parse_PS() {

@@ -5,15 +5,16 @@
 #include "Scanner.h"
 #include "ParserTree.h"
 
-extern void parse(char *file);
-extern void parse_PS();
-extern void parse_P();
-extern void parse_STMTS();
-extern void parse_STMTS_();
-extern void parse_TOKENS();
-extern void syntaxError();
-extern void match(int c);
-extern void next();
-extern void syntaxError();
+extern Tree* parse(char *file);
+
+void parse_PS();
+void parse_P();
+void parse_STMTS();
+void parse_STMTS_();
+void parse_TOKENS();
+void syntaxError();
+void match(int c);
+void next();
+void syntaxError();
 
 #endif

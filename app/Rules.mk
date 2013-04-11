@@ -4,7 +4,7 @@ d := $(dir)
 
 # Local variables
 
-sources := main.c Lib.c Scanner.c Parser.c ParserTree.c Array.c
+sources := main.c Lib.c Scanner.c Parser.c ParserTree.c Array.c Semantic.c SymbolTable.c
 targets := main
 sources_in_d := $(addprefix $(d)/,$(sources))
 objects_in_d := $(sources_in_d:.c=.o)

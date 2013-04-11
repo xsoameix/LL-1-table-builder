@@ -1,6 +1,7 @@
 #include "Lib.h"
 #include "Parser.h"
 #include "ParserTree.h"
+#include "Semantic.h"
 
 int tlevel = 0;
 
@@ -9,7 +10,7 @@ void printTreeId(char *id) {
 }
 
 void DFS(Tree *t) {
-        printTreeId(t->id);
+        printTreeId(t->id == NULL ? t->token->id : t->id);
         tlevel++;
         if(t->child != NULL) {
                 Array *child = t->child;
@@ -22,7 +23,8 @@ void DFS(Tree *t) {
 
 int main() {
         char *file = fileToStr("test.syntax");
-        parse(file);
-        DFS(getRoot());
+        Tree *tree = parse(file);
+        DFS(tree);
+        semantic(tree);
         return 0;
 }
