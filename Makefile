@@ -1,4 +1,4 @@
-CFLAGS = -g -std=c99
+CFLAGS = -g -std=c99 -Wall
 compile = $(CC) $(CFLAGS) $(CF_target) -o $@ -c $<
 link = $(CC) $(CFLAGS) -o $@ $^
 

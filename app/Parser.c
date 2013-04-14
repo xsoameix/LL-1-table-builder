@@ -22,7 +22,7 @@ Tree* parse(char *file) {
 }
 
 void parse_PS() {
-        if(lookahead == NT) {
+        if(lookahead == NONTERMINAL) {
                 buildTree(&parse_P, "P");
                 buildTree(&parse_PS, "PS");
         } else if(lookahead == EOF) {
@@ -32,8 +32,8 @@ void parse_PS() {
 }
 
 void parse_P() {
-        if(lookahead == NT) {
-                match(NT);
+        if(lookahead == NONTERMINAL) {
+                match(NONTERMINAL);
                 match(ARROW);
                 buildTree(&parse_STMTS, "STMTS");
         } else {
@@ -51,7 +51,7 @@ void parse_STMTS_() {
                 match(OR);
                 buildTree(&parse_TOKENS, "TOKENS");
                 buildTree(&parse_STMTS_, "STMTS_");
-        } else if(lookahead == NT || lookahead == EOF) {
+        } else if(lookahead == NONTERMINAL || lookahead == EOF) {
         } else {
                 syntaxError();
         }
