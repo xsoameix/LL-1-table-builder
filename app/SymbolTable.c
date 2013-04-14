@@ -14,6 +14,8 @@ void storeT(Token *t) {
         addT(t);
 }
 
+// Usage: put NonTerminal or Terminal into the certain Production of the certain NonTerminal.
+
 void storeInWhichP(int NT_i, int P_i, int type, Token *tk) {
         Symbol *s = NULL;
         if(type == NONTERMINAL) {
@@ -52,6 +54,8 @@ NonTerminal* newNT(Token *t) {
         return n;
 }
 
+// Usage: Get index of array of NonTerminals by name of NonTerminal.
+
 int NT_IndexOf(Array *a, char *id) {
         for(int i = 0; i < a->count; i++) {
                 if(strcmp(((NonTerminal*) a->item[i])->id, id) == 0) {
@@ -86,6 +90,8 @@ Terminal* newT(Token *token) {
         t->id = token->id;
         return t;
 }
+
+// Usage: Get index of array of Terminals by name of Terminal.
 
 int T_IndexOf(Array *a, char *id) {
         for(int i = 0; i < a->count; i++) {

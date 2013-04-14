@@ -1,5 +1,7 @@
 #include "Semantic.h"
 
+// Usage: put NonTerminals and Terminals into SymbolTable.
+
 void semantic(Tree *t) {
         setTree(t);
         PS_storeNTs(); // NT = NonTerminal
@@ -7,6 +9,7 @@ void semantic(Tree *t) {
 }
 
 // Store NonTerminals functions
+// Usage: To store NonTerminals into SymbolTable.
 
 void PS_storeNTs() {
         if(tree->child != NULL) {
@@ -22,8 +25,9 @@ void P_storeNTs() {
 }
 
 // Store Terminals functions
+// Usage: To store Terminals into SymbolTable.
 
-static int P_count = 0;
+static int P_count = 0; // The number of NonTerminals.
 
 void PS_storeTs() {
         if(tree->child != NULL) {
@@ -37,12 +41,13 @@ void P_storeTs() {
         enterWhichTree(&STMTS_storeTs, 2);
 }
 
-static int STMTS__count = 0;
+static int STMTS__count = 0; // The number of Production of the certain NonTerminal.
 
 void STMTS_storeTs() {
         enterWhichTree(&TOKENS_storeTs, 0);
         STMTS__count++;
         enterWhichTree(&STMTS__storeTs, 1);
+        STMTS__count--;
 }
 
 void STMTS__storeTs() {
@@ -50,6 +55,7 @@ void STMTS__storeTs() {
                 enterWhichTree(&TOKENS_storeTs, 1);
                 STMTS__count++;
                 enterWhichTree(&STMTS__storeTs, 2);
+                STMTS__count--;
         }
 }
 
