@@ -2,7 +2,7 @@
 
 Tree *tree = NULL;
 
-int level = 0;
+static int level = 0;
 
 Tree* buildRoot(void (*parseFunc)(), char *id) {
         printTreeType(id);
@@ -46,12 +46,16 @@ void addLeaf(Token *token) {
 }
 
 void enterTree(void (*parseFunc)()) {
+        enterWhichTree(parseFunc, tree->child->count - 1);
+}
+
+void enterWhichTree(void (*semanticFunc)(), int i) {
         // Enter Tree
         Array *child = tree->child;
-        tree = child->item[child->count - 1];
+        tree = child->item[i];
 
         // Do something
-        parseFunc();
+        semanticFunc();
 
         // Leave Tree
         tree = tree->parent;
@@ -79,9 +83,9 @@ void setTree(Tree *t) {
         tree = t;
 }
 
-Token* getChildToken(int i) {
+Tree* getChild(int i) {
         assert(tree->child != NULL);
-        return ((Tree*) tree->child->item[i])->token;
+        return (Tree*) tree->child->item[i];
 }
 
 void printTreeType(char *treeType) {

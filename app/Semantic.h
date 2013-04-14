@@ -6,10 +6,12 @@
 
 extern void semantic(Tree *t);
 
-void semantic_PS();
-void semantic_P();
-void semantic_STMTS();
-void semantic_STMTS_();
-void semantic_TOKENS();
+void PS_storeNTs();
+void P_storeNTs();
+void PS_storeTs();
+void P_storeTs();
+void STMTS_storeTs();
+void STMTS__storeTs();
+void TOKENS_storeTs();
 
 #endif

@@ -27,8 +27,9 @@ extern void buildTree(void (*parseFunc)(), char *id);
 extern void addChild(char *id);
 extern void addLeaf(Token *token);
 extern void enterTree(void (*parseFunc)());
+extern void enterWhichTree(void (*semanticFunc)(), int i);
 extern void setTree(Tree *t);
-extern Token* getChildToken(int i);
+extern Tree* getChild(int i);
 
 Tree* newTree(char *id);
 Tree* newLeaf(Token *t);

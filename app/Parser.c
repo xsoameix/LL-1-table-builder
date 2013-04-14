@@ -8,10 +8,10 @@
  * TOKENS -> TOKEN TOKENS | epsilon
  */
 
-char *scanningFile;
+static char *scanningFile;
 
-Token *lookaheadToken;
-int lookahead;
+static Token *lookaheadToken;
+static int lookahead;
 
 Tree* parse(char *file) {
         scanningFile = file;

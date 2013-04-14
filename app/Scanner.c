@@ -19,7 +19,7 @@ Token* scan(char *string) {
                 forward++;
         } else if(isAlphaOrPunct(string, forward)) {
                 if(isAtNewLine(string, forward)) {
-                        type = NT;
+                        type = NONTERMINAL;
                 } else {
                         type = TOKEN;
                 }
@@ -30,9 +30,9 @@ Token* scan(char *string) {
                 return NULL;
         }
 
-        Token *token = (Token *) newMemory(sizeof(Token));
-        token->id = newSubStr(string, lexemeBegin, forward - lexemeBegin); // char pointer point to file
-        token->type = type;
+        Token *token = newToken(
+                        newSubStr(string, lexemeBegin, forward - lexemeBegin), // char pointer point to file
+                        type);
 
         lexemeBegin = forward;
         return token;

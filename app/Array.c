@@ -1,7 +1,7 @@
 #include "Array.h"
 
 Array* ArrayNew(int size) {
-        Array *a = (Array*) newMemory(size * sizeof(Array));
+        Array *a = (Array*) newMemory(sizeof(Array));
         a->size = size;
         a->count = 0;
         a->item = (void**) newMemory(size * sizeof(void*));

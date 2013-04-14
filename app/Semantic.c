@@ -2,34 +2,67 @@
 
 void semantic(Tree *t) {
         setTree(t);
-        enterTree(&semantic_PS);
+        PS_storeNTs(); // NT = NonTerminal
+        PS_storeTs(); // T = Terminal
 }
 
-void semantic_PS() {
+// Store NonTerminals functions
+
+void PS_storeNTs() {
         if(tree->child != NULL) {
-                enterTree(&semantic_P);
+                enterWhichTree(&P_storeNTs, 0);
+                enterWhichTree(&PS_storeNTs, 1);
         }
 }
 
-void semantic_P() {
-        storeNonTerminal(getChildToken(0)); // token[0] is NonTerminal.
-        enterTree(&semantic_STMTS);
+void P_storeNTs() {
+        Token *t = getChild(0)->token; // child[0]->token is a NonTerminal.
+        storeNT(t);
+        freeMemory(t);
 }
 
-void semantic_STMTS() {
-        enterTree(&semantic_TOKENS);
-        enterTree(&semantic_STMTS_);
-}
+// Store Terminals functions
 
-void semantic_STMTS_() {
+static int P_count = 0;
+
+void PS_storeTs() {
         if(tree->child != NULL) {
-                enterTree(&semantic_TOKENS);
-                enterTree(&semantic_STMTS_);
+                enterWhichTree(&P_storeTs, 0);
+                P_count++;
+                enterWhichTree(&PS_storeTs, 1);
         }
 }
 
-void semantic_TOKENS() {
+void P_storeTs() {
+        enterWhichTree(&STMTS_storeTs, 2);
+}
+
+static int STMTS__count = 0;
+
+void STMTS_storeTs() {
+        enterWhichTree(&TOKENS_storeTs, 0);
+        STMTS__count++;
+        enterWhichTree(&STMTS__storeTs, 1);
+}
+
+void STMTS__storeTs() {
         if(tree->child != NULL) {
-                storeToken(getChildToken(0)); // token[0] is a token.
+                enterWhichTree(&TOKENS_storeTs, 1);
+                STMTS__count++;
+                enterWhichTree(&STMTS__storeTs, 2);
+        }
+}
+
+void TOKENS_storeTs() {
+        if(tree->child != NULL) {
+                Token *t = getChild(0)->token; // child[0] is a token.
+                if(isNT(t)) {
+                        storeInWhichP(P_count, STMTS__count, NONTERMINAL, t); // P = Production
+                } else {
+                        storeT(t);
+                        storeInWhichP(P_count, STMTS__count, TERMINAL, t); // P = Production
+                }
+                freeMemory(t);
+                enterWhichTree(&TOKENS_storeTs, 1);
         }
 }
