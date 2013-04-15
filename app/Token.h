@@ -14,6 +14,6 @@ typedef struct {
         int type;
 } Token;
 
-extern Token* newToken(char *id, int type);
+Token* newToken(char *id, int type);
 
 #endif

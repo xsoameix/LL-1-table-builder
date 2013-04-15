@@ -8,6 +8,15 @@
  * TOKENS -> TOKEN TOKENS | epsilon
  */
 
+static void parse_PS();
+static void parse_P();
+static void parse_STMTS();
+static void parse_STMTS_();
+static void parse_TOKENS();
+static void match(int c);
+static void next();
+static void syntaxError();
+
 static char *scanningFile;
 
 static Token *lookaheadToken;
@@ -21,6 +30,7 @@ Tree* parse(char *file) {
         return t;
 }
 
+static
 void parse_PS() {
         if(lookahead == NONTERMINAL) {
                 buildTree(&parse_P, "P");
@@ -31,6 +41,7 @@ void parse_PS() {
         }
 }
 
+static
 void parse_P() {
         if(lookahead == NONTERMINAL) {
                 match(NONTERMINAL);
@@ -41,11 +52,13 @@ void parse_P() {
         }
 }
 
+static
 void parse_STMTS() {
         buildTree(&parse_TOKENS, "TOKENS");
         buildTree(&parse_STMTS_, "STMTS_");
 }
 
+static
 void parse_STMTS_() {
         if(lookahead == OR) {
                 match(OR);
@@ -57,6 +70,7 @@ void parse_STMTS_() {
         }
 }
 
+static
 void parse_TOKENS() {
         if(lookahead == TOKEN) {
                 match(TOKEN);
@@ -64,6 +78,7 @@ void parse_TOKENS() {
         }
 }
 
+static
 void match(int c) {
         if(lookahead == c) {
                 addLeaf(lookaheadToken);
@@ -73,6 +88,7 @@ void match(int c) {
         }
 }
 
+static
 void next() {
         lookaheadToken = scan(scanningFile);
         if(lookaheadToken == NULL) {
@@ -82,6 +98,7 @@ void next() {
         }
 }
 
+static
 void syntaxError() {
         printf("Syntax error\n");
         exit(0);

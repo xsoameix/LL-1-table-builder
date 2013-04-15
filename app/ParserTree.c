@@ -1,6 +1,6 @@
 #include "ParserTree.h"
 
-Tree *tree = NULL;
+static Tree *tree = NULL;
 
 static int level = 0;
 
@@ -81,6 +81,10 @@ Tree* newLeaf(Token *token) {
 
 void setTree(Tree *t) {
         tree = t;
+}
+
+Tree* getTree() {
+        return tree;
 }
 
 Tree* getChild(int i) {

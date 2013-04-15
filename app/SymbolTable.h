@@ -33,23 +33,26 @@ typedef struct {
         Array *S;
 } Production;
 
-extern void storeNT(Token *t);
-extern void storeT(Token *t);
-extern void storeInWhichP(int NT_i, int P_i, int type, Token *tk);
-extern void addInWhichP(int NT_i, int P_i, Symbol *s);
-extern bool isNT(Token *t);
+void storeNT(Token *t);
+void storeT(Token *t);
+void storeInWhichP(int NT_i, int P_i, int type, Token *tk);
+void addInWhichP(int NT_i, int P_i, Symbol *s);
+bool isNT(Token *t);
 
 // NonTerminal utilities
 
 void addNT(Token *t);
 NonTerminal* newNT(Token *t);
 int NT_IndexOf(Array *a, char *id);
+Array* getNT();
+void resetNT();
 
 // Terminal utilities
 
 void addT(Token *t);
 Terminal* newT(Token *token);
 int T_IndexOf(Array *a, char *id);
+Array* getT();
 
 // Symbol utilities
 

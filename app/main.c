@@ -1,30 +1,25 @@
-#include "Lib.h"
-#include "Parser.h"
-#include "ParserTree.h"
-#include "Semantic.h"
+#include "IntegrationTest/Parser.h"
+#include "IntegrationTest/Semantic.h"
+#include "UnitTest/minunit.h"
+#include "UnitTest/SymbolTable.h"
 
-int tlevel = 0;
-
-void printTreeId(char *id) {
-        printf("%s%s\n", newSpaces(tlevel), id);
-}
-
-void DFS(Tree *t) {
-        printTreeId(t->id == NULL ? t->token->id : t->id);
-        tlevel++;
-        if(t->child != NULL) {
-                Array *child = t->child;
-                for(int i = 0; i < child->count; i++) {
-                        DFS(child->item[i]);
-                }
-        }
-        tlevel--;
-}
+int tests_run = 0;
 
 int main() {
-        char *file = fileToStr("test.syntax");
-        Tree *tree = parse(file);
-        DFS(tree);
-        semantic(tree);
-        return 0;
+        // Integration Test
+
+        char *path = "IntegrationTest/";
+        Tree *t = IParser(path); // I = Integration Test
+        ISemantic(t);
+
+        // Unit Test
+
+        char *result = USymbolTable(); // U = Unit Test
+        if(result == 0) {
+                printf("All test passed.\n");
+        } else {
+                printf("%s\n", result);
+        }
+        printf("Tests run: %d\n", tests_run);
+        return result != 0;
 }

@@ -75,6 +75,14 @@ bool isNT(Token *t) {
         return false;
 }
 
+Array* getNT() {
+        return gNT;
+}
+
+void resetNT() {
+        gNT = NULL;
+}
+
 // Terminal utilities
 
 void addT(Token *t) {
@@ -100,6 +108,10 @@ int T_IndexOf(Array *a, char *id) {
                 }
         }
         return -1;
+}
+
+Array* getT() {
+        return gT;
 }
 
 // Symbol utilities

@@ -1,5 +1,6 @@
 # Standard things
 
+d_parent := $(d)
 d := $(dir)
 
 # Local variables
@@ -25,8 +26,16 @@ $(objects_in_d): CF_target := -I$(d)
 
 #dir := $(d)/follow
 #include $(dir)/Rules.mk
+dir := $(d)/IntegrationTest
+include $(dir)/Rules.mk
+dir := $(d)/UnitTest
+include $(dir)/Rules.mk
 
 # Local rules
 
 $(targets_in_d): $(objects_all)
 	$(link)
+
+# Standard things
+
+d := $(d_parent)

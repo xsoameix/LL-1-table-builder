@@ -9,7 +9,7 @@ typedef struct {
         void **item;
 } Array;
 
-extern Array* ArrayNew(int size);
-extern void ArrayAdd(Array *a, void *item);
+Array* ArrayNew(int size);
+void ArrayAdd(Array *a, void *item);
 
 #endif

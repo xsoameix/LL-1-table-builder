@@ -20,19 +20,17 @@ struct _Tree {
         Array *child;
 };
 
-extern Tree *tree;
-
-extern Tree* buildRoot(void (*parseFunc)(), char *id);
-extern void buildTree(void (*parseFunc)(), char *id);
-extern void addChild(char *id);
-extern void addLeaf(Token *token);
-extern void enterTree(void (*parseFunc)());
-extern void enterWhichTree(void (*semanticFunc)(), int i);
-extern void setTree(Tree *t);
-extern Tree* getChild(int i);
-
+Tree* buildRoot(void (*parseFunc)(), char *id);
+void buildTree(void (*parseFunc)(), char *id);
+void addChild(char *id);
+void addLeaf(Token *token);
+void enterTree(void (*parseFunc)());
+void enterWhichTree(void (*semanticFunc)(), int i);
 Tree* newTree(char *id);
 Tree* newLeaf(Token *t);
+void setTree(Tree *t);
+Tree* getTree();
+Tree* getChild(int i);
 void printTreeType(char *treeType);
 void printLeafId(char *id);
 
