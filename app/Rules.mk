@@ -1,10 +1,11 @@
 # Standard things
 
+d_parent := $(d)
 d := $(dir)
 
 # Local variables
 
-sources := main.c Lib.c Scanner.c
+sources := main.c Lib.c Scanner.c Parser.c ParserTree.c Array.c Semantic.c SymbolTable.c Token.c
 targets := main
 sources_in_d := $(addprefix $(d)/,$(sources))
 objects_in_d := $(sources_in_d:.c=.o)
@@ -25,8 +26,16 @@ $(objects_in_d): CF_target := -I$(d)
 
 #dir := $(d)/follow
 #include $(dir)/Rules.mk
+dir := $(d)/IntegrationTest
+include $(dir)/Rules.mk
+dir := $(d)/UnitTest
+include $(dir)/Rules.mk
 
 # Local rules
 
 $(targets_in_d): $(objects_all)
 	$(link)
+
+# Standard things
+
+d := $(d_parent)

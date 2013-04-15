@@ -1,7 +1,13 @@
 #include "Scanner.h"
 
-int forward = 0,
-    lexemeBegin = 0;
+static bool isArrow(char *s, int offset);
+static bool isOr(char *s, int offset);
+static bool isAlphaOrPunct(char *s, int offset);
+static bool isAtNewLine(char *s, int offset);
+static bool isEOF(char *s, int offset);
+
+static int forward = 0,
+           lexemeBegin = 0;
 
 Token* scan(char *string) {
         for(;; forward++, lexemeBegin++) {
@@ -11,22 +17,54 @@ Token* scan(char *string) {
         }
 
         int type;
-        if(strncmp(&string[forward], "->", 2) == 0) { // "->" == 2 chars
-                forward += 2; // "->" == 2 chars
+        if(isArrow(string, forward)) {
                 type = ARROW;
-        } else if(isalpha(string[forward]) || ispunct(string[forward])) {
-                while(isalpha(string[forward]) || ispunct(string[forward])) {
+                forward += 2; // "->" == 2 chars
+        } else if(isOr(string, forward)) {
+                type = OR;
+                forward++;
+        } else if(isAlphaOrPunct(string, forward)) {
+                if(isAtNewLine(string, forward)) {
+                        type = NONTERMINAL;
+                } else {
+                        type = TOKEN;
+                }
+                while(isAlphaOrPunct(string, forward)) {
                         forward++;
                 }
-                type = TOKEN;
-        } else if(string[lexemeBegin] == '\0') {
+        } else if(isEOF(string, lexemeBegin)) {
                 return NULL;
         }
 
-        Token *token = (Token *) newMemory(sizeof(Token));
-        token->id = newSubStr(string, lexemeBegin, forward - lexemeBegin); // char pointer point to file
-        token->type = type;
+        Token *token = newToken(
+                        newSubStr(string, lexemeBegin, forward - lexemeBegin), // char pointer point to file
+                        type);
 
         lexemeBegin = forward;
         return token;
+}
+
+static
+bool isArrow(char *s, int offset) {
+        return strncmp(&s[offset], "->", 2) == 0; // "->" == 2 chars
+}
+
+static
+bool isOr(char *s, int offset) {
+        return s[offset] == '|';
+}
+
+static
+bool isAlphaOrPunct(char *s, int offset) {
+        return isalpha(s[offset]) || ispunct(s[offset]);
+}
+
+static
+bool isAtNewLine(char *s, int offset) {
+        return offset == 0 || s[offset - 1] == 0x0A || s[offset - 1] == 0x0D;
+}
+
+static
+bool isEOF(char *s, int offset) {
+        return s[offset] == '\0';
 }

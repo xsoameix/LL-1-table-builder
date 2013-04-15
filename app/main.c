@@ -1,16 +1,25 @@
-#include <stdio.h>
-#include "Lib.h"
-#include "Scanner.h"
-//#include "follow/Follow.h"
+#include "IntegrationTest/Parser.h"
+#include "IntegrationTest/Semantic.h"
+#include "UnitTest/minunit.h"
+#include "UnitTest/SymbolTable.h"
+
+int tests_run = 0;
 
 int main() {
-        char *file = fileToStr("test.syntax");
-        Token *token = NULL;
-        token = scan(file);
-        while(token != NULL) {
-                printf("%s\n", token->id);
-                token = scan(file);
+        // Integration Test
+
+        char *path = "IntegrationTest/";
+        Tree *t = IParser(path); // I = Integration Test
+        ISemantic(t);
+
+        // Unit Test
+
+        char *result = USymbolTable(); // U = Unit Test
+        if(result == 0) {
+                printf("All test passed.\n");
+        } else {
+                printf("%s\n", result);
         }
-        //follow(5);
-        return 0;
+        printf("Tests run: %d\n", tests_run);
+        return result != 0;
 }

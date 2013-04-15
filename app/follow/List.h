@@ -1,3 +1,6 @@
+#ifndef LIST_H
+#define LIST_H
+
 #include <stdbool.h>
 #include <stdio.h>
 #include "Set.h"
@@ -24,3 +27,5 @@ extern Node* newNode(int id, int nodeLen);
 extern Node** newNodeArray(int len);
 extern void pushBack(Node *n, Node *next);
 extern void printPointTo(Node **n, int nodeLen);
+
+#endif

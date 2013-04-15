@@ -7,6 +7,11 @@ void* newMemory(int size) {
         return ptr;
 }
 
+void freeMemory(void *ptr) {
+        assert(ptr != NULL);
+        free(ptr);
+}
+
 char* fileToStr(char *filename) {
         FILE *file = fopen(filename, "rb");
         assert(file != NULL);
@@ -32,4 +37,22 @@ char* newSubStr(char *str, int offset, int len) {
         strncpy(newStr, &str[offset], len);
         newStr[len] = '\0';
         return newStr;
+}
+
+char* newCatStr(char *str_a, char *str_b) {
+        size_t len_a = strlen(str_a),
+               len_b = strlen(str_b);
+        char *s = (char*) newMemory(len_a + len_b + 1); // EOF = 1 char
+        memcpy(s, str_a, len_a);
+        memcpy(s + len_a, str_b, len_b);
+        return s;
+}
+
+static char spaces[MAX_LEN];
+
+char* newSpaces(int len) {
+        assert(len < MAX_LEN);
+        memset(spaces, ' ', MAX_LEN);
+        spaces[len] = '\0';
+        return spaces;
 }
