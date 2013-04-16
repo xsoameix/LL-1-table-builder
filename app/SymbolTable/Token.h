@@ -1,7 +1,7 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
-#include "Lib.h"
+#include "../lib/Lib.h"
 
 // For Scanner & Parser
 #define TOKEN 256

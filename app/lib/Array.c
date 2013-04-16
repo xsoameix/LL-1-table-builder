@@ -20,3 +20,17 @@ void ArrayAdd(Array *a, void *item) {
         }
         a->item[a->count++] = item;
 }
+
+void ArrayFree(Array *a, void (*freeFunc)(void*)) {
+        assert(a != NULL);
+        assert(freeFunc != NULL);
+        ArrayEach(a, freeFunc);
+        freeMemory(a->item);
+        freeMemory(a);
+}
+
+void ArrayEach(Array *a, void (*func)(void*)) {
+        for(int i = 0; i < a->count; i++) {
+                func(a->item[i]);
+        }
+}

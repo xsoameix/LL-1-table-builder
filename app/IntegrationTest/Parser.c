@@ -5,7 +5,9 @@ static void printTree(Tree *t);
 
 Tree* IParser(char *path) {
         char *filename = "test.syntax",
-             *string = fileToStr(newCatStr(path, filename));
+             *fullpath = newCatStr(path, filename),
+             *string = fileToStr(fullpath);
+        freeMemory(fullpath);
         Tree *tree = parse(string);
         printTree(tree);
         return tree;

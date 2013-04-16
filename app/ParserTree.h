@@ -2,9 +2,9 @@
 #define PARSERTREE_H
 
 #include <stdio.h>
-#include "Token.h"
-#include "Lib.h"
-#include "Array.h"
+#include "lib/Lib.h"
+#include "lib/Array.h"
+#include "SymbolTable/Token.h"
 
 typedef struct _Tree Tree;
 struct _Tree {

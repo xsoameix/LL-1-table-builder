@@ -50,6 +50,7 @@ void PS_storeTs() {
 
 static
 void P_storeTs() {
+        freeMemory(getChild(1)->token);
         enterWhichTree(&STMTS_storeTs, 2);
 }
 
@@ -66,6 +67,7 @@ void STMTS_storeTs() {
 static
 void STMTS__storeTs() {
         if(getTree()->child != NULL) {
+                freeMemory(getChild(0)->token);
                 enterWhichTree(&TOKENS_storeTs, 1);
                 STMTS__count++;
                 enterWhichTree(&STMTS__storeTs, 2);

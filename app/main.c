@@ -1,7 +1,11 @@
 #include "IntegrationTest/Parser.h"
 #include "IntegrationTest/Semantic.h"
 #include "UnitTest/minunit.h"
+#include "UnitTest/Array.h"
 #include "UnitTest/SymbolTable.h"
+#include "lib/Lib.h"
+
+static char* run_unit_tests();
 
 int tests_run = 0;
 
@@ -14,12 +18,23 @@ int main() {
 
         // Unit Test
 
-        char *result = USymbolTable(); // U = Unit Test
+        char *result = run_unit_tests(); // U = Unit Test
         if(result == 0) {
                 printf("All test passed.\n");
         } else {
                 printf("%s\n", result);
         }
         printf("Tests run: %d\n", tests_run);
+
+        // Check Memory
+
+        checkMemory();
         return result != 0;
+}
+
+static
+char* run_unit_tests() {
+        mu_run_test(USymbolTable);
+        mu_run_test(UArray);
+        return 0;
 }

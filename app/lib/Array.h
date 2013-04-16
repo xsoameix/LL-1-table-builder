@@ -11,5 +11,7 @@ typedef struct {
 
 Array* ArrayNew(int size);
 void ArrayAdd(Array *a, void *item);
+void ArrayFree(Array *a, void (*freeFunc)(void*));
+void ArrayEach(Array *a, void (*func)(void*));
 
 #endif

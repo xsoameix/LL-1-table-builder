@@ -1,15 +1,26 @@
 #include "Lib.h"
 
+static int newMemoryCount = 0;
+
 void* newMemory(int size) {
         void* ptr = malloc(size);
         assert(ptr != NULL);
         memset(ptr, 0, size);
+        newMemoryCount++;
         return ptr;
 }
+
+static int freeMemoryCount = 0;
 
 void freeMemory(void *ptr) {
         assert(ptr != NULL);
         free(ptr);
+        freeMemoryCount++;
+}
+
+void checkMemory() {
+        printf("newMemoryCount: %d, freeMemoryCount: %d\n",
+                        newMemoryCount, freeMemoryCount);
 }
 
 char* fileToStr(char *filename) {
