@@ -2,12 +2,14 @@
 
 // Element type is Terminal.
 static Array *gT; // g = global variable
+static bool gT_using = false;
 
 void addT(Token *t) {
         if(gT == NULL) {
                 gT = mArrayNew(1, mAT_AN);
         }
         mArrayAdd(gT, mNewT(t, mAT_nT), mAT_AA);
+        gT_using = true;
 }
 
 Terminal* newT(Token *token) {
@@ -36,7 +38,13 @@ Array* getT() {
         return gT;
 }
 
+void resetT() {
+        if(gT_using) {
+                mArrayFree(gT, NULL, mAT_AN);
+        }
+}
+
 void freeT(Terminal *t) {
-        freeMemory(t->id);
-        freeMemory(t);
+        freeMemoryLog(t->id, mS_nSS);
+        freeMemoryLog(t, mAT_nT);
 }

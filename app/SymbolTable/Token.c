@@ -15,3 +15,8 @@ void freeToken(Token *t) {
         freeMemory(t->id);
         freeMemory(t);
 }
+
+void mFreeToken(Token *t) {
+        freeMemoryLog(t->id, mS_nSS);
+        freeMemoryLog(t, mS_nT);
+}

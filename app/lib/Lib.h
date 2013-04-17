@@ -14,6 +14,7 @@ enum {
         mS_nT,
         mBR_nT,
         mAC_nT,
+        m_nT,
         mAC_AN,
         mAC_AA,
         mAL_nL,

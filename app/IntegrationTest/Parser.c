@@ -7,8 +7,9 @@ Tree* IParser(char *path) {
         char *filename = "test.syntax",
              *fullpath = mNewCatStr(path, filename, mIP_NCS),
              *string = mFileToStr(fullpath, mIP_FTS);
-        freeMemory(fullpath);
+        freeMemoryLog(fullpath, mIP_NCS);
         Tree *tree = parse(string);
+        freeMemoryLog(string, mIP_FTS);
         printTree(tree);
         return tree;
 }

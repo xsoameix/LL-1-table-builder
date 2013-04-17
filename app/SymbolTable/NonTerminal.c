@@ -51,16 +51,17 @@ Array* getNT() {
 
 void resetNT() {
         if(gNT_using) {
-                ArrayFree(gNT, &freeNT);
+                mArrayFree(gNT, &freeNT, mAN_AN);
                 gNT_using = false;
         }
+        resetT();
 }
 
 void freeNT(void *item) {
         NonTerminal *n = (NonTerminal*) item;
-        freeMemory(n->id);
+        freeMemoryLog(n->id, mS_nSS);
         for(int i = 0; i < n->P->count; i++) {
-                ArrayFree(n->P, &freeP);
+                mArrayFree(n->P, &freeP, mAN_nN);
         }
-        freeMemory(n);
+        freeMemoryLog(n, mAN_nN);
 }

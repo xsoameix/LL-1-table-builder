@@ -1,6 +1,7 @@
 #ifndef TERMINAL_H
 #define TERMINAL_H
 
+#include <stdbool.h>
 #include "../lib/Lib.h"
 #include "../lib/Array.h"
 

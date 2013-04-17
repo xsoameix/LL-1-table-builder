@@ -23,7 +23,7 @@ void buildTree(void (*parseFunc)(), char *id) {
         addChild(id);
 
         // Simulate a tree
-        enterTree(parseFunc);
+        enterLastTree(parseFunc);
 
         level--;
 }
@@ -45,7 +45,7 @@ void addLeaf(Token *token) {
         printLeafId(token->id);
 }
 
-void enterTree(void (*parseFunc)()) {
+void enterLastTree(void (*parseFunc)()) {
         enterWhichTree(parseFunc, tree->child->count - 1);
 }
 

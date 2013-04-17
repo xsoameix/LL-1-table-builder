@@ -24,7 +24,7 @@ Tree* buildRoot(void (*parseFunc)(), char *id);
 void buildTree(void (*parseFunc)(), char *id);
 void addChild(char *id);
 void addLeaf(Token *token);
-void enterTree(void (*parseFunc)());
+void enterLastTree(void (*parseFunc)());
 void enterWhichTree(void (*semanticFunc)(), int i);
 Tree* newTree(char *id);
 Tree* mNewTree(char *id, int reason);

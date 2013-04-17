@@ -23,7 +23,7 @@ void addInWhichP(int NT_i, int P_i, Symbol *s) {
 void freeP(void *item) {
         Production *p = (Production*) item;
         for(int i = 0; i < p->S->count; i++) {
-                ArrayFree(p->S, &freeS);
+                mArrayFree(p->S, &freeS, mAIWP_nP);
         }
-        freeMemory(p);
+        freeMemoryLog(p, mAIWP_nP);
 }

@@ -31,7 +31,7 @@ static
 void P_storeNTs() {
         Token *t = getChild(0)->token; // child[0]->token is a NonTerminal.
         storeNT(t);
-        freeMemory(t);
+        freeMemoryLog(t, mS_nT);
 }
 
 // Store Terminals functions
@@ -41,56 +41,72 @@ static int P_count = 0; // The number of NonTerminals.
 
 static
 void PS_storeTs() {
-        if(getTree()->child != NULL) {
+        Tree *tree = getTree();
+        if(tree->child != NULL) {
                 enterWhichTree(&P_storeTs, 0);
                 P_count++;
                 enterWhichTree(&PS_storeTs, 1);
+                mArrayFree(tree->child, NULL, mAC_AN);
         }
-        freeMemory(getTree());
+        freeMemoryLog(tree, m_nT);
 }
 
 static
 void P_storeTs() {
-        freeToken(getChild(1)->token);
+        Tree *tree = getTree();
+        mFreeToken(getChild(1)->token);
+        freeMemoryLog(getChild(0), mAL_nL);
+        freeMemoryLog(getChild(1), mAL_nL);
         enterWhichTree(&STMTS_storeTs, 2);
-        freeMemory(getTree());
+        mArrayFree(tree->child, NULL, mAL_AN);
+        freeMemoryLog(tree, m_nT);
 }
 
 static int STMTS__count = 0; // The number of Production of the certain NonTerminal.
 
 static
 void STMTS_storeTs() {
+        Tree *tree = getTree();
         enterWhichTree(&TOKENS_storeTs, 0);
         STMTS__count++;
         enterWhichTree(&STMTS__storeTs, 1);
         STMTS__count--;
-        freeMemory(getTree());
+        mArrayFree(tree->child, NULL, mAC_AN);
+        freeMemoryLog(tree, m_nT);
 }
 
 static
 void STMTS__storeTs() {
-        if(getTree()->child != NULL) {
-                freeToken(getChild(0)->token);
+        Tree *tree = getTree();
+        if(tree->child != NULL) {
+                mFreeToken(getChild(0)->token);
+                freeMemoryLog(getChild(0), mAL_nL);
                 enterWhichTree(&TOKENS_storeTs, 1);
                 STMTS__count++;
                 enterWhichTree(&STMTS__storeTs, 2);
                 STMTS__count--;
+                mArrayFree(tree->child, NULL, mAL_AN);
         }
-        freeMemory(getTree());
+        freeMemoryLog(tree, m_nT);
 }
 
 static
 void TOKENS_storeTs() {
-        if(getTree()->child != NULL) {
+        Tree *tree = getTree();
+        if(tree->child != NULL) {
                 Token *t = getChild(0)->token; // child[0] is a token.
+                freeMemoryLog(getChild(0), mAL_nL);
                 if(isNT(t)) {
                         storeInWhichP(P_count, STMTS__count, NONTERMINAL, t); // P = Production
+                        enterWhichTree(&TOKENS_storeTs, 1);
+                        mFreeToken(t);
                 } else {
                         storeT(t);
                         storeInWhichP(P_count, STMTS__count, TERMINAL, t); // P = Production
+                        enterWhichTree(&TOKENS_storeTs, 1);
+                        freeMemoryLog(t, mS_nT);
                 }
-                freeMemory(t);
-                enterWhichTree(&TOKENS_storeTs, 1);
+                mArrayFree(tree->child, NULL, mAL_AN);
         }
-        freeMemory(getTree());
+        freeMemoryLog(tree, m_nT);
 }

@@ -22,7 +22,7 @@ void mArrayAdd(Array *a, void *item, int reason) {
                 int newSize = a->size * 2;
                 void **newItem = (void**) newMemoryLog(newSize * sizeof(void*), reason);
                 memcpy(newItem, a->item, a->size * sizeof(void*));
-                freeMemory(a->item);
+                freeMemoryLog(a->item, reason);
                 a->item = newItem;
                 a->size = newSize;
         }
@@ -31,13 +31,22 @@ void mArrayAdd(Array *a, void *item, int reason) {
 
 void ArrayFree(Array *a, void (*freeFunc)(void*)) {
         assert(a != NULL);
-        assert(freeFunc != NULL);
         ArrayEach(a, freeFunc);
         freeMemory(a->item);
         freeMemory(a);
 }
 
+void mArrayFree(Array *a, void (*freeFunc)(void*), int reason) {
+        assert(a != NULL);
+        ArrayEach(a, freeFunc);
+        freeMemoryLog(a->item, reason);
+        freeMemoryLog(a, reason);
+}
+
 void ArrayEach(Array *a, void (*func)(void*)) {
+        if(func == NULL) {
+                return;
+        }
         for(int i = 0; i < a->count; i++) {
                 func(a->item[i]);
         }

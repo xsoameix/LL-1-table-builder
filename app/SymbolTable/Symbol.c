@@ -28,6 +28,8 @@ void freeS(void *item) {
         Symbol *s = (Symbol*) item;
         if(s->type == TERMINAL) {
                 freeT(s->T);
+                freeMemoryLog(item, mSIWP_nS_T);
+        } else {
+                freeMemoryLog(item, mSIWP_nS_N);
         }
-        freeMemory(item);
 }

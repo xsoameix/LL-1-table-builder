@@ -14,6 +14,7 @@ static MemoryLog memLog[] = {
         {"scan()", "newToken()", "", 0, 0},
         {"buildRoot()", "newTree()", "", 0, 0},
         {"addChild()", "newTree()", "", 0, 0},
+        {"", "newTree()", "", 0, 0},
         {"addChild()", "ArrayNew()x2", "", 0, 0},
         {"addChild()", "ArrayAdd()", "", 0, 0},
         {"addLeaf()", "newLeaf()", "", 0, 0},
@@ -32,10 +33,10 @@ static MemoryLog memLog[] = {
         {"addT()", "ArrayAdd()", "", 0, 0}};
 
 void* newMemoryLog(int size, int reason) {
-        memLog[reason].newMemoryCount++;
         void* ptr = malloc(size);
         assert(ptr != NULL);
         memset(ptr, 0, size);
+        memLog[reason].newMemoryCount++;
         newMemoryCount++;
         return ptr;
 }
@@ -43,14 +44,14 @@ void* newMemoryLog(int size, int reason) {
 static int freeMemoryCount = 0;
 
 void freeMemory(void *ptr) {
-        assert(ptr != NULL);
-        free(ptr);
-        freeMemoryCount++;
+        freeMemoryLog(ptr, mNULL);
 }
 
 void freeMemoryLog(void *ptr, int reason) {
+        assert(ptr != NULL);
+        free(ptr);
         memLog[reason].freeMemoryCount++;
-        freeMemory(ptr);
+        freeMemoryCount++;
 }
 
 void checkMemory() {

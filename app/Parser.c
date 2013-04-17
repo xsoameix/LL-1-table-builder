@@ -26,7 +26,6 @@ Tree* parse(char *str) {
         string = str;
         next();
         Tree *t = buildRoot(&parse_PS, "PS");
-        freeMemory(str);
         return t;
 }
 
