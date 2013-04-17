@@ -7,7 +7,10 @@
 #include <stdio.h>
 
 enum {
-        mS_nSS, // m = memory log
+        mNULL, // unknown caller (function)
+        mIP_NCS, // m = memory log
+        mIP_FTS,
+        mS_nSS,
         mS_nT,
         mBR_nT,
         mAC_nT,
@@ -29,7 +32,9 @@ enum {
         mAT_AA};
 
 typedef struct {
-        char *reason;
+        char *caller;
+        char *callee;
+        char *explanation;
         int newMemoryCount;
         int freeMemoryCount;
 } MemoryLog;
@@ -40,9 +45,11 @@ void freeMemory(void *ptr);
 void freeMemoryLog(void *ptr, int reason);
 void checkMemory();
 char* fileToStr(char *filename);
+char* mFileToStr(char *filename, int reason);
 char* newSubStr(char *str, int offset, int len);
-char* newSubStr_memLog(char *str, int offset, int len, int reason);
+char* mNewSubStr(char *str, int offset, int len, int reason);
 char* newCatStr(char *str_a, char *str_b);
+char* mNewCatStr(char *str_a, char *str_b, int reason);
 char* newSpaces(int len);
 
 #define MAX_LEN 512

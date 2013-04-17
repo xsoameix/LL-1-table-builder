@@ -13,11 +13,7 @@ void addNT(Token *t) {
 }
 
 NonTerminal* newNT(Token *t) {
-        NonTerminal *n = (NonTerminal*) newMemory(sizeof(NonTerminal));
-        n->no = gNT->count;
-        n->id = t->id;
-        n->P = ArrayNew(1);
-        return n;
+        return mNewNT(t, mNULL);
 }
 
 NonTerminal* mNewNT(Token *t, int reason) {

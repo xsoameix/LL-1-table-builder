@@ -62,12 +62,7 @@ void enterWhichTree(void (*semanticFunc)(), int i) {
 }
 
 Tree* newTree(char *id) {
-        Tree *t = (Tree*) newMemory(sizeof(Tree));
-        t->id = id;
-        t->token = NULL;
-        t->parent = tree;
-        t->child = NULL;
-        return t;
+        return mNewTree(id, mNULL);
 }
 
 Tree* mNewTree(char *id, int reason) {
@@ -80,12 +75,7 @@ Tree* mNewTree(char *id, int reason) {
 }
 
 Tree* newLeaf(Token *token) {
-        Tree *t = (Tree*) newMemory(sizeof(Tree));
-        t->id = NULL;
-        t->token = token;
-        t->parent = tree;
-        t->child = NULL;
-        return t;
+        return mNewLeaf(token, mNULL);
 }
 
 Tree* mNewLeaf(Token *token, int reason) {

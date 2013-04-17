@@ -11,10 +11,7 @@ void addT(Token *t) {
 }
 
 Terminal* newT(Token *token) {
-        Terminal *t = (Terminal*) newMemory(sizeof(Terminal));
-        t->no = gT->count;
-        t->id = token->id;
-        return t;
+        return mNewT(token, mNULL);
 }
 
 Terminal* mNewT(Token *token, int reason) {

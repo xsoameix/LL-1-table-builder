@@ -1,11 +1,7 @@
 #include "Symbol.h"
 
-Symbol* newS_NT(NonTerminal *n) { // S = Symbol
-        Symbol *s = (Symbol*) newMemory(sizeof(Symbol));
-        s->type = NONTERMINAL;
-        s->NT = n;
-        s->T = NULL;
-        return s;
+Symbol* newS_NT(NonTerminal *n) {
+        return mNewS_NT(n, mNULL);
 }
 
 Symbol* mNewS_NT(NonTerminal *n, int reason) { // S = Symbol
@@ -16,12 +12,8 @@ Symbol* mNewS_NT(NonTerminal *n, int reason) { // S = Symbol
         return s;
 }
 
-Symbol* newS_T(Terminal *t) { // S = Symbol
-        Symbol *s = (Symbol*) newMemory(sizeof(Symbol));
-        s->type = TERMINAL;
-        s->NT = NULL;
-        s->T = t;
-        return s;
+Symbol* newS_T(Terminal *t) {
+        return mNewS_T(t, mNULL);
 }
 
 Symbol* mNewS_T(Terminal *t, int reason) { // S = Symbol

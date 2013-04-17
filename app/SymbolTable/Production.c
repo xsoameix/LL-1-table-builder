@@ -1,10 +1,7 @@
 #include "Production.h"
 
-Production* newP(Symbol *s) { // P = Production
-        Production *p = (Production*) newMemory(sizeof(Production));
-        p->S = ArrayNew(1);
-        ArrayAdd(p->S, s);
-        return p;
+Production* newP(Symbol *s) {
+        return mNewP(s, mNULL);
 }
 
 Production* mNewP(Symbol *s, int reason) { // P = Production
