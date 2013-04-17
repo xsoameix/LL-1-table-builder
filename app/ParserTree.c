@@ -8,7 +8,7 @@ Tree* buildRoot(void (*parseFunc)(), char *id) {
         printTreeType(id);
         level++;
 
-        tree = newTree_memLog(id, memLog_buildRoot_newTree);
+        tree = mNewTree(id, mBR_nT);
         parseFunc();
 
         level--;
@@ -31,17 +31,17 @@ void buildTree(void (*parseFunc)(), char *id) {
 void addChild(char *id) {
         assert(tree != NULL);
         if(tree->child == NULL) {
-                tree->child = ArrayNew_memLog(1, memLog_addChild_ArrayNew);
+                tree->child = mArrayNew(1, mAC_AN);
         }
-        ArrayAdd_memLog(tree->child, newTree_memLog(id, memLog_addChild_newTree), memLog_addChild_ArrayAdd);
+        mArrayAdd(tree->child, mNewTree(id, mAC_nT), mAC_AA);
 }
 
 void addLeaf(Token *token) {
         assert(tree != NULL);
         if(tree->child == NULL) {
-                tree->child = ArrayNew_memLog(1, memLog_addLeaf_ArrayNew);
+                tree->child = mArrayNew(1, mAL_AN);
         }
-        ArrayAdd_memLog(tree->child, newLeaf_memLog(token, memLog_addLeaf_newLeaf), memLog_addLeaf_ArrayAdd);
+        mArrayAdd(tree->child, mNewLeaf(token, mAL_nL), mAL_AA);
         printLeafId(token->id);
 }
 
@@ -70,7 +70,7 @@ Tree* newTree(char *id) {
         return t;
 }
 
-Tree* newTree_memLog(char *id, int reason) {
+Tree* mNewTree(char *id, int reason) {
         Tree *t = (Tree*) newMemoryLog(sizeof(Tree), reason);
         t->id = id;
         t->token = NULL;
@@ -88,7 +88,7 @@ Tree* newLeaf(Token *token) {
         return t;
 }
 
-Tree* newLeaf_memLog(Token *token, int reason) {
+Tree* mNewLeaf(Token *token, int reason) {
         Tree *t = (Tree*) newMemoryLog(sizeof(Tree), reason);
         t->id = NULL;
         t->token = token;

@@ -7,26 +7,26 @@
 #include <stdio.h>
 
 enum {
-        memLog_scan_newSubStr,
-        memLog_scan_newToken,
-        memLog_buildRoot_newTree,
-        memLog_addChild_newTree,
-        memLog_addChild_ArrayNew,
-        memLog_addChild_ArrayAdd,
-        memLog_addLeaf_newLeaf,
-        memLog_addLeaf_ArrayNew,
-        memLog_addLeaf_ArrayAdd,
-        memLog_storeInWhichP_newS_NT,
-        memLog_storeInWhichP_newS_T,
-        memLog_addInWhichP_newP,
-        memLog_addInWhichP_ArrayAdd_P,
-        memLog_addInWhichP_ArrayAdd_S,
-        memLog_addNT_newNT,
-        memLog_addNT_ArrayNew,
-        memLog_addNT_ArrayAdd,
-        memLog_addT_newT,
-        memLog_addT_ArrayNew,
-        memLog_addT_ArrayAdd};
+        mS_nSS, // m = memory log
+        mS_nT,
+        mBR_nT,
+        mAC_nT,
+        mAC_AN,
+        mAC_AA,
+        mAL_nL,
+        mAL_AN,
+        mAL_AA,
+        mSIWP_nS_N,
+        mSIWP_nS_T,
+        mAIWP_nP,
+        mAIWP_AA_P,
+        mAIWP_AA_S,
+        mAN_nN,
+        mAN_AN,
+        mAN_AA,
+        mAT_nT,
+        mAT_AN,
+        mAT_AA};
 
 typedef struct {
         char *reason;

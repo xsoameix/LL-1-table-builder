@@ -15,7 +15,7 @@ typedef struct _Terminal {
 
 void addT(Token *t);
 Terminal* newT(Token *token);
-Terminal* newT_memLog(Token *token, int reason);
+Terminal* mNewT(Token *token, int reason);
 int T_IndexOf(Array *a, char *id);
 Array* getT();
 void freeT(Terminal *t);

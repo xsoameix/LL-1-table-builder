@@ -7,7 +7,7 @@ Token* newToken(char *id, int type) {
         return t;
 }
 
-Token* newToken_memLog(char *id, int type, int reason) {
+Token* mNewToken(char *id, int type, int reason) {
         Token *t = (Token *) newMemoryLog(sizeof(Token), reason);
         t->id = id; // char pointer point to file
         t->type = type;

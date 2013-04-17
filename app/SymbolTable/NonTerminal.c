@@ -6,9 +6,9 @@ static bool gNT_using = false;
 
 void addNT(Token *t) {
         if(!gNT_using) {
-                gNT = ArrayNew_memLog(1, memLog_addNT_ArrayNew);
+                gNT = mArrayNew(1, mAN_AN);
         }
-        ArrayAdd_memLog(gNT, newNT_memLog(t, memLog_addNT_newNT), memLog_addNT_ArrayAdd);
+        mArrayAdd(gNT, mNewNT(t, mAN_nN), mAN_AA);
         gNT_using = true;
 }
 
@@ -20,11 +20,11 @@ NonTerminal* newNT(Token *t) {
         return n;
 }
 
-NonTerminal* newNT_memLog(Token *t, int reason) {
+NonTerminal* mNewNT(Token *t, int reason) {
         NonTerminal *n = (NonTerminal*) newMemoryLog(sizeof(NonTerminal), reason);
         n->no = gNT->count;
         n->id = t->id;
-        n->P = ArrayNew_memLog(1, reason);
+        n->P = mArrayNew(1, reason);
         return n;
 }
 

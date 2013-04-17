@@ -11,26 +11,26 @@ void* newMemory(int size) {
 }
 
 static MemoryLog memLog[] = {
-        {"scan_newSubStr", 0, 0},
-        {"scan_newToken", 0, 0},
-        {"buildRoot_newTree", 0, 0},
-        {"addChild_newTree", 0, 0},
-        {"addChild_ArrayNew(x2)", 0, 0},
-        {"addChild_ArrayAdd", 0, 0},
-        {"addLeaf_newLeaf", 0, 0},
-        {"addLeaf_ArrayNew(x2)", 0, 0},
-        {"addLeaf_ArrayAdd", 0, 0},
-        {"storeInWhichP_newS_NT", 0, 0},
-        {"storeInWhichP_newS_T", 0, 0},
-        {"addInWhichP_newP(x3)", 0, 0},
-        {"addInWhichP_ArrayAdd_P", 0, 0},
-        {"addInWhichP_ArrayAdd_S", 0, 0},
-        {"addNT_newNT(x3)", 0, 0},
-        {"addNT_ArrayNew(x2)", 0, 0},
-        {"addNT_ArrayAdd", 0, 0},
-        {"addT_newT", 0, 0},
-        {"addT_ArrayNew(x2)", 0, 0},
-        {"addT_ArrayAdd", 0, 0}};
+        {"scan(): newSubStr()", 0, 0},
+        {"scan(): newToken()", 0, 0},
+        {"buildRoot(): newTree()", 0, 0},
+        {"addChild(): newTree()", 0, 0},
+        {"addChild(): ArrayNew()x2", 0, 0},
+        {"addChild(): ArrayAdd()", 0, 0},
+        {"addLeaf(): newLeaf()", 0, 0},
+        {"addLeaf(): ArrayNew()x2", 0, 0},
+        {"addLeaf(): ArrayAdd()", 0, 0},
+        {"storeInWhichP(): newS_NT()", 0, 0},
+        {"storeInWhichP(): newS_T()", 0, 0},
+        {"addInWhichP(): newP()x3", 0, 0},
+        {"addInWhichP(): ArrayAdd(): P", 0, 0},
+        {"addInWhichP(): ArrayAdd(): S", 0, 0},
+        {"addNT(): newNT()x3", 0, 0},
+        {"addNT(): ArrayNew()x2", 0, 0},
+        {"addNT(): ArrayAdd()", 0, 0},
+        {"addT(): newT()", 0, 0},
+        {"addT(): ArrayNew()x2", 0, 0},
+        {"addT(): ArrayAdd()", 0, 0}};
 
 void* newMemoryLog(int size, int reason) {
         memLog[reason].newMemoryCount++;
@@ -56,16 +56,16 @@ void freeMemoryLog(void *ptr, int reason) {
 }
 
 void checkMemory() {
-        printf("%-25s%s: %-10d%s: %d\n",
-                        "Total",
-                        "newMemoryCount", newMemoryCount,
-                        "freeMemoryCount", freeMemoryCount);
+        printf("============  checkMemory  ============\n");
+        printf("x2 or x3 is this function malloc times.\n");
+        printf("%-30s%-20s%s\n", "", "newMemoryCount", "freeMemoryCount");
+        printf("%-30s%-20d%d\n", "Total", newMemoryCount, freeMemoryCount);
         int len = sizeof(memLog) / sizeof(memLog[0]);
         for(int i = 0; i < len; i++) {
-                printf("%-25s%s: %-10d%s: %d\n",
+                printf("%-30s%-20d%d\n",
                                 memLog[i].reason,
-                                "newMemoryCount", memLog[i].newMemoryCount,
-                                "freeMemoryCount", memLog[i].freeMemoryCount);
+                                memLog[i].newMemoryCount,
+                                memLog[i].freeMemoryCount);
         }
 }
 
@@ -96,7 +96,7 @@ char* newSubStr(char *str, int offset, int len) {
         return newStr;
 }
 
-char* newSubStr_memLog(char *str, int offset, int len, int reason) {
+char* mNewSubStr(char *str, int offset, int len, int reason) {
         char *newStr = newMemoryLog(len + 1, reason); // EOF = 1 char
         strncpy(newStr, &str[offset], len);
         newStr[len] = '\0';

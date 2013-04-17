@@ -8,7 +8,7 @@ Array* ArrayNew(int size) {
         return a;
 }
 
-Array* ArrayNew_memLog(int size, int reason) {
+Array* mArrayNew(int size, int reason) {
         Array *a = (Array*) newMemoryLog(sizeof(Array), reason);
         a->size = size;
         a->count = 0;
@@ -29,7 +29,7 @@ void ArrayAdd(Array *a, void *item) {
         a->item[a->count++] = item;
 }
 
-void ArrayAdd_memLog(Array *a, void *item, int reason) {
+void mArrayAdd(Array *a, void *item, int reason) {
         assert(a->count <= a->size);
         if(a->count == a->size) {
                 int newSize = a->size * 2;

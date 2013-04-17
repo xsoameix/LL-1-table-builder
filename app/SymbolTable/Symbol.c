@@ -8,7 +8,7 @@ Symbol* newS_NT(NonTerminal *n) { // S = Symbol
         return s;
 }
 
-Symbol* newS_NT_memLog(NonTerminal *n, int reason) { // S = Symbol
+Symbol* mNewS_NT(NonTerminal *n, int reason) { // S = Symbol
         Symbol *s = (Symbol*) newMemoryLog(sizeof(Symbol), reason);
         s->type = NONTERMINAL;
         s->NT = n;
@@ -24,7 +24,7 @@ Symbol* newS_T(Terminal *t) { // S = Symbol
         return s;
 }
 
-Symbol* newS_T_memLog(Terminal *t, int reason) { // S = Symbol
+Symbol* mNewS_T(Terminal *t, int reason) { // S = Symbol
         Symbol *s = (Symbol*) newMemoryLog(sizeof(Symbol), reason);
         s->type = TERMINAL;
         s->NT = NULL;

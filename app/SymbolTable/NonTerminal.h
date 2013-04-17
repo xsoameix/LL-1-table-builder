@@ -18,7 +18,7 @@ typedef struct _NonTerminal {
 
 void addNT(Token *t);
 NonTerminal* newNT(Token *t);
-NonTerminal* newNT_memLog(Token *t, int reason);
+NonTerminal* mNewNT(Token *t, int reason);
 int NT_IndexOf(Array *a, char *id);
 bool isNT(Token *t);
 Array* getNT();

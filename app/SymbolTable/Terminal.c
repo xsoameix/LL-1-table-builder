@@ -5,9 +5,9 @@ static Array *gT; // g = global variable
 
 void addT(Token *t) {
         if(gT == NULL) {
-                gT = ArrayNew_memLog(1, memLog_addT_ArrayNew);
+                gT = mArrayNew(1, mAT_AN);
         }
-        ArrayAdd_memLog(gT, newT_memLog(t, memLog_addT_newT), memLog_addT_ArrayAdd);
+        mArrayAdd(gT, mNewT(t, mAT_nT), mAT_AA);
 }
 
 Terminal* newT(Token *token) {
@@ -17,7 +17,7 @@ Terminal* newT(Token *token) {
         return t;
 }
 
-Terminal* newT_memLog(Token *token, int reason) {
+Terminal* mNewT(Token *token, int reason) {
         Terminal *t = (Terminal*) newMemoryLog(sizeof(Terminal), reason);
         t->no = gT->count;
         t->id = token->id;

@@ -14,9 +14,9 @@ typedef struct _Symbol {
 #include "Terminal.h"
 
 Symbol* newS_NT(NonTerminal *n);
-Symbol* newS_NT_memLog(NonTerminal *n, int reason);
+Symbol* mNewS_NT(NonTerminal *n, int reason);
 Symbol* newS_T(Terminal *t);
-Symbol* newS_T_memLog(Terminal *t, int reason);
+Symbol* mNewS_T(Terminal *t, int reason);
 void freeS(void *item);
 
 #endif

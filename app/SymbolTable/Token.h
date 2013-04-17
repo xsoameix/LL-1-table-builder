@@ -15,7 +15,7 @@ typedef struct {
 } Token;
 
 Token* newToken(char *id, int type);
-Token* newToken_memLog(char *id, int type, int reason);
+Token* mNewToken(char *id, int type, int reason);
 void freeToken(Token *t);
 
 #endif
