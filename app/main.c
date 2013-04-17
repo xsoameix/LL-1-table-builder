@@ -15,6 +15,7 @@ int main() {
         char *path = "IntegrationTest/";
         Tree *t = IParser(path); // I = Integration Test
         ISemantic(t);
+        resetNT();
 
         // Unit Test
 
@@ -34,7 +35,7 @@ int main() {
 
 static
 char* run_unit_tests() {
-        mu_run_test(USymbolTable);
-        mu_run_test(UArray);
+        //mu_run_test(USymbolTable);
+        //mu_run_test(UArray);
         return 0;
 }

@@ -5,13 +5,20 @@ static Array *gT; // g = global variable
 
 void addT(Token *t) {
         if(gT == NULL) {
-                gT = ArrayNew(1);
+                gT = ArrayNew_memLog(1, memLog_addT_ArrayNew);
         }
-        ArrayAdd(gT, newT(t));
+        ArrayAdd_memLog(gT, newT_memLog(t, memLog_addT_newT), memLog_addT_ArrayAdd);
 }
 
 Terminal* newT(Token *token) {
         Terminal *t = (Terminal*) newMemory(sizeof(Terminal));
+        t->no = gT->count;
+        t->id = token->id;
+        return t;
+}
+
+Terminal* newT_memLog(Token *token, int reason) {
+        Terminal *t = (Terminal*) newMemoryLog(sizeof(Terminal), reason);
         t->no = gT->count;
         t->id = token->id;
         return t;
@@ -30,4 +37,9 @@ int T_IndexOf(Array *a, char *id) {
 
 Array* getT() {
         return gT;
+}
+
+void freeT(Terminal *t) {
+        freeMemory(t->id);
+        freeMemory(t);
 }

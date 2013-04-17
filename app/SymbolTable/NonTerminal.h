@@ -4,9 +4,8 @@
 #include "assert.h"
 #include "stdbool.h"
 #include "../lib/Array.h"
-#include "Token.h"
 
-typedef struct {
+typedef struct _NonTerminal {
         int no;
         char *id;
 
@@ -14,11 +13,16 @@ typedef struct {
         Array *P;
 } NonTerminal;
 
+#include "Token.h"
+#include "Production.h"
+
 void addNT(Token *t);
 NonTerminal* newNT(Token *t);
+NonTerminal* newNT_memLog(Token *t, int reason);
 int NT_IndexOf(Array *a, char *id);
 bool isNT(Token *t);
 Array* getNT();
 void resetNT();
+void freeNT(void *item);
 
 #endif

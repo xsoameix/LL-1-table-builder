@@ -14,10 +14,10 @@ void storeInWhichP(int NT_i, int P_i, int type, Token *tk) {
         Symbol *s = NULL;
         if(type == NONTERMINAL) {
                 NonTerminal *n = getNT()->item[NT_IndexOf(getNT(), tk->id)];
-                s = newS_NT(n);
+                s = newS_NT_memLog(n, memLog_storeInWhichP_newS_NT);
         } else {
                 Terminal *t = getT()->item[T_IndexOf(getT(), tk->id)];
-                s = newS_T(t);
+                s = newS_T_memLog(t, memLog_storeInWhichP_newS_T);
         }
         addInWhichP(NT_i, P_i, s);
 }

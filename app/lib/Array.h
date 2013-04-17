@@ -10,7 +10,9 @@ typedef struct {
 } Array;
 
 Array* ArrayNew(int size);
+Array* ArrayNew_memLog(int size, int reason);
 void ArrayAdd(Array *a, void *item);
+void ArrayAdd_memLog(Array *a, void *item, int reason);
 void ArrayFree(Array *a, void (*freeFunc)(void*));
 void ArrayEach(Array *a, void (*func)(void*));
 

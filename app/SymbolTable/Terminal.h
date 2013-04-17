@@ -3,18 +3,21 @@
 
 #include "../lib/Lib.h"
 #include "../lib/Array.h"
-#include "Token.h"
 
-#define TERMINAL 260
-
-typedef struct {
+typedef struct _Terminal {
         int no;
         char *id;
 } Terminal;
 
+#include "Token.h"
+
+#define TERMINAL 260
+
 void addT(Token *t);
 Terminal* newT(Token *token);
+Terminal* newT_memLog(Token *token, int reason);
 int T_IndexOf(Array *a, char *id);
 Array* getT();
+void freeT(Terminal *t);
 
 #endif

@@ -2,12 +2,14 @@
 
 // Element type is NonTerminal.
 static Array *gNT; // g = global variable
+static bool gNT_using = false;
 
 void addNT(Token *t) {
-        if(gNT == NULL) {
-                gNT = ArrayNew(1);
+        if(!gNT_using) {
+                gNT = ArrayNew_memLog(1, memLog_addNT_ArrayNew);
         }
-        ArrayAdd(gNT, newNT(t));
+        ArrayAdd_memLog(gNT, newNT_memLog(t, memLog_addNT_newNT), memLog_addNT_ArrayAdd);
+        gNT_using = true;
 }
 
 NonTerminal* newNT(Token *t) {
@@ -15,6 +17,14 @@ NonTerminal* newNT(Token *t) {
         n->no = gNT->count;
         n->id = t->id;
         n->P = ArrayNew(1);
+        return n;
+}
+
+NonTerminal* newNT_memLog(Token *t, int reason) {
+        NonTerminal *n = (NonTerminal*) newMemoryLog(sizeof(NonTerminal), reason);
+        n->no = gNT->count;
+        n->id = t->id;
+        n->P = ArrayNew_memLog(1, reason);
         return n;
 }
 
@@ -44,5 +54,17 @@ Array* getNT() {
 }
 
 void resetNT() {
-        gNT = NULL;
+        if(gNT_using) {
+                ArrayFree(gNT, &freeNT);
+                gNT_using = false;
+        }
+}
+
+void freeNT(void *item) {
+        NonTerminal *n = (NonTerminal*) item;
+        freeMemory(n->id);
+        for(int i = 0; i < n->P->count; i++) {
+                ArrayFree(n->P, &freeP);
+        }
+        freeMemory(n);
 }

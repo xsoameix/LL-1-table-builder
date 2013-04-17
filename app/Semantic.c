@@ -46,12 +46,14 @@ void PS_storeTs() {
                 P_count++;
                 enterWhichTree(&PS_storeTs, 1);
         }
+        freeMemory(getTree());
 }
 
 static
 void P_storeTs() {
-        freeMemory(getChild(1)->token);
+        freeToken(getChild(1)->token);
         enterWhichTree(&STMTS_storeTs, 2);
+        freeMemory(getTree());
 }
 
 static int STMTS__count = 0; // The number of Production of the certain NonTerminal.
@@ -62,17 +64,19 @@ void STMTS_storeTs() {
         STMTS__count++;
         enterWhichTree(&STMTS__storeTs, 1);
         STMTS__count--;
+        freeMemory(getTree());
 }
 
 static
 void STMTS__storeTs() {
         if(getTree()->child != NULL) {
-                freeMemory(getChild(0)->token);
+                freeToken(getChild(0)->token);
                 enterWhichTree(&TOKENS_storeTs, 1);
                 STMTS__count++;
                 enterWhichTree(&STMTS__storeTs, 2);
                 STMTS__count--;
         }
+        freeMemory(getTree());
 }
 
 static
@@ -88,4 +92,5 @@ void TOKENS_storeTs() {
                 freeMemory(t);
                 enterWhichTree(&TOKENS_storeTs, 1);
         }
+        freeMemory(getTree());
 }
