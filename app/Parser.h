@@ -5,6 +5,6 @@
 #include "Scanner.h"
 #include "ParserTree.h"
 
-Tree* parse(char *file);
+Tree* parse(char *str);
 
 #endif

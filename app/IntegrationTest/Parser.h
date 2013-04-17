@@ -1,5 +1,5 @@
 #include <string.h>
-#include "../Lib.h"
+#include "../lib/Lib.h"
 #include "../Parser.h"
 #include "../ParserTree.h"
 

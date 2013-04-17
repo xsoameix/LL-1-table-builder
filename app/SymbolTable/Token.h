@@ -1,7 +1,7 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
-#include "Lib.h"
+#include "../lib/Lib.h"
 
 // For Scanner & Parser
 #define TOKEN 256
@@ -15,5 +15,8 @@ typedef struct {
 } Token;
 
 Token* newToken(char *id, int type);
+Token* mNewToken(char *id, int type, int reason);
+void freeToken(Token *t);
+void mFreeToken(Token *t);
 
 #endif

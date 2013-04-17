@@ -17,16 +17,15 @@ static void match(int c);
 static void next();
 static void syntaxError();
 
-static char *scanningFile;
+static char *string;
 
 static Token *lookaheadToken;
 static int lookahead;
 
-Tree* parse(char *file) {
-        scanningFile = file;
+Tree* parse(char *str) {
+        string = str;
         next();
         Tree *t = buildRoot(&parse_PS, "PS");
-        freeMemory(file);
         return t;
 }
 
@@ -90,7 +89,7 @@ void match(int c) {
 
 static
 void next() {
-        lookaheadToken = scan(scanningFile);
+        lookaheadToken = scan(string);
         if(lookaheadToken == NULL) {
                 lookahead = EOF;
         } else {

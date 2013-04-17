@@ -2,9 +2,9 @@
 #define PARSERTREE_H
 
 #include <stdio.h>
-#include "Token.h"
-#include "Lib.h"
-#include "Array.h"
+#include "lib/Lib.h"
+#include "lib/Array.h"
+#include "SymbolTable/Token.h"
 
 typedef struct _Tree Tree;
 struct _Tree {
@@ -24,10 +24,12 @@ Tree* buildRoot(void (*parseFunc)(), char *id);
 void buildTree(void (*parseFunc)(), char *id);
 void addChild(char *id);
 void addLeaf(Token *token);
-void enterTree(void (*parseFunc)());
+void enterLastTree(void (*parseFunc)());
 void enterWhichTree(void (*semanticFunc)(), int i);
 Tree* newTree(char *id);
+Tree* mNewTree(char *id, int reason);
 Tree* newLeaf(Token *t);
+Tree* mNewLeaf(Token *token, int reason);
 void setTree(Tree *t);
 Tree* getTree();
 Tree* getChild(int i);

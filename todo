@@ -1,2 +1,4 @@
 Integration Test: Add more func to list member of SymbolTable's gNT and gT.
 Unit Test: Write more SymbolTable Test func.
+addT() is not the correct semantic action, because using this will put duplicated item into the array.
+The solution is using hash table (use linked list to implement). If hash collision happen, use flatten func to store it into array.

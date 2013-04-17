@@ -5,8 +5,11 @@ static void printTree(Tree *t);
 
 Tree* IParser(char *path) {
         char *filename = "test.syntax",
-             *string = fileToStr(newCatStr(path, filename));
+             *fullpath = mNewCatStr(path, filename, mIP_NCS),
+             *string = mFileToStr(fullpath, mIP_FTS);
+        freeMemoryLog(fullpath, mIP_NCS);
         Tree *tree = parse(string);
+        freeMemoryLog(string, mIP_FTS);
         printTree(tree);
         return tree;
 }

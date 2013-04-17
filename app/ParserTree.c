@@ -8,7 +8,7 @@ Tree* buildRoot(void (*parseFunc)(), char *id) {
         printTreeType(id);
         level++;
 
-        tree = newTree(id);
+        tree = mNewTree(id, mBR_nT);
         parseFunc();
 
         level--;
@@ -23,7 +23,7 @@ void buildTree(void (*parseFunc)(), char *id) {
         addChild(id);
 
         // Simulate a tree
-        enterTree(parseFunc);
+        enterLastTree(parseFunc);
 
         level--;
 }
@@ -31,21 +31,21 @@ void buildTree(void (*parseFunc)(), char *id) {
 void addChild(char *id) {
         assert(tree != NULL);
         if(tree->child == NULL) {
-                tree->child = ArrayNew(1);
+                tree->child = mArrayNew(1, mAC_AN);
         }
-        ArrayAdd(tree->child, newTree(id));
+        mArrayAdd(tree->child, mNewTree(id, mAC_nT), mAC_AA);
 }
 
 void addLeaf(Token *token) {
         assert(tree != NULL);
         if(tree->child == NULL) {
-                tree->child = ArrayNew(1);
+                tree->child = mArrayNew(1, mAL_AN);
         }
-        ArrayAdd(tree->child, newLeaf(token));
+        mArrayAdd(tree->child, mNewLeaf(token, mAL_nL), mAL_AA);
         printLeafId(token->id);
 }
 
-void enterTree(void (*parseFunc)()) {
+void enterLastTree(void (*parseFunc)()) {
         enterWhichTree(parseFunc, tree->child->count - 1);
 }
 
@@ -62,7 +62,11 @@ void enterWhichTree(void (*semanticFunc)(), int i) {
 }
 
 Tree* newTree(char *id) {
-        Tree *t = (Tree*) newMemory(sizeof(Tree));
+        return mNewTree(id, mNULL);
+}
+
+Tree* mNewTree(char *id, int reason) {
+        Tree *t = (Tree*) newMemoryLog(sizeof(Tree), reason);
         t->id = id;
         t->token = NULL;
         t->parent = tree;
@@ -71,7 +75,11 @@ Tree* newTree(char *id) {
 }
 
 Tree* newLeaf(Token *token) {
-        Tree *t = (Tree*) newMemory(sizeof(Tree));
+        return mNewLeaf(token, mNULL);
+}
+
+Tree* mNewLeaf(Token *token, int reason) {
+        Tree *t = (Tree*) newMemoryLog(sizeof(Tree), reason);
         t->id = NULL;
         t->token = token;
         t->parent = tree;
