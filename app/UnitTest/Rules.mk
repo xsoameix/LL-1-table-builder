@@ -19,6 +19,11 @@ clean_all := $(clean_all) $(objects_in_d)
 
 $(objects_in_d): CF_target := -I$(d)
 
+# Subdirectories, in random order
+
+dir := $(d)/lib
+include $(dir)/Rules.mk
+
 # Standard things
 
 d := $(d_parent)

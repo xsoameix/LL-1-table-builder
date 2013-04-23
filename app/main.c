@@ -3,6 +3,7 @@
 #include "UnitTest/minunit.h"
 #include "UnitTest/Array.h"
 #include "UnitTest/SymbolTable.h"
+#include "UnitTest/lib/HashTable.h"
 #include "lib/Lib.h"
 
 static char* run_unit_tests();
@@ -29,7 +30,7 @@ int main() {
 
         // Check Memory
 
-        checkMemory();
+        // checkMemory();
         return result != 0;
 }
 
@@ -37,5 +38,6 @@ static
 char* run_unit_tests() {
         //mu_run_test(USymbolTable);
         //mu_run_test(UArray);
+        mu_run_test(UHashTable);
         return 0;
 }

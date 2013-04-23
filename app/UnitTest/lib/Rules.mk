@@ -5,7 +5,7 @@ d := $(dir)
 
 # Local variables
 
-sources := Lib.c Array.c HashTable.c
+sources := HashTable.c
 sources_in_d := $(addprefix $(d)/,$(sources))
 objects_in_d := $(sources_in_d:.c=.o)
 
