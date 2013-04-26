@@ -1,7 +1,7 @@
 #include "List.h"
 
 List* newList(Node *node) {
-        List *list = (List*) newMemory(sizeof(List));
+        List *list = (List*) fNewMemory(sizeof(List));
 
         list->node = node;
         list->next = NULL;
@@ -10,20 +10,20 @@ List* newList(Node *node) {
 }
 
 Node* newNode(int id, int nodeLen) {
-        Node *node = (Node*) newMemory(sizeof(Node));
+        Node *node = (Node*) fNewMemory(sizeof(Node));
 
         node->id = id;
         node->visited = false;
         node->pointTo_Front = NULL;
         node->pointTo_Back = NULL;
-        node->result = (Set) newMemory(sizeof(Element) * nodeLen);
+        node->result = (Set) fNewMemory(sizeof(Element) * nodeLen);
         node->done = false;
 
         return node;
 }
 
 Node** newNodeArray(int len) {
-        Node **node = (Node**) newMemory(sizeof(Node*) * len);
+        Node **node = (Node**) fNewMemory(sizeof(Node*) * len);
         for(int i = 0; i < len; i++) {
                 node[i] = newNode(i, len);
         }

@@ -1,6 +1,7 @@
 # Standard things
 
-d_parent := $(d)
+sp := $(sp).x
+d_parent_$(sp) := $(d)
 d := $(dir)
 
 # Local variables
@@ -21,4 +22,5 @@ $(objects_in_d): CF_target := -I$(d)
 
 # Standard things
 
-d := $(d_parent)
+d := $(d_parent_$(sp))
+sp := $(basename $(sp))

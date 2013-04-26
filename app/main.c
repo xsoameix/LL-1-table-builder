@@ -1,5 +1,6 @@
 #include "IntegrationTest/Parser.h"
 #include "IntegrationTest/Semantic.h"
+#include "IntegrationTest/follow/Follow.h"
 #include "UnitTest/minunit.h"
 #include "UnitTest/Array.h"
 #include "UnitTest/SymbolTable.h"
@@ -38,6 +39,7 @@ static
 char* run_unit_tests() {
         //mu_run_test(USymbolTable);
         //mu_run_test(UArray);
-        mu_run_test(UHashTable);
+        //mu_run_test(UHashTable);
+        mu_run_test(UFollow);
         return 0;
 }

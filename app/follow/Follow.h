@@ -1,5 +1,5 @@
-#ifndef FOLLOE_H
-#define FOLLOE_H
+#ifndef FOLLOW_H
+#define FOLLOW_H
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -7,10 +7,10 @@
 #include "List.h"
 #include "Set.h"
 
-extern Node** initFollow();
-extern void DFS(Node *node);
-extern void unvisit(Node **node);
-extern void traversal(Node **node);
-extern void follow(int nodeLength);
+Node** initFollow();
+void DFS(Node *node);
+void unvisit(Node **node);
+void traversal(Node **node);
+void follow(int nodeLength);
 
 #endif

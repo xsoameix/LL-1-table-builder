@@ -19,6 +19,7 @@ Terminal* newT(Token *token);
 Terminal* mNewT(Token *token, int reason);
 int T_IndexOf(Array *a, char *id);
 Array* getT();
+void resetT();
 void freeT(Terminal *t);
 
 #endif

@@ -13,6 +13,7 @@ typedef struct _NonTerminal {
         Array *P;
 } NonTerminal;
 
+#include "NonTerminal.h"
 #include "Token.h"
 #include "Production.h"
 

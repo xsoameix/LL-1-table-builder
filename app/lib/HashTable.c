@@ -126,3 +126,6 @@ void rehash(HTab *h) {
         }
         freeMemoryLog(oldE, mNULL);
 }
+
+Array* HToArray(HTab *h) {
+}

@@ -1,6 +1,7 @@
 # Standard things
 
-d_parent := $(d)
+sp := $(sp).x
+d_parent_$(sp) := $(d)
 d := $(dir)
 
 # Local variables
@@ -19,6 +20,12 @@ clean_all := $(clean_all) $(objects_in_d)
 
 $(objects_in_d): CF_target := -I$(d)
 
+# Subdirectories, in random order
+
+dir := $(d)/follow
+include $(dir)/Rules.mk
+
 # Standard things
 
-d := $(d_parent)
+d := $(d_parent_$(sp))
+sp := $(basename $(sp))

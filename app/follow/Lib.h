@@ -5,6 +5,6 @@
 #include <assert.h>
 #include <string.h>
 
-extern void* newMemory(int size);
+void* fNewMemory(int size);
 
 #endif
