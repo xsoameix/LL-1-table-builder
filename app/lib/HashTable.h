@@ -25,7 +25,7 @@ typedef struct {
 // The reentrant has no static variable to maintain the state.
 // So using this structure to maintain the state.
 
-HTab* mNewHashTable(int size, int reason);
+HTab* newHashTable(int size, int reason);
 bool HPut(HTab *h, char *key, void *data);
 void* HGet(HTab *h, char *key);
 

@@ -4,7 +4,7 @@ static bool isprime(size_t n);
 static bool HSearch(HTab *h, char *key, void *data, void **retdata, ACTION action);
 static void rehash(HTab *h);
 
-HTab* mNewHashTable(int size, int reason) {
+HTab* newHashTable(int size, int reason) {
         size |= 1; // Because most prime is odd, so make it odd.
         if(!isprime(size)) {
                 size += 2;
@@ -118,14 +118,11 @@ void rehash(HTab *h) {
 
         // Create the new entry array.
         Entry *oldE = h->entry;
-        h->entry = (Entry*) newMemoryLog(newSize * sizeof(Entry), mNULL);
+        h->entry = (Entry*) newMemoryLog(newSize * sizeof(Entry), m_R);
         for(int i = 0; i < oldSize; i++) {
                 if(oldE[i].used) {
                         HPut(h, oldE[i].key, oldE[i].data);
                 }
         }
-        freeMemoryLog(oldE, mNULL);
-}
-
-Array* HToArray(HTab *h) {
+        freeMemoryLog(oldE, m_R);
 }

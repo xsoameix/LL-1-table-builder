@@ -28,9 +28,10 @@ static MemoryLog memLog[] = {
         {"addNT()", "newNT()x3", "", 0, 0},
         {"addNT()", "ArrayNew()x2", "", 0, 0},
         {"addNT()", "ArrayAdd()", "", 0, 0},
-        {"addT()", "newT()", "", 0, 0},
-        {"addT()", "ArrayNew()x2", "", 0, 0},
-        {"addT()", "ArrayAdd()", "", 0, 0}};
+        {"addT()", "newHashTable()", "", 0, 0},
+        {"addT()", "HPut()", "", 0, 0},
+        {"", "rehash()", "", 0, 0}
+};
 
 void* newMemoryLog(int size, int reason) {
         void* ptr = malloc(size);
@@ -72,11 +73,7 @@ void checkMemory() {
         printf("+----------------------------------------------------------------+\n");
 }
 
-char* fileToStr(char *filename) {
-        return mFileToStr(filename, mNULL);
-}
-
-char* mFileToStr(char *filename, int reason) {
+char* fileToStr(char *filename, int reason) {
         FILE *file = fopen(filename, "rb");
         assert(file != NULL);
 
@@ -96,22 +93,14 @@ char* mFileToStr(char *filename, int reason) {
         return buffer;
 }
 
-char* newSubStr(char *str, int offset, int len) {
-        return mNewSubStr(str, offset, len, mNULL);
-}
-
-char* mNewSubStr(char *str, int offset, int len, int reason) {
+char* newSubStr(char *str, int offset, int len, int reason) {
         char *newStr = newMemoryLog(len + 1, reason); // EOF = 1 char
         strncpy(newStr, &str[offset], len);
         newStr[len] = '\0';
         return newStr;
 }
 
-char* newCatStr(char *str_a, char *str_b) {
-        return mNewCatStr(str_a, str_b, mNULL);
-}
-
-char* mNewCatStr(char *str_a, char *str_b, int reason) {
+char* newCatStr(char *str_a, char *str_b, int reason) {
         size_t len_a = strlen(str_a),
                len_b = strlen(str_b);
         char *s = (char*) newMemoryLog(len_a + len_b + 1, reason); // EOF = 1 char

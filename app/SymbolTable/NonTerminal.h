@@ -18,12 +18,9 @@ typedef struct _NonTerminal {
 #include "Production.h"
 
 void addNT(Token *t);
-NonTerminal* newNT(Token *t);
-NonTerminal* mNewNT(Token *t, int reason);
 int NT_IndexOf(Array *a, char *id);
 bool isNT(Token *t);
 Array* getNT();
-void resetNT();
-void freeNT(void *item);
+void free_gNT();
 
 #endif

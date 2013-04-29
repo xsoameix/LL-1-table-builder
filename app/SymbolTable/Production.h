@@ -12,8 +12,6 @@ typedef struct {
 #include "NonTerminal.h"
 #include "Symbol.h"
 
-Production* newP(Symbol *s);
-Production* mNewP(Symbol *s, int reason);
 void addInWhichP(int NT_i, int P_i, Symbol *s);
 void freeP(void *item);
 

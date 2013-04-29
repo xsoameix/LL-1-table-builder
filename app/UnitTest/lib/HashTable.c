@@ -9,7 +9,7 @@ char* UHashTable() {
 
 static
 char* UHPut() {
-        HTab *h = mNewHashTable(13, mNULL);
+        HTab *h = newHashTable(13, mNULL);
         HPut(h, "dff", "data1");
         HPut(h, "asu", "data2");
         HPut(h, "boe", "data3");

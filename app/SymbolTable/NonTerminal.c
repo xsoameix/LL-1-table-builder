@@ -1,5 +1,8 @@
 #include "NonTerminal.h"
 
+static NonTerminal* newNT(Token *t, int reason);
+static void freeNT(void *item);
+
 // Element type is NonTerminal.
 static Array *gNT; // g = global variable
 static bool gNT_using = false;
@@ -7,16 +10,13 @@ static bool gNT_using = false;
 void addNT(Token *t) {
         if(!gNT_using) {
                 gNT = mArrayNew(1, mAN_AN);
+                gNT_using = true;
         }
-        mArrayAdd(gNT, mNewNT(t, mAN_nN), mAN_AA);
-        gNT_using = true;
+        mArrayAdd(gNT, newNT(t, mAN_nN), mAN_AA);
 }
 
-NonTerminal* newNT(Token *t) {
-        return mNewNT(t, mNULL);
-}
-
-NonTerminal* mNewNT(Token *t, int reason) {
+static
+NonTerminal* newNT(Token *t, int reason) {
         NonTerminal *n = (NonTerminal*) newMemoryLog(sizeof(NonTerminal), reason);
         n->no = gNT->count;
         n->id = t->id;
@@ -49,14 +49,11 @@ Array* getNT() {
         return gNT;
 }
 
-void resetNT() {
-        if(gNT_using) {
-                mArrayFree(gNT, &freeNT, mAN_AN);
-                gNT_using = false;
-        }
-        resetT();
+void free_gNT() {
+        mArrayFree(gNT, &freeNT, mAN_AN);
 }
 
+static
 void freeNT(void *item) {
         NonTerminal *n = (NonTerminal*) item;
         freeMemoryLog(n->id, mS_nSS);

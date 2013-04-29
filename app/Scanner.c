@@ -36,8 +36,8 @@ Token* scan(char *string) {
                 return NULL;
         }
 
-        Token *token = mNewToken(
-                        mNewSubStr(string, lexemeBegin, forward - lexemeBegin, mS_nSS), // char pointer point to file
+        Token *token = newToken(
+                        newSubStr(string, lexemeBegin, forward - lexemeBegin, mS_nSS), // char pointer point to file
                         type,
                         mS_nT);
 

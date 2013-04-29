@@ -1,50 +1,42 @@
 #include "Terminal.h"
 
+static Terminal* newT(Token *token, int reason);
+
 // Element type is Terminal.
-static Array *gT; // g = global variable
+static HTab *gT; // g = global variable
 static bool gT_using = false;
 
 void addT(Token *t) {
-        if(gT == NULL) {
-                gT = mArrayNew(1, mAT_AN);
+        if(!gT_using) {
+                gT = newHashTable(3, mAT_nHT);
+                gT_using = true;
         }
-        mArrayAdd(gT, mNewT(t, mAT_nT), mAT_AA);
-        gT_using = true;
+        if(HGet(gT, t->id) == NULL) {
+                HPut(gT, t->id, newT(t, mAT_HP));
+        } else { // Duplicate Terminal, free the id of token
+                freeMemoryLog(t->id, mS_nSS);
+        }
 }
 
-Terminal* newT(Token *token) {
-        return mNewT(token, mNULL);
-}
-
-Terminal* mNewT(Token *token, int reason) {
+static
+Terminal* newT(Token *token, int reason) {
         Terminal *t = (Terminal*) newMemoryLog(sizeof(Terminal), reason);
-        t->no = gT->count;
         t->id = token->id;
         return t;
 }
 
-// Usage: Get index of array of Terminals by name of Terminal.
-
-int T_IndexOf(Array *a, char *id) {
-        for(int i = 0; i < a->count; i++) {
-                if(strcmp(((Terminal*) a->item[i])->id, id) == 0) {
-                        return i;
-                }
-        }
-        return -1;
-}
-
-Array* getT() {
+HTab* getT() {
         return gT;
 }
 
-void resetT() {
-        if(gT_using) {
-                mArrayFree(gT, NULL, mAT_AN);
+void free_gT() {
+        Entry *e = gT->entry;
+        for(int i = 0; i < gT->size; i++) {
+                if(e[i].used) {
+                        freeMemoryLog(e[i].key, mS_nSS);
+                        freeMemoryLog(e[i].data, mAT_HP);
+                }
         }
-}
-
-void freeT(Terminal *t) {
-        freeMemoryLog(t->id, mS_nSS);
-        freeMemoryLog(t, mAT_nT);
+        freeMemoryLog(gT->entry, mAT_nHT);
+        freeMemoryLog(gT, mAT_nHT);
 }

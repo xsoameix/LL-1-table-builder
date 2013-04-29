@@ -22,10 +22,9 @@ struct _List {
         List *next;
 };
 
-extern List* newList(Node *node);
-extern Node* newNode(int id, int nodeLen);
-extern Node** newNodeArray(int len);
-extern void pushBack(Node *n, Node *next);
-extern void printPointTo(Node **n, int nodeLen);
+List* newList(Node *node);
+Node* newNodeArray(int len);
+void pushBack(Node *n, Node *next);
+void printPointTo(Node *n, int nodeLen);
 
 #endif

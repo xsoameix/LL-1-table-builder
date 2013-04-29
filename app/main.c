@@ -17,7 +17,8 @@ int main() {
         char *path = "IntegrationTest/";
         Tree *t = IParser(path); // I = Integration Test
         ISemantic(t);
-        resetNT();
+        free_gNT();
+        free_gT();
 
         // Unit Test
 
@@ -31,7 +32,7 @@ int main() {
 
         // Check Memory
 
-        // checkMemory();
+        checkMemory();
         return result != 0;
 }
 
@@ -40,6 +41,6 @@ char* run_unit_tests() {
         //mu_run_test(USymbolTable);
         //mu_run_test(UArray);
         //mu_run_test(UHashTable);
-        mu_run_test(UFollow);
+        //mu_run_test(UFollow);
         return 0;
 }

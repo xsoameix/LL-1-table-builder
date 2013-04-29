@@ -4,9 +4,9 @@
 #include <stdbool.h>
 #include "../lib/Lib.h"
 #include "../lib/Array.h"
+#include "../lib/HashTable.h"
 
 typedef struct _Terminal {
-        int no;
         char *id;
 } Terminal;
 
@@ -15,11 +15,7 @@ typedef struct _Terminal {
 #define TERMINAL 260
 
 void addT(Token *t);
-Terminal* newT(Token *token);
-Terminal* mNewT(Token *token, int reason);
-int T_IndexOf(Array *a, char *id);
-Array* getT();
-void resetT();
-void freeT(Terminal *t);
+HTab* getT();
+void free_gT();
 
 #endif

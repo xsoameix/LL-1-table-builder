@@ -28,9 +28,10 @@ enum {
         mAN_nN,
         mAN_AN,
         mAN_AA,
-        mAT_nT,
-        mAT_AN,
-        mAT_AA};
+        mAT_nHT,
+        mAT_HP,
+        m_R
+};
 
 typedef struct {
         char *caller;
@@ -45,12 +46,9 @@ void* newMemoryLog(int size, int reason);
 void freeMemory(void *ptr);
 void freeMemoryLog(void *ptr, int reason);
 void checkMemory();
-char* fileToStr(char *filename);
-char* mFileToStr(char *filename, int reason);
-char* newSubStr(char *str, int offset, int len);
-char* mNewSubStr(char *str, int offset, int len, int reason);
-char* newCatStr(char *str_a, char *str_b);
-char* mNewCatStr(char *str_a, char *str_b, int reason);
+char* fileToStr(char *filename, int reason);
+char* newSubStr(char *str, int offset, int len, int reason);
+char* newCatStr(char *str_a, char *str_b, int reason);
 char* newSpaces(int len);
 
 #define MAX_LEN 512

@@ -9,9 +9,8 @@ char* USymbolTable() {
 
 static
 char* UStoreInWhichP() {
-        resetNT();
-        storeNT(newToken("expr", NONTERMINAL));
-        storeInWhichP(0, 0, NONTERMINAL, newToken("expr", NONTERMINAL));
+        storeNT(newToken("expr", NONTERMINAL, mNULL));
+        storeInWhichP(0, 0, NONTERMINAL, newToken("expr", NONTERMINAL, mNULL));
         Array *NT = getNT();
         mu_assert("error, count of array of NT != 1", NT->count == 1);
         NonTerminal *n = (NonTerminal*) NT->item[0];

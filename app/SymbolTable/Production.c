@@ -1,23 +1,22 @@
 #include "Production.h"
 
-Production* newP(Symbol *s) {
-        return mNewP(s, mNULL);
-}
-
-Production* mNewP(Symbol *s, int reason) { // P = Production
-        Production *p = (Production*) newMemoryLog(sizeof(Production), reason);
-        p->S = mArrayNew(1, reason);
-        mArrayAdd(p->S, s, reason);
-        return p;
-}
+static Production* newP(Symbol *s, int reason);
 
 void addInWhichP(int NT_i, int P_i, Symbol *s) {
         NonTerminal *n = getNT()->item[NT_i];
         if(n->P->count < P_i + 1) {
-                mArrayAdd(n->P, mNewP(s, mAIWP_nP), mAIWP_AA_P);
+                mArrayAdd(n->P, newP(s, mAIWP_nP), mAIWP_AA_P);
         } else {
                 mArrayAdd(((Production*) n->P->item[P_i])->S, s, mAIWP_AA_S);
         }
+}
+
+static
+Production* newP(Symbol *s, int reason) { // P = Production
+        Production *p = (Production*) newMemoryLog(sizeof(Production), reason);
+        p->S = mArrayNew(1, reason);
+        mArrayAdd(p->S, s, reason);
+        return p;
 }
 
 void freeP(void *item) {

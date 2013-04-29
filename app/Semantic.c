@@ -54,7 +54,7 @@ void PS_storeTs() {
 static
 void P_storeTs() {
         Tree *tree = getTree();
-        mFreeToken(getChild(1)->token);
+        freeToken(getChild(1)->token);
         freeMemoryLog(getChild(0), mAL_nL);
         freeMemoryLog(getChild(1), mAL_nL);
         enterWhichTree(&STMTS_storeTs, 2);
@@ -79,7 +79,7 @@ static
 void STMTS__storeTs() {
         Tree *tree = getTree();
         if(tree->child != NULL) {
-                mFreeToken(getChild(0)->token);
+                freeToken(getChild(0)->token);
                 freeMemoryLog(getChild(0), mAL_nL);
                 enterWhichTree(&TOKENS_storeTs, 1);
                 STMTS__count++;
@@ -99,7 +99,7 @@ void TOKENS_storeTs() {
                 if(isNT(t)) {
                         storeInWhichP(P_count, STMTS__count, NONTERMINAL, t); // P = Production
                         enterWhichTree(&TOKENS_storeTs, 1);
-                        mFreeToken(t);
+                        freeToken(t); // Duplicate NonTerminal, free the token
                 } else {
                         storeT(t);
                         storeInWhichP(P_count, STMTS__count, TERMINAL, t); // P = Production

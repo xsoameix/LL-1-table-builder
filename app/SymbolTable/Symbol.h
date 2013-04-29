@@ -13,10 +13,8 @@ typedef struct _Symbol {
 #include "NonTerminal.h"
 #include "Terminal.h"
 
-Symbol* newS_NT(NonTerminal *n);
-Symbol* mNewS_NT(NonTerminal *n, int reason);
-Symbol* newS_T(Terminal *t);
-Symbol* mNewS_T(Terminal *t, int reason);
+Symbol* newS_NT(NonTerminal *n, int reason);
+Symbol* newS_T(Terminal *t, int reason);
 void freeS(void *item);
 
 #endif
