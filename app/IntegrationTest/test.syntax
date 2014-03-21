@@ -1,5 +1,0 @@
-expr -> term expr'
-expr' -> + term expr' | epsilon
-term -> factor term'
-term' -> * factor term' | epsilon
-factor -> ( expr ) | digit

@@ -20,5 +20,20 @@ main
 # Vim temporary files
 *.swp
 
-# auto-dependency file
-depend
+# autotools
+
+/.deps
+/*/.deps
+/autom4te.cache/
+/aclocal.m4
+/autoscan.log
+/config.h
+/config.h.in
+/config.log
+/config.status
+/configure
+/depcomp
+/install-sh*
+/Makefile
+/Makefile.in
+/stamp-h1
