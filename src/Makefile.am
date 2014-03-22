@@ -5,6 +5,6 @@ ll1_SOURCES =       \
     scanner.c       \
     parser.c        \
     nonterminal.c   \
-    table_builder.c
+    table.c
 ll1_CPPFLAGS = $(DEPS_CFLAGS)
 ll1_LDADD = $(DEPS_LIBS)

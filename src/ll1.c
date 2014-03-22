@@ -3,7 +3,7 @@
 
 #include "scanner.h"
 #include "parser.h"
-#include "table_builder.h"
+#include "table.h"
 
 int
 main(void) {
@@ -13,14 +13,14 @@ main(void) {
     File_init();
     Scanner_init();
     Parser_init();
-    TableBuilder_init();
+    Table_init();
     void * file = new(File, "src/example.syntax");
     void * content = File_read(file);
     void * scanner = new(Scanner, content);
     void * parser = new(Parser, scanner);
     void * nonterminals = Parser_parse(parser);
-    void * builder = new(TableBuilder, nonterminals);
-    void * table = TableBuilder_build(builder);
+    void * builder = new(Table, nonterminals);
+    void * table = Table_build(builder);
     delete(parser);
     delete(scanner);
     delete(file);

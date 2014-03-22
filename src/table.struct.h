@@ -1,13 +1,15 @@
-#ifndef TABLE_BUILDER_STRCUT_H
-#define TABLE_BUILDER_STRCUT_H
+#ifndef TABLE_STRCUT_H
+#define TABLE_STRCUT_H
 
 #include <libooc/object.struct.h>
-#include "table_builder.h"
+#include "table.h"
 
-struct TableBuilder {
+struct Table {
     struct Object super;
     void * nonterminals;
+    void * nonterminal_set;
     void * terminals;
+    void * terminal_set;
 };
 
 def_class_struct()

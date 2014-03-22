@@ -8,6 +8,14 @@ struct Nonterminal {
     struct Object super;
     void * self;
     void * stmts;
+    enum NT_TYPE type;
+    void * first;
+
+    // for tree traverse
+    void * subset;
+    void * union_set;
+    void * traversed;
+    bool done;
 };
 
 def_class_struct()

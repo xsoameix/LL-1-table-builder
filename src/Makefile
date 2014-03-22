@@ -64,7 +64,7 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_ll1_OBJECTS = ll1-ll1.$(OBJEXT) ll1-token.$(OBJEXT) \
 	ll1-scanner.$(OBJEXT) ll1-parser.$(OBJEXT) \
-	ll1-nonterminal.$(OBJEXT) ll1-table_builder.$(OBJEXT)
+	ll1-nonterminal.$(OBJEXT) ll1-table.$(OBJEXT)
 ll1_OBJECTS = $(am_ll1_OBJECTS)
 am__DEPENDENCIES_1 =
 ll1_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -183,7 +183,7 @@ ll1_SOURCES = \
     scanner.c       \
     parser.c        \
     nonterminal.c   \
-    table_builder.c
+    table.c
 
 ll1_CPPFLAGS = $(DEPS_CFLAGS)
 ll1_LDADD = $(DEPS_LIBS)
@@ -275,7 +275,7 @@ include ./$(DEPDIR)/ll1-ll1.Po
 include ./$(DEPDIR)/ll1-nonterminal.Po
 include ./$(DEPDIR)/ll1-parser.Po
 include ./$(DEPDIR)/ll1-scanner.Po
-include ./$(DEPDIR)/ll1-table_builder.Po
+include ./$(DEPDIR)/ll1-table.Po
 include ./$(DEPDIR)/ll1-token.Po
 
 .c.o:
@@ -362,19 +362,19 @@ ll1-nonterminal.obj: nonterminal.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ll1-nonterminal.obj `if test -f 'nonterminal.c'; then $(CYGPATH_W) 'nonterminal.c'; else $(CYGPATH_W) '$(srcdir)/nonterminal.c'; fi`
 
-ll1-table_builder.o: table_builder.c
-	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ll1-table_builder.o -MD -MP -MF $(DEPDIR)/ll1-table_builder.Tpo -c -o ll1-table_builder.o `test -f 'table_builder.c' || echo '$(srcdir)/'`table_builder.c
-	$(am__mv) $(DEPDIR)/ll1-table_builder.Tpo $(DEPDIR)/ll1-table_builder.Po
-#	source='table_builder.c' object='ll1-table_builder.o' libtool=no \
+ll1-table.o: table.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ll1-table.o -MD -MP -MF $(DEPDIR)/ll1-table.Tpo -c -o ll1-table.o `test -f 'table.c' || echo '$(srcdir)/'`table.c
+	$(am__mv) $(DEPDIR)/ll1-table.Tpo $(DEPDIR)/ll1-table.Po
+#	source='table.c' object='ll1-table.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ll1-table_builder.o `test -f 'table_builder.c' || echo '$(srcdir)/'`table_builder.c
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ll1-table.o `test -f 'table.c' || echo '$(srcdir)/'`table.c
 
-ll1-table_builder.obj: table_builder.c
-	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ll1-table_builder.obj -MD -MP -MF $(DEPDIR)/ll1-table_builder.Tpo -c -o ll1-table_builder.obj `if test -f 'table_builder.c'; then $(CYGPATH_W) 'table_builder.c'; else $(CYGPATH_W) '$(srcdir)/table_builder.c'; fi`
-	$(am__mv) $(DEPDIR)/ll1-table_builder.Tpo $(DEPDIR)/ll1-table_builder.Po
-#	source='table_builder.c' object='ll1-table_builder.obj' libtool=no \
+ll1-table.obj: table.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ll1-table.obj -MD -MP -MF $(DEPDIR)/ll1-table.Tpo -c -o ll1-table.obj `if test -f 'table.c'; then $(CYGPATH_W) 'table.c'; else $(CYGPATH_W) '$(srcdir)/table.c'; fi`
+	$(am__mv) $(DEPDIR)/ll1-table.Tpo $(DEPDIR)/ll1-table.Po
+#	source='table.c' object='ll1-table.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ll1-table_builder.obj `if test -f 'table_builder.c'; then $(CYGPATH_W) 'table_builder.c'; else $(CYGPATH_W) '$(srcdir)/table_builder.c'; fi`
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ll1-table.obj `if test -f 'table.c'; then $(CYGPATH_W) 'table.c'; else $(CYGPATH_W) '$(srcdir)/table.c'; fi`
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
