@@ -70,6 +70,41 @@ def(parse_NTS, void *) {
     return nonterminals;
 }
 
+// NTS ->
+//     {
+//         nonterminals = new(Array);
+//     }
+//     NT NTS'
+//   | NEXT_LINE END_OF_FILE
+//   | END_OF_FILE
+// NTS' -> NEXT_LINE NTS'' | END_OF_FILE
+// NTS'' -> NT NTS' | END_OF_FILE
+// NT ->
+//     {
+//          void * nonterminal = new(Nonterminal, self->token);
+//          Array_push(nonterminals, nonterminal);
+//     }
+//     TOKEN ARROW STMTS
+// STMTS ->
+//     {
+//          void * stmts = new(Array);
+//          Nonterminal_set_stmts(nonterminal, stmts);
+//     }
+//     TOKENS STMTS'
+// STMTS' -> OR TOKENS STMTS' | epsilon
+// TOKENS ->
+//     {
+//          void * tokens = new(Array);
+//          Array_push(stmts, tokens);
+//          Array_push(tokens, self->token);
+//     }
+//     TOKEN TOKENS'
+// TOKENS' ->
+//     {
+//          Array_push(tokens, self->token);
+//     }
+//     TOKEN TOKENS' | epsilon
+
 def(parse_NTS_, void : void * @nonterminals) {
     if(self->type == NEXT_LINE) {
         match(self, NEXT_LINE);

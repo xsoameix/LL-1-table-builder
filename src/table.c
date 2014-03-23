@@ -159,7 +159,8 @@ def(first_init_NT, void : void * @nonterminal) {
 
 static void
 traverse_add(void * ancestor, void * nonterminal, void * data) {
-    Hash_set(ancestor, nonterminal, nonterminal);
+    void * union_set = Nonterminal_union_set(ancestor);
+    Hash_set(union_set, nonterminal, nonterminal);
     void * traversed = Nonterminal_traversed(nonterminal);
     Hash_set(traversed, ancestor, ancestor);
 }
@@ -216,15 +217,14 @@ def(first_init_NTs, void : void * @nonterminal . size_t @index) {
 
 static void
 union_set_iter(void * nonterminal, void * token, void * data) {
-    printf("union_set[%s]: %s\n",
-            inspect(Nonterminal_token(nonterminal)),
+    printf("               %s\n",
             inspect(Nonterminal_token(token)));
 }
 
 def(first_init_traverse, void : void * @nonterminal . size_t @index) {
     traverse(nonterminal, nonterminal);
     Nonterminal_set_done(nonterminal, true);
-    void * union_set = Nonterminal_subset(nonterminal);
+    void * union_set = Nonterminal_union_set(nonterminal);
     Hash_each(union_set, union_set_iter, nonterminal);
 }
 
