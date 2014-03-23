@@ -23,6 +23,8 @@ enum NT_TYPE {
     (_Nonterminal_type), \
     (_Nonterminal_first_init), \
     (_Nonterminal_first), \
+    (_Nonterminal_follow_init), \
+    (_Nonterminal_follow), \
     (_Nonterminal_subset), \
     (_Nonterminal_union_set), \
     (_Nonterminal_traversed), \
@@ -40,6 +42,8 @@ enum NT_TYPE {
 #define _Nonterminal_type type, enum NT_TYPE
 #define _Nonterminal_first_init first_init, void
 #define _Nonterminal_first first, void *
+#define _Nonterminal_follow_init follow_init, void
+#define _Nonterminal_follow follow, void *
 #define _Nonterminal_subset subset, void *
 #define _Nonterminal_union_set union_set, void *
 #define _Nonterminal_traversed traversed, void *

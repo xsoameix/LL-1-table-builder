@@ -56,6 +56,20 @@ def(first, void *) {
     return self->first;
 }
 
+def(follow_init, void) {
+    delete(self->subset);
+    delete(self->union_set);
+    delete(self->traversed);
+    self->follow = new(Hash);
+    self->subset = new(Hash);
+    self->union_set = new(Hash);
+    self->traversed = new(Hash);
+}
+
+def(follow, void *) {
+    return self->follow;
+}
+
 def(subset, void *) {
     return self->subset;
 }

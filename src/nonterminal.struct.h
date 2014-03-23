@@ -10,6 +10,7 @@ struct Nonterminal {
     void * stmts;
     enum NT_TYPE type;
     void * first;
+    void * follow;
 
     // for tree traverse
     void * subset;

@@ -75,6 +75,7 @@ terminals_iter(void * null, void * terminal, size_t index) {
 struct self_with_NT {
     struct Table * self;
     void * nonterminal;
+    void * stmt;
 };
 
 static bool
@@ -126,36 +127,7 @@ def(null_init, void) {
     Array_each(self->nonterminals, Table_null_init_iter, self);
 }
 
-static bool
-first_token_iter(void * _args, void * token, size_t index) {
-    struct self_with_NT * args = _args;
-    void * nonterminal = Hash_get(args->self->nonterminal_set, token);
-    void * terminal = Hash_get(args->self->terminal_set, token);
-    if(nonterminal != NULL) {
-        void * subset = Nonterminal_subset(args->nonterminal);
-        Hash_set(subset, nonterminal, nonterminal);
-        return Nonterminal_type(nonterminal) == PRESENT;
-    } else if(terminal != NULL) {
-        void * first = Nonterminal_first(args->nonterminal);
-        Hash_set(first, token, token);
-        return true;
-    } else {
-        return false;
-    }
-}
-
-static void
-first_stmt_iter(void * args, void * stmt, size_t index) {
-    Array_any_p(stmt, first_token_iter, args);
-}
-
-def(first_init_NT, void : void * @nonterminal) {
-    void * stmts = Nonterminal_stmts(nonterminal);
-    struct self_with_NT args;
-    args.self = self;
-    args.nonterminal = nonterminal;
-    Array_each(stmts, first_stmt_iter, &args);
-}
+// traverse algorithm
 
 static void
 traverse_add(void * ancestor, void * nonterminal, void * data) {
@@ -192,9 +164,18 @@ traverse(void * nonterminal, void * ancestor) {
             inspect(Nonterminal_token(ancestor)));
 }
 
+// first
+
 static void
 first_iter(void * nonterminal, void * token, void * data) {
     printf("first[%s]: %s\n",
+            inspect(Nonterminal_token(nonterminal)),
+            inspect(token));
+}
+
+static void
+follow_iter(void * nonterminal, void * token, void * data) {
+    printf("follow[%s]: %s\n",
             inspect(Nonterminal_token(nonterminal)),
             inspect(token));
 }
@@ -206,31 +187,165 @@ subset_iter(void * nonterminal, void * token, void * data) {
             inspect(Nonterminal_token(token)));
 }
 
-def(first_init_NTs, void : void * @nonterminal . size_t @index) {
-    Nonterminal_first_init(nonterminal);
-    first_init_NT(self, nonterminal);
-    void * first = Nonterminal_first(nonterminal);
-    Hash_each(first, first_iter, nonterminal);
-    void * subset = Nonterminal_subset(nonterminal);
-    Hash_each(subset, subset_iter, nonterminal);
+static void
+union_set_iter(void * nonterminal, void * token, void * data) {
+    printf("union_set[%s]: %s\n",
+            inspect(Nonterminal_token(nonterminal)),
+            inspect(Nonterminal_token(token)));
+}
+
+static bool
+first_token_iter(void * _args, void * token, size_t index) {
+    struct self_with_NT * args = _args;
+    void * nonterminal = Hash_get(args->self->nonterminal_set, token);
+    void * terminal = Hash_get(args->self->terminal_set, token);
+    if(nonterminal != NULL) {
+        void * subset = Nonterminal_subset(args->nonterminal);
+        Hash_set(subset, nonterminal, nonterminal);
+        return Nonterminal_type(nonterminal) == PRESENT;
+    } else if(terminal != NULL) {
+        void * first = Nonterminal_first(args->nonterminal);
+        Hash_set(first, terminal, terminal);
+        return true;
+    } else {
+        return false;
+    }
 }
 
 static void
-union_set_iter(void * nonterminal, void * token, void * data) {
-    printf("               %s\n",
-            inspect(Nonterminal_token(token)));
+first_stmt_iter(void * args, void * stmt, size_t index) {
+    Array_any_p(stmt, first_token_iter, args);
+}
+
+def(first_init_subset, void : void * @nonterminal . size_t @index) {
+    Nonterminal_first_init(nonterminal);
+    void * stmts = Nonterminal_stmts(nonterminal);
+    struct self_with_NT args;
+    args.self = self;
+    args.nonterminal = nonterminal;
+    Array_each(stmts, first_stmt_iter, &args);
 }
 
 def(first_init_traverse, void : void * @nonterminal . size_t @index) {
     traverse(nonterminal, nonterminal);
     Nonterminal_set_done(nonterminal, true);
+}
+
+static void
+first_init_first_tokens(void * ancestor, void * token, void * data) {
+    void * first = Nonterminal_first(ancestor);
+    Hash_set(first, token, token);
+}
+
+static void
+first_init_union_set_iter(void * ancestor, void * nonterminal, void * data) {
+    void * first = Nonterminal_first(nonterminal);
+    Hash_each(first, first_init_first_tokens, ancestor);
+}
+
+def(first_init_union_set, void : void * @nonterminal . size_t @index) {
+    void * union_set = Nonterminal_union_set(nonterminal);
+    Hash_each(union_set, first_init_union_set_iter, nonterminal);
+}
+
+// debug
+
+def(first_init_debug_first, void : void * @nonterminal . size_t @index) {
+    void * first = Nonterminal_first(nonterminal);
+    Hash_each(first, first_iter, nonterminal);
+}
+
+def(follow_init_debug_follow, void : void * @nonterminal . size_t @index) {
+    void * follow = Nonterminal_follow(nonterminal);
+    Hash_each(follow, follow_iter, nonterminal);
+}
+
+def(first_init_debug_subset, void : void * @nonterminal . size_t @index) {
+    void * subset = Nonterminal_subset(nonterminal);
+    Hash_each(subset, subset_iter, nonterminal);
+}
+
+def(first_init_debug_union_set, void : void * @nonterminal . size_t @index) {
     void * union_set = Nonterminal_union_set(nonterminal);
     Hash_each(union_set, union_set_iter, nonterminal);
 }
 
 def(first_init, void) {
-    Array_each(self->nonterminals, Table_first_init_NTs, self);
+    Array_each(self->nonterminals, Table_first_init_subset, self);
+    Array_each(self->nonterminals, Table_first_init_debug_first, self);
     Array_each(self->nonterminals, Table_first_init_traverse, self);
+    Array_each(self->nonterminals, Table_first_init_union_set, self);
+    Array_each(self->nonterminals, Table_first_init_debug_union_set, self);
+    Array_each(self->nonterminals, Table_first_init_debug_first, self);
+}
+
+// follow
+
+def(follow_init_follow, void : void * @nonterminal . size_t @index) {
+    Nonterminal_follow_init(nonterminal);
+    Nonterminal_set_done(nonterminal, false);
+}
+
+static void
+follow_token_iter(void * _args, void * token, size_t index) {
+    struct self_with_NT * args = _args;
+    void * nonterminal = Hash_get(args->self->nonterminal_set, token);
+    if(nonterminal == NULL) {
+        return;
+    }
+    printf("nt[%s]\n",
+            inspect(Nonterminal_token(nonterminal)));
+    size_t len = Array_len(args->stmt);
+    index += 1;
+    while(index < len) {
+        void * next_token = Array_get(args->stmt, index);
+        void * next_nonterminal = Hash_get(args->self->nonterminal_set, next_token);
+        void * next_terminal = Hash_get(args->self->terminal_set, next_token);
+        if(next_nonterminal != NULL) {
+            void * subset = Nonterminal_subset(nonterminal);
+            printf("add nt: %s\n", inspect(Nonterminal_token(next_nonterminal)));
+            Hash_set(subset, next_nonterminal, next_nonterminal);
+            enum NT_TYPE type = Nonterminal_type(nonterminal);
+            if(type == PRESENT) {
+                break;
+            }
+        } else if(next_terminal != NULL) {
+            void * follow = Nonterminal_follow(nonterminal);
+            printf("add t: %s\n", inspect(next_terminal));
+            Hash_set(follow, next_terminal, next_terminal);
+            return;
+        }
+        index += 1;
+    }
+    void * subset = Nonterminal_subset(nonterminal);
+    printf("           %s\n", inspect(Nonterminal_token(args->nonterminal)));
+    Hash_set(subset, args->nonterminal, args->nonterminal);
+}
+
+static void
+follow_stmt_iter(void * _args, void * stmt, size_t index) {
+    struct self_with_NT * args = _args;
+    args->stmt = stmt;
+    Array_each(stmt, follow_token_iter, args);
+}
+
+def(follow_init_subset, void : void * @nonterminal . size_t @index) {
+    printf("nt[%s]\n",
+            inspect(Nonterminal_token(nonterminal)));
+    void * stmts = Nonterminal_stmts(nonterminal);
+    struct self_with_NT args;
+    args.self = self;
+    args.nonterminal = nonterminal;
+    Array_each(stmts, follow_stmt_iter, &args);
+}
+
+def(follow_init, void) {
+    Array_each(self->nonterminals, Table_follow_init_follow, self);
+    Array_each(self->nonterminals, Table_follow_init_subset, self);
+    Array_each(self->nonterminals, Table_follow_init_debug_follow, self);
+    Array_each(self->nonterminals, Table_first_init_debug_subset, self);
+    Array_each(self->nonterminals, Table_first_init_traverse, self);
+    Array_each(self->nonterminals, Table_first_init_debug_union_set, self);
 }
 
 def(build, void *) {
@@ -240,5 +355,6 @@ def(build, void *) {
     Array_each(self->terminals, terminals_iter, NULL);
     null_init(self);
     first_init(self);
+    follow_init(self);
     return NULL;
 }
