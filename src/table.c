@@ -536,6 +536,29 @@ def(follow_init, void) {
     Array_each(self->nonterminals, debug_first_each_NT, self);
 }
 
+//procedure Parser;
+//  Push stack, S
+//  scan look
+//  while stack present?
+//    top = stack top
+//    if top nonterminal?
+//      action = parse_table[top,look]
+//      if action > 0 then
+//        symbol = stack pop
+//        func = symbol func
+//        case func
+//        when 0
+//        when 1
+//        for each symbol on RHS #action do
+//          stack push symbol
+//      else
+//        print("syntax error")
+//    else if look == top
+//      stack pop
+//      scan look
+//    else
+//      print("syntax error")
+
 def(build, void *) {
     NT_set_init(self);
     T_set_init(self);
