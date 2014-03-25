@@ -5,6 +5,7 @@
 #include "token.h"
 #include "scanner.h"
 #include "nonterminal.h"
+#include "production.h"
 #include "parser.struct.h"
 
 def_class(Parser, Object)
@@ -12,6 +13,7 @@ def_class(Parser, Object)
 override
 def(ctor, void : va_list * @args_ptr) {
     Nonterminal_init();
+    Production_init();
     self->scanner = va_arg(* args_ptr, void *);
 }
 
@@ -139,20 +141,20 @@ def(parse_NT, void : void * @nonterminals) {
 
 def(parse_STMTS, void : void * @nonterminal) {
     if(self->type == TOKEN) {
-        void * stmts = new(Array);
-        Nonterminal_set_stmts(nonterminal, stmts);
-        parse_TOKENS(self, stmts);
-        parse_STMTS_(self, stmts);
+        void * productions = new(Array);
+        Nonterminal_set_productions(nonterminal, productions);
+        parse_TOKENS(self, nonterminal);
+        parse_STMTS_(self, nonterminal);
     } else {
         syntax_error(self);
     }
 }
 
-def(parse_STMTS_, void : void * @stmts) {
+def(parse_STMTS_, void : void * @nonterminal) {
     if(self->type == OR) {
         match(self, OR);
-        parse_TOKENS(self, stmts);
-        parse_STMTS_(self, stmts);
+        parse_TOKENS(self, nonterminal);
+        parse_STMTS_(self, nonterminal);
     } else if(self->type == NEXT_LINE ||
             self->type == END_OF_FILE) {
     } else {
@@ -160,10 +162,14 @@ def(parse_STMTS_, void : void * @stmts) {
     }
 }
 
-def(parse_TOKENS, void : void * @stmts) {
+def(parse_TOKENS, void : void * @nonterminal) {
     if(self->type == TOKEN) {
+        void * productions = Nonterminal_productions(nonterminal);
+        size_t len = Array_len(productions);
+        void * production = new(Production, nonterminal, len);
+        Array_push(productions, production);
         void * tokens = new(Array);
-        Array_push(stmts, tokens);
+        Production_set_tokens(production, tokens);
         Array_push(tokens, self->token);
         match(self, TOKEN);
         parse_TOKENS_(self, tokens);

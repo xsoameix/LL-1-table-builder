@@ -7,16 +7,8 @@
 struct Nonterminal {
     struct Object super;
     void * self;
-    void * stmts;
+    void * productions;
     enum NT_TYPE type;
-    void * first;
-    void * follow;
-
-    // for tree traverse
-    void * subset;
-    void * union_set;
-    void * traversed;
-    bool done;
 };
 
 def_class_struct()

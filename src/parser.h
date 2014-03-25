@@ -31,8 +31,8 @@
 #define _Parser_parse_NTS__ parse_NTS__, void, (void * nonterminals, nonterminals)
 #define _Parser_parse_NT parse_NT, void, (void * nonterminals, nonterminals)
 #define _Parser_parse_STMTS parse_STMTS, void, (void * nonterminal, nonterminal)
-#define _Parser_parse_STMTS_ parse_STMTS_, void, (void * stmts, stmts)
-#define _Parser_parse_TOKENS parse_TOKENS, void, (void * stmts, stmts)
+#define _Parser_parse_STMTS_ parse_STMTS_, void, (void * nonterminal, nonterminal)
+#define _Parser_parse_TOKENS parse_TOKENS, void, (void * nonterminal, nonterminal)
 #define _Parser_parse_TOKENS_ parse_TOKENS_, void, (void * tokens, tokens)
 #define _Parser_match match, void, (enum TYPE expected, expected)
 #define _Parser_next next, void

@@ -11,7 +11,6 @@ override
 def(ctor, void : va_list * @args_ptr) {
     self->self = va_arg(* args_ptr, void *);
     self->type = NOT_SET;
-    self->done = false;
 }
 
 override
@@ -29,12 +28,12 @@ def(token, void *) {
     return self->self;
 }
 
-def(set_stmts, void : void * @stmts) {
-    self->stmts = stmts;
+def(set_productions, void : void * @productions) {
+    self->productions = productions;
 }
 
-def(stmts, void *) {
-    return self->stmts;
+def(productions, void *) {
+    return self->productions;
 }
 
 def(set_type, void : enum NT_TYPE @type) {
@@ -43,54 +42,4 @@ def(set_type, void : enum NT_TYPE @type) {
 
 def(type, enum NT_TYPE) {
     return self->type;
-}
-
-def(first_init, void) {
-    self->first = new(Hash);
-    self->subset = new(Hash);
-    self->union_set = new(Hash);
-    self->traversed = new(Hash);
-}
-
-def(first, void *) {
-    return self->first;
-}
-
-def(follow_init, void) {
-    delete(self->subset);
-    delete(self->union_set);
-    delete(self->traversed);
-    self->follow = new(Hash);
-    self->subset = new(Hash);
-    self->union_set = new(Hash);
-    self->traversed = new(Hash);
-}
-
-def(follow, void *) {
-    return self->follow;
-}
-
-def(subset, void *) {
-    return self->subset;
-}
-
-def(union_set, void *) {
-    return self->union_set;
-}
-
-def(traversed, void *) {
-    return self->traversed;
-}
-
-def(traversed_by_p, bool : void * @ancestor) {
-    void * set = union_set(ancestor);
-    return Hash_intersact_p(self->traversed, set);
-}
-
-def(done_p, bool) {
-    return self->done;
-}
-
-def(set_done, void : bool @done) {
-    self->done = done;
 }

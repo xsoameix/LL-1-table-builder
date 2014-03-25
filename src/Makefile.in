@@ -64,7 +64,8 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_ll1_OBJECTS = ll1-ll1.$(OBJEXT) ll1-token.$(OBJEXT) \
 	ll1-scanner.$(OBJEXT) ll1-parser.$(OBJEXT) \
-	ll1-nonterminal.$(OBJEXT) ll1-table.$(OBJEXT)
+	ll1-nonterminal.$(OBJEXT) ll1-production.$(OBJEXT) \
+	ll1-table.$(OBJEXT)
 ll1_OBJECTS = $(am_ll1_OBJECTS)
 am__DEPENDENCIES_1 =
 ll1_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -183,6 +184,7 @@ ll1_SOURCES = \
     scanner.c       \
     parser.c        \
     nonterminal.c   \
+    production.c    \
     table.c
 
 ll1_CPPFLAGS = $(DEPS_CFLAGS)
@@ -274,6 +276,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ll1-ll1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ll1-nonterminal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ll1-parser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ll1-production.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ll1-scanner.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ll1-table.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ll1-token.Po@am__quote@
@@ -361,6 +364,20 @@ ll1-nonterminal.obj: nonterminal.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='nonterminal.c' object='ll1-nonterminal.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ll1-nonterminal.obj `if test -f 'nonterminal.c'; then $(CYGPATH_W) 'nonterminal.c'; else $(CYGPATH_W) '$(srcdir)/nonterminal.c'; fi`
+
+ll1-production.o: production.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ll1-production.o -MD -MP -MF $(DEPDIR)/ll1-production.Tpo -c -o ll1-production.o `test -f 'production.c' || echo '$(srcdir)/'`production.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ll1-production.Tpo $(DEPDIR)/ll1-production.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='production.c' object='ll1-production.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ll1-production.o `test -f 'production.c' || echo '$(srcdir)/'`production.c
+
+ll1-production.obj: production.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ll1-production.obj -MD -MP -MF $(DEPDIR)/ll1-production.Tpo -c -o ll1-production.obj `if test -f 'production.c'; then $(CYGPATH_W) 'production.c'; else $(CYGPATH_W) '$(srcdir)/production.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ll1-production.Tpo $(DEPDIR)/ll1-production.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='production.c' object='ll1-production.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ll1-production.obj `if test -f 'production.c'; then $(CYGPATH_W) 'production.c'; else $(CYGPATH_W) '$(srcdir)/production.c'; fi`
 
 ll1-table.o: table.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ll1-table.o -MD -MP -MF $(DEPDIR)/ll1-table.Tpo -c -o ll1-table.o `test -f 'table.c' || echo '$(srcdir)/'`table.c
