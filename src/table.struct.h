@@ -10,6 +10,11 @@ struct Table {
     void * nonterminal_set;
     void * terminals;
     void * terminal_set;
+    size_t * table;
+    size_t * rhs;
+    size_t   rhs_size;
+    size_t * prhs;
+    size_t   prhs_size;
 };
 
 def_class_struct()

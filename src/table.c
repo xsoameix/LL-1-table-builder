@@ -3,6 +3,7 @@
 #include <string.h>
 #include <libooc/hash.h>
 #include <libooc/array.h>
+#include <libooc/file.h>
 
 #include "token.h"
 #include "terminal.h"
@@ -777,7 +778,7 @@ static void
 fill_table_follow_each_T(void * _args, void * terminal, void * data) {
     struct table * args = _args;
     size_t row_i = Nonterminal_id(args->nonterminal);
-    size_t col_i = Terminal_id(terminal);
+    size_t col_i = Terminal_id(terminal) - args->rows;
     size_t id = Production_id(args->production);
     printf("follow [%s][%s]: %zu\n",
             inspect(Nonterminal_token(args->nonterminal)),
@@ -822,6 +823,7 @@ def(make_table, void) {
     size_t * table = malloc(rows * cols * sizeof(size_t));
     clear_table(table, rows, cols);
     fill_table(self, table);
+    self->table = table;
 }
 
 // make rhs
@@ -918,9 +920,9 @@ make_rhs_each_NT(void * args, void * nonterminal, size_t index) {
 
 private
 def(make_rhs, void) {
-    size_t size = rhs_size(self);
-    size_t * rhs = malloc(size * sizeof(size_t));
+    size_t   size =  rhs_size(self);
     size_t p_size = prhs_size(self);
+    size_t *  rhs = malloc(size * sizeof(size_t));
     size_t * prhs = malloc(p_size * sizeof(size_t));
     struct self_with_token args;
     args.self = self;
@@ -928,6 +930,10 @@ def(make_rhs, void) {
     args.production_id = 0;
     args.rhs = rhs;
     args.prhs = prhs;
+    self->rhs = rhs;
+    self->prhs = prhs;
+    self->rhs_size = size;
+    self->prhs_size = p_size;
     Array_each(self->nonterminals, make_rhs_each_NT, &args);
     size_t rows = Array_len(self->nonterminals);
     for(size_t i = 0; i < size; i++) {
@@ -944,7 +950,8 @@ def(make_rhs, void) {
     }
 }
 
-def(build, void *) {
+private
+def(build, void) {
     Terminal_init();
     NT_set_init(self);
     production_epsilon(self);
@@ -957,5 +964,99 @@ def(build, void *) {
     set_id(self);
     make_table(self);
     make_rhs(self);
-    return NULL;
+}
+
+// save table
+
+static void
+save_col(void * file, size_t col) {
+    if(col == -1) {
+        File_puts(file, " -1");
+    } else {
+        File_printf(file, "%3zu", col);
+    }
+}
+
+static void
+save_row(void * file, size_t * table,
+        size_t rows, size_t row_i, size_t cols, char * line_feed) {
+    File_puts(file, "    {");
+    for(size_t col_i = 0; col_i + 1 < cols; col_i++) {
+        size_t col = table[row_i * rows + col_i];
+        save_col(file, col);
+        File_puts(file, ", ");
+    }
+    if(cols > 0) {
+        size_t col = table[row_i * rows + cols - 1];
+        save_col(file, col);
+    }
+    File_puts(file, "}");
+    File_puts(file, line_feed);
+}
+
+static void
+save_table(struct Table * self, void * file) {
+    size_t rows = Array_len(self->nonterminals);
+    size_t cols = Array_len(self->terminals);
+    File_printf(file, "static int act[%zu][%zu] = {\n", rows, cols);
+    for(size_t row_i = 0; row_i + 1 < rows; row_i++) {
+        save_row(file, self->table, rows, row_i, cols, ",\n");
+    }
+    if(rows > 0) {
+        save_row(file, self->table, rows, rows - 1, cols, "\n");
+    }
+    File_puts(file, "};\n\n");
+}
+
+// save prhs
+
+static void
+save_prhs(struct Table * self, void * file) {
+    size_t size = self->prhs_size;
+    File_printf(file, "static int prhs[%zu] = {\n", size);
+    for(size_t i = 0; i + 1 < size; i++) {
+        File_printf(file, "    %zu,\n", self->prhs[i]);
+    }
+    if(size > 0) {
+        File_printf(file, "    %zu\n", self->prhs[size - 1]);
+    }
+    File_puts(file, "};\n\n");
+}
+
+// save rhs
+
+static void
+save_rhs(struct Table * self, void * file) {
+    size_t * rhs = self->rhs;
+    size_t size = self->rhs_size;
+    File_printf(file, "static int rhs[%zu] = {\n    ", size);
+    for(size_t i = 0; i + 1 < size; i += 1) {
+        if(rhs[i] == -1) {
+            File_puts(file, " -1,\n    ");
+        } else {
+            File_printf(file, "%3zu, ", rhs[i]);
+        }
+    }
+    if(size > 0) {
+        File_puts(file, " -1\n");
+    }
+    File_puts(file, "};\n\n");
+}
+
+static void
+open_file(void * _self, void * file) {
+    struct Table * self = _self;
+    save_table(self, file);
+    save_prhs(self, file);
+    save_rhs(self, file);
+}
+
+private
+def(save, void : void * @file) {
+    File_open(file, "w", open_file, self);
+}
+
+def(write_to, void : void * @file) {
+    build(self);
+    save(self, file);
 }

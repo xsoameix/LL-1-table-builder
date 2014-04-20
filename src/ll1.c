@@ -16,15 +16,17 @@ main(void) {
     Scanner_init();
     Parser_init();
     Table_init();
-    void * file = new(File, "src/example.syntax");
-    void * content = File_read(file);
+    void * input = new(File, "src/example.syntax");
+    void * content = File_read(input);
     void * scanner = new(Scanner, content);
     void * parser = new(Parser, scanner);
     void * nonterminals = Parser_parse(parser);
-    void * builder = new(Table, nonterminals);
-    void * table = Table_build(builder);
+    void * table = new(Table, nonterminals);
+    void * output = new(File, "src/example.c");
+    Table_write_to(table, output);
     delete(parser);
     delete(scanner);
-    delete(file);
+    delete(input);
+    delete(output);
     return 0;
 }
