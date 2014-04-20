@@ -10,6 +10,7 @@ override
 def(ctor, void : va_list * @args_ptr) {
     self->nonterminal = va_arg(* args_ptr, void *);
     self->no = va_arg(* args_ptr, size_t);
+    self->epsilon = false;
     self->done = false;
 }
 
@@ -91,4 +92,20 @@ def(set_type, void : enum NT_TYPE @type) {
 
 def(type, enum NT_TYPE) {
     return self->type;
+}
+
+def(set_id, void : size_t @id) {
+    self->id = id;
+}
+
+def(id, size_t) {
+    return self->id;
+}
+
+def(set_epsilon, void : bool @epsilon) {
+    self->epsilon = epsilon;
+}
+
+def(epsilon, bool) {
+    return self->epsilon;
 }

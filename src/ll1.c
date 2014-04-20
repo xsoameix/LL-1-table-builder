@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include <libooc/string.conflict.h>
+#include <libooc/array.h>
+#include <libooc/hash.h>
 #include <libooc/file.h>
-
 #include "scanner.h"
 #include "parser.h"
 #include "table.h"

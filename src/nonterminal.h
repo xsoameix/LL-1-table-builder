@@ -20,7 +20,9 @@ enum NT_TYPE {
     (_Nonterminal_set_productions), \
     (_Nonterminal_productions), \
     (_Nonterminal_set_type), \
-    (_Nonterminal_type)
+    (_Nonterminal_type), \
+    (_Nonterminal_set_id), \
+    (_Nonterminal_id)
 #define _Nonterminal_PRIVATE_METHODS
 #define _Nonterminal_ctor ctor, void, (va_list * args_ptr, args_ptr)
 #define _Nonterminal_dtor dtor, void
@@ -30,6 +32,8 @@ enum NT_TYPE {
 #define _Nonterminal_productions productions, void *
 #define _Nonterminal_set_type set_type, void, (enum NT_TYPE type, type)
 #define _Nonterminal_type type, enum NT_TYPE
+#define _Nonterminal_set_id set_id, void, (size_t id, id)
+#define _Nonterminal_id id, size_t
 def_public_methods()
 
 #endif

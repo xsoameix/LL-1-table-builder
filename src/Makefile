@@ -64,8 +64,8 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_ll1_OBJECTS = ll1-ll1.$(OBJEXT) ll1-token.$(OBJEXT) \
 	ll1-scanner.$(OBJEXT) ll1-parser.$(OBJEXT) \
-	ll1-nonterminal.$(OBJEXT) ll1-production.$(OBJEXT) \
-	ll1-table.$(OBJEXT)
+	ll1-nonterminal.$(OBJEXT) ll1-terminal.$(OBJEXT) \
+	ll1-production.$(OBJEXT) ll1-table.$(OBJEXT)
 ll1_OBJECTS = $(am_ll1_OBJECTS)
 am__DEPENDENCIES_1 =
 ll1_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -93,7 +93,7 @@ AUTOCONF = ${SHELL} /home/lien/ll1/missing --run autoconf
 AUTOHEADER = ${SHELL} /home/lien/ll1/missing --run autoheader
 AUTOMAKE = ${SHELL} /home/lien/ll1/missing --run automake-1.11
 AWK = gawk
-CC = gcc
+CC = gcc -std=gnu99
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2
 CPP = gcc -E
@@ -184,6 +184,7 @@ ll1_SOURCES = \
     scanner.c       \
     parser.c        \
     nonterminal.c   \
+    terminal.c      \
     production.c    \
     table.c
 
@@ -279,6 +280,7 @@ include ./$(DEPDIR)/ll1-parser.Po
 include ./$(DEPDIR)/ll1-production.Po
 include ./$(DEPDIR)/ll1-scanner.Po
 include ./$(DEPDIR)/ll1-table.Po
+include ./$(DEPDIR)/ll1-terminal.Po
 include ./$(DEPDIR)/ll1-token.Po
 
 .c.o:
@@ -364,6 +366,20 @@ ll1-nonterminal.obj: nonterminal.c
 #	source='nonterminal.c' object='ll1-nonterminal.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ll1-nonterminal.obj `if test -f 'nonterminal.c'; then $(CYGPATH_W) 'nonterminal.c'; else $(CYGPATH_W) '$(srcdir)/nonterminal.c'; fi`
+
+ll1-terminal.o: terminal.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ll1-terminal.o -MD -MP -MF $(DEPDIR)/ll1-terminal.Tpo -c -o ll1-terminal.o `test -f 'terminal.c' || echo '$(srcdir)/'`terminal.c
+	$(am__mv) $(DEPDIR)/ll1-terminal.Tpo $(DEPDIR)/ll1-terminal.Po
+#	source='terminal.c' object='ll1-terminal.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ll1-terminal.o `test -f 'terminal.c' || echo '$(srcdir)/'`terminal.c
+
+ll1-terminal.obj: terminal.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ll1-terminal.obj -MD -MP -MF $(DEPDIR)/ll1-terminal.Tpo -c -o ll1-terminal.obj `if test -f 'terminal.c'; then $(CYGPATH_W) 'terminal.c'; else $(CYGPATH_W) '$(srcdir)/terminal.c'; fi`
+	$(am__mv) $(DEPDIR)/ll1-terminal.Tpo $(DEPDIR)/ll1-terminal.Po
+#	source='terminal.c' object='ll1-terminal.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ll1-terminal.obj `if test -f 'terminal.c'; then $(CYGPATH_W) 'terminal.c'; else $(CYGPATH_W) '$(srcdir)/terminal.c'; fi`
 
 ll1-production.o: production.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ll1_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ll1-production.o -MD -MP -MF $(DEPDIR)/ll1-production.Tpo -c -o ll1-production.o `test -f 'production.c' || echo '$(srcdir)/'`production.c

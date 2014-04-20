@@ -25,7 +25,11 @@
     (_Production_done_p), \
     (_Production_set_done), \
     (_Production_set_type), \
-    (_Production_type)
+    (_Production_type), \
+    (_Production_set_id), \
+    (_Production_id), \
+    (_Production_set_epsilon), \
+    (_Production_epsilon)
 #define _Production_PRIVATE_METHODS
 #define _Production_ctor ctor, void, (va_list * args_ptr, args_ptr)
 #define _Production_dtor dtor, void
@@ -45,6 +49,10 @@
 #define _Production_set_done set_done, void, (bool done, done)
 #define _Production_set_type set_type, void, (enum NT_TYPE type, type)
 #define _Production_type type, enum NT_TYPE
+#define _Production_set_id set_id, void, (size_t id, id)
+#define _Production_id id, size_t
+#define _Production_set_epsilon set_epsilon, void, (bool epsilon, epsilon)
+#define _Production_epsilon epsilon, bool
 def_public_methods()
 
 #endif

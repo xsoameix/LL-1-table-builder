@@ -12,6 +12,8 @@ struct Production {
     void * first;
     void * follow;
     enum NT_TYPE type;
+    size_t id;
+    bool epsilon;
 
     // for tree traverse
     void * subset;

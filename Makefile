@@ -131,7 +131,7 @@ AUTOCONF = ${SHELL} /home/lien/ll1/missing --run autoconf
 AUTOHEADER = ${SHELL} /home/lien/ll1/missing --run autoheader
 AUTOMAKE = ${SHELL} /home/lien/ll1/missing --run automake-1.11
 AWK = gawk
-CC = gcc
+CC = gcc -std=gnu99
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2
 CPP = gcc -E

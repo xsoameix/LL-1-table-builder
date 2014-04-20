@@ -43,3 +43,11 @@ def(set_type, void : enum NT_TYPE @type) {
 def(type, enum NT_TYPE) {
     return self->type;
 }
+
+def(set_id, void : size_t @id) {
+    self->id = id;
+}
+
+def(id, size_t) {
+    return self->id;
+}
