@@ -20,20 +20,23 @@ main
 # Vim temporary files
 *.swp
 
-# autotools
+# Autotools
 
-/.deps
-/*/.deps
-/autom4te.cache/
-/aclocal.m4
-/autoscan.log
-/config.h
-/config.h.in
-/config.log
-/config.status
-/configure
-/depcomp
-/install-sh*
-/Makefile
-/Makefile.in
-/stamp-h1
+.deps
+aclocal.m4
+autom4te.cache
+autoscan.log
+compile
+config.h
+config.h.in
+config.h.in~
+config.log
+config.status
+configure
+depcomp
+install-sh*
+Makefile
+Makefile.in
+missing
+stamp-h1
+test-driver

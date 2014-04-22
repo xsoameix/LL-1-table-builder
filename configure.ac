@@ -20,6 +20,7 @@ AC_CHECK_HEADERS([stdlib.h string.h])
 AC_CHECK_HEADER_STDBOOL
 AC_TYPE_SIZE_T
 AC_PROG_CC_C99
+AM_PROG_CC_C_O
 
 # Checks for library functions.
 AC_FUNC_MALLOC
