@@ -8,7 +8,8 @@ struct Scanner {
     struct Object super;
     char * string;
     char * forward;
-    char * lexeme;
+    char * lexeme_start;
+    char * lexeme_end;
     void * token;
 };
 

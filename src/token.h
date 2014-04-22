@@ -4,11 +4,16 @@
 #include <libooc/object.h>
 
 enum TYPE {
-    TOKEN = 256,
-    ARROW,
+    NONTERMINAL = 256,
+    DEFINE,
+    TOKEN,
+    OPEN_BRACE,
+    CLOSE_BRACE,
     OR,
-    NEXT_LINE,
-    END_OF_FILE
+    SPACE,
+    PADDING,
+    END_OF_FILE,
+    NEXT_LINE
 };
 
 #undef CLASS

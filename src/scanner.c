@@ -16,7 +16,8 @@ def(ctor, void : va_list * @args_ptr) {
     char * string = inspect(content);
     self->string = string;
     self->forward = string;
-    self->lexeme = string;
+    self->lexeme_start = string;
+    self->lexeme_end = string;
 }
 
 override
@@ -26,55 +27,129 @@ def(dtor, void) {
 
 def(scan, void) {
     char * forward = self->forward;
-    char * lexeme = self->lexeme;
-    ignore_spaces(self, &forward, &lexeme);
+    char * lexeme_start = self->lexeme_start;
+    char * lexeme_end = self->lexeme_end;
     enum TYPE type;
-    if(alpha_or_punct_p(self, * forward)) {
-        type = TOKEN;
+    if(token_p(self, * lexeme_end)) {
+        if(lexeme_end == self->string) {
+            type = NONTERMINAL;
+            do {
+                lexeme_end += 1;
+            } while(token_p(self, * lexeme_end));
+            forward = lexeme_end;
+            do {
+                forward += 1;
+            } while(space_p(self, * forward));
+        } else {
+            type = TOKEN;
+            do {
+                lexeme_end += 1;
+            } while(token_p(self, * lexeme_end));
+        }
+    } else if(space_p(self, * lexeme_end)) {
+        type = SPACE;
         do {
-            forward += 1;
-        } while(alpha_or_punct_p(self, * forward));
-    } else if(arrow_p(self, forward)) {
-        type = ARROW;
-        forward += 2;
-    } else if(or_p(self, * forward)) {
+            lexeme_end += 1;
+        } while(space_p(self, * lexeme_end));
+    } else if(open_brace_p(self, * lexeme_end)) {
+        type = OPEN_BRACE;
+        lexeme_end += 1;
+    } else if(close_brace_p(self, * lexeme_end)) {
+        type = CLOSE_BRACE;
+        lexeme_end += 1;
+    } else if(colon_p(self, * lexeme_end)) {
+        type = DEFINE;
+        do {
+            lexeme_end += 1;
+        } while(space_p(self, * lexeme_end));
+    } else if(or_p(self, * lexeme_end)) {
         type = OR;
-        forward += 1;
-    } else if(next_line_p(self, * forward)) {
-        type = NEXT_LINE;
-        forward += 1;
-    } else if(EOF_p(self, * forward)) {
+        do {
+            lexeme_end += 1;
+        } while(space_p(self, * lexeme_end));
+    } else if(next_line_p(self, * lexeme_end)) {
+        lexeme_end += 1;
+        size_t state = 0;
+        while(true) {
+            switch(state) {
+            case 0:
+                if(next_line_p(self, * lexeme_end)) {
+                    lexeme_end += 1;
+                } else if(EOF_p(self, * lexeme_end)) {
+                    self->token = NULL;
+                    return;
+                } else if(token_p(self, * lexeme_end)) {
+                    type = NONTERMINAL;
+                    lexeme_start = lexeme_end;
+                    do {
+                        lexeme_end += 1;
+                    } while(token_p(self, * lexeme_end));
+                    forward = lexeme_end;
+                    do {
+                        forward += 1;
+                    } while(space_p(self, * forward));
+                    goto accept;
+                } else if(space_p(self, * lexeme_end)) {
+                    type = PADDING;
+                    state = 1;
+                    lexeme_end += 1;
+                } else {
+                    type = NEXT_LINE;
+                    goto accept;
+                }
+                break;
+            case 1:
+                if(next_line_p(self, * lexeme_end)) {
+                    state = 0;
+                    lexeme_end += 1;
+                } else if(space_p(self, * lexeme_end)) {
+                    type = PADDING;
+                    lexeme_end += 1;
+                } else {
+                    goto accept;
+                }
+                break;
+            }
+        }
+        accept:;
+    } else if(EOF_p(self, * lexeme_end)) {
         self->token = NULL;
         return;
     }
-    self->forward = forward;
-    self->lexeme = forward;
-    self->token = new(Token, type, lexeme, forward - lexeme);
+    self->forward = max(self, forward, lexeme_end);
+    self->lexeme_start = self->forward;
+    self->lexeme_end = self->forward;
+    self->token = new(Token, type, lexeme_start, lexeme_end - lexeme_start);
 }
 
-def(ignore_spaces, void : char ** @forward . char ** @lexeme) {
-    while(space_p(self, ** forward)) {
-        * forward += 1;
-        * lexeme += 1;
-    }
+def(max, char * : char * @z . char * @b) {
+    return z > b ? z : b;
 }
 
 def(space_p, bool : char @c) {
     return c == ' ' || c == '\t';
 }
 
-def(alpha_or_punct_p, bool : char @c) {
+def(token_p, bool : char @c) {
     return (isalpha(c) ||
-            (c >= 0x21 && c <= 0x2C) || // !"#$%&'()*+,
-            (c >= 0x2E && c <= 0x2F) || // ./
-            (c >= 0x3A && c <= 0x40) || // :;<=>?@
-            (c >= 0x5B && c <= 0x60) || // [\]^_`
-            (c == 0x7B) ||              // {
-            (c >= 0x7D && c <= 0x7E));  // }~
+            c >= 0x21 && c <= 0x2C || // !"#$%&'()*+,
+            c >= 0x2D && c <= 0x2F || // -./
+            c >= 0x30 && c <= 0x39 || // 0123456789
+            c >= 0x3B && c <= 0x40 || // ;<=>?@
+            c >= 0x5B && c <= 0x60 || // [\]^_`
+            c == 0x7E);               // ~
 }
 
-def(arrow_p, bool : char * @string) {
-    return strncmp(string, "->", 2) == 0;
+def(open_brace_p, bool : char @c) {
+    return c == '{';
+}
+
+def(close_brace_p, bool : char @c) {
+    return c == '}';
+}
+
+def(colon_p, bool : char @c) {
+    return c == ':';
 }
 
 def(or_p, bool : char @c) {
