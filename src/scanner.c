@@ -11,7 +11,6 @@ def_class(Scanner, Object)
 
 override
 def(ctor, void : va_list * @args_ptr) {
-    Token_init();
     void * content = va_arg(* args_ptr, void *);
     char * string = inspect(content);
     self->string = string;

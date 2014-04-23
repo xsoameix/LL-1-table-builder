@@ -13,8 +13,16 @@ def(ctor, void : va_list * @args_ptr) {
     self->type = NOT_SET;
 }
 
+static void
+delete_each_prod(void * null, void * production, size_t index) {
+    delete(production);
+}
+
 override
 def(dtor, void) {
+    Array_each(self->productions, delete_each_prod, NULL);
+    delete(self->productions);
+    delete(self->self);
     free(self);
 }
 

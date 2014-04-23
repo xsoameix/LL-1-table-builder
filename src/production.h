@@ -29,7 +29,8 @@
     (_Production_set_id), \
     (_Production_id), \
     (_Production_set_epsilon), \
-    (_Production_epsilon)
+    (_Production_epsilon), \
+    (_Production_clear_set)
 #define _Production_PRIVATE_METHODS
 #define _Production_ctor ctor, void, (va_list * args_ptr, args_ptr)
 #define _Production_dtor dtor, void
@@ -53,6 +54,7 @@
 #define _Production_id id, size_t
 #define _Production_set_epsilon set_epsilon, void, (bool epsilon, epsilon)
 #define _Production_epsilon epsilon, bool
+#define _Production_clear_set clear_set, void
 def_public_methods()
 
 #endif

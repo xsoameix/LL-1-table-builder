@@ -590,6 +590,19 @@ follow_union_each_NT(void * null, void * nonterminal, size_t index) {
     Array_each(productions, follow_union_each_prod, NULL);
 }
 
+// follow clear set: subset, union_set, traversed
+
+static void
+follow_clear_set_each_prod(void * null, void * production, size_t index) {
+    Production_clear_set(production);
+}
+
+static void
+follow_clear_set_each_NT(void * null, void * nonterminal, size_t index) {
+    void * productions = Nonterminal_productions(nonterminal);
+    Array_each(productions, follow_clear_set_each_prod, NULL);
+}
+
 private
 def(follow_init, void) {
     Array_each(self->nonterminals, follow_each_NT, self);
@@ -599,6 +612,7 @@ def(follow_init, void) {
     Array_each(self->nonterminals, first_traverse_each_NT, self);
     Array_each(self->nonterminals, debug_union_each_NT, self);
     Array_each(self->nonterminals, follow_union_each_NT, self);
+    Array_each(self->nonterminals, follow_clear_set_each_NT, self);
     Array_each(self->nonterminals, debug_follow_each_NT, self);
     Array_each(self->nonterminals, debug_first_each_NT, self);
 }
@@ -812,7 +826,7 @@ private
 def(fill_table, void : size_t * @table) {
     struct table args;
     args.table = table;
-    args.rows = Array_len(self->nonterminals);
+    args.rows = self->rows;
     Array_each(self->nonterminals, fill_table_each_NT, &args);
 }
 
@@ -821,9 +835,11 @@ def(make_table, void) {
     size_t rows = Array_len(self->nonterminals);
     size_t cols = Array_len(self->terminals);
     size_t * table = malloc(rows * cols * sizeof(size_t));
+    self->rows = rows;
+    self->cols = cols;
+    self->table = table;
     clear_table(table, rows, cols);
     fill_table(self, table);
-    self->table = table;
 }
 
 // make rhs
@@ -935,14 +951,13 @@ def(make_rhs, void) {
     self->rhs_size = size;
     self->prhs_size = p_size;
     Array_each(self->nonterminals, make_rhs_each_NT, &args);
-    size_t rows = Array_len(self->nonterminals);
     for(size_t i = 0; i < size; i++) {
         if(rhs[i] == -1) {
             printf("rhs[  ]\n");
-        } else if(rhs[i] < rows) {
+        } else if(rhs[i] < self->rows) {
             printf("rhs[%s]\n", inspect(Nonterminal_token(Array_get(self->nonterminals, rhs[i]))));
         } else {
-            printf("rhs[%s]\n", inspect(Array_get(self->terminals, rhs[i] - rows)));
+            printf("rhs[%s]\n", inspect(Array_get(self->terminals, rhs[i] - self->rows)));
         }
     }
     for(size_t i = 0; i < p_size; i++) {
@@ -950,9 +965,30 @@ def(make_rhs, void) {
     }
 }
 
+// delete nonterminals, terminals
+
+static void
+delete_each_NT(void * null, void * nonterminal, size_t index) {
+    delete(nonterminal);
+}
+
+static void
+delete_each_T(void * null, void * terminal, size_t index) {
+    delete(terminal);
+}
+
+static void
+delete_NT_and_T_and_sets(struct Table * self) {
+    Array_each(self->nonterminals, delete_each_NT, NULL);
+    Array_each(self->terminals, delete_each_T, NULL);
+    delete(self->nonterminals);
+    delete(self->nonterminal_set);
+    delete(self->terminals);
+    delete(self->terminal_set);
+}
+
 private
 def(build, void) {
-    Terminal_init();
     NT_set_init(self);
     production_epsilon(self);
     T_set_init(self);
@@ -964,6 +1000,7 @@ def(build, void) {
     set_id(self);
     make_table(self);
     make_rhs(self);
+    delete_NT_and_T_and_sets(self);
 }
 
 // save table
@@ -996,14 +1033,15 @@ save_row(void * file, size_t * table,
 
 static void
 save_table(struct Table * self, void * file) {
-    size_t rows = Array_len(self->nonterminals);
-    size_t cols = Array_len(self->terminals);
+    size_t * table = self->table;
+    size_t rows = self->rows;
+    size_t cols = self->cols;
     File_printf(file, "static int act[%zu][%zu] = {\n", rows, cols);
     for(size_t row_i = 0; row_i + 1 < rows; row_i++) {
-        save_row(file, self->table, rows, row_i, cols, ",\n");
+        save_row(file, table, rows, row_i, cols, ",\n");
     }
     if(rows > 0) {
-        save_row(file, self->table, rows, rows - 1, cols, "\n");
+        save_row(file, table, rows, rows - 1, cols, "\n");
     }
     File_puts(file, "};\n\n");
 }
@@ -1049,6 +1087,9 @@ open_file(void * _self, void * file) {
     save_table(self, file);
     save_prhs(self, file);
     save_rhs(self, file);
+    free(self->table);
+    free(self->rhs);
+    free(self->prhs);
 }
 
 private

@@ -23,7 +23,8 @@
     (_Parser_next), \
     (_Parser_syntax_error)
 #define _Parser_PRIVATE_METHODS \
-    (_Parser_match)
+    (_Parser_match), \
+    (_Parser_discard)
 #define _Parser_ctor ctor, void, (va_list * args_ptr, args_ptr)
 #define _Parser_dtor dtor, void
 #define _Parser_parse parse, void *
@@ -37,6 +38,7 @@
 #define _Parser_parse_BLOCK parse_BLOCK, void, (void * nonterminal, nonterminal)
 #define _Parser_parse_ANY_TOKEN parse_ANY_TOKEN, void, (void * nonterminal, nonterminal)
 #define _Parser_match match, void, (enum TYPE expected, expected)
+#define _Parser_discard discard, void, (enum TYPE expected, expected)
 #define _Parser_next next, void
 #define _Parser_syntax_error syntax_error, void
 def_public_methods()

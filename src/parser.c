@@ -12,8 +12,6 @@ def_class(Parser, Object)
 
 override
 def(ctor, void : va_list * @args_ptr) {
-    Nonterminal_init();
-    Production_init();
     self->scanner = va_arg(* args_ptr, void *);
 }
 
@@ -115,7 +113,7 @@ def(parse_NT, void : void * @nonterminals) {
         void * productions = new(Array);
         Nonterminal_set_productions(nonterminal, productions);
         match(self, NONTERMINAL);
-        match(self, DEFINE);
+        discard(self, DEFINE);
         parse_TOKENS(self, nonterminal);
     } else {
         syntax_error(self);
@@ -144,7 +142,7 @@ def(parse_TOKENS, void : void * @nonterminal) {
         void * tokens = new(Array);
         Production_set_tokens(production, tokens);
         parse_BLOCK(self, productions);
-        match(self, PADDING);
+        discard(self, PADDING);
         Array_push(tokens, self->token);
         match(self, TOKEN);
         parse_TOKENS_(self, nonterminal);
@@ -159,10 +157,10 @@ def(parse_TOKENS, void : void * @nonterminal) {
 
 def(parse_TOKENS_, void : void * @nonterminal) {
     if(self->type == SPACE) {
-        match(self, SPACE);
+        discard(self, SPACE);
         parse_TOKENS__(self, nonterminal);
     } else if(self->type == PADDING) {
-        match(self, PADDING);
+        discard(self, PADDING);
         parse_TOKENS____(self, nonterminal);
     } else if(self->type == NONTERMINAL ||
             self->type == END_OF_FILE) {
@@ -191,7 +189,7 @@ def(parse_TOKENS__, void : void * @nonterminal) {
 
 def(parse_TOKENS___, void : void * @nonterminal) {
     if(self->type == PADDING) {
-        match(self, PADDING);
+        discard(self, PADDING);
         parse_TOKENS____(self, nonterminal);
     } else if(self->type == NONTERMINAL ||
             self->type == END_OF_FILE) {
@@ -212,7 +210,7 @@ def(parse_TOKENS____, void : void * @nonterminal) {
         match(self, TOKEN);
         parse_TOKENS_(self, nonterminal);
     } else if(self->type == OR) {
-        match(self, OR);
+        discard(self, OR);
         parse_TOKENS(self, nonterminal);
     } else {
         syntax_error(self);
@@ -223,9 +221,9 @@ def(parse_TOKENS____, void : void * @nonterminal) {
 
 def(parse_BLOCK, void : void * @nonterminal) {
     if(self->type == OPEN_BRACE) {
-        match(self, OPEN_BRACE);
+        discard(self, OPEN_BRACE);
         parse_ANY_TOKEN(self, nonterminal);
-        match(self, CLOSE_BRACE);
+        discard(self, CLOSE_BRACE);
     } else {
         syntax_error(self);
     }
@@ -275,6 +273,16 @@ def(parse_ANY_TOKEN, void : void * @nonterminal) {
 private
 def(match, void : enum TYPE @expected) {
     if(self->type == expected) {
+        next(self);
+    } else {
+        syntax_error(self);
+    }
+}
+
+private
+def(discard, void : enum TYPE @expected) {
+    if(self->type == expected) {
+        delete(self->token);
         next(self);
     } else {
         syntax_error(self);

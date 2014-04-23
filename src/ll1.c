@@ -5,17 +5,32 @@
 #include <libooc/file.h>
 #include "scanner.h"
 #include "parser.h"
+#include "nonterminal.h"
+#include "terminal.h"
+#include "token.h"
+#include "production.h"
 #include "table.h"
 
-int
-main(void) {
+static void
+init(void) {
+    // libooc
     String_init();
     Array_init();
     Hash_init();
     File_init();
+
     Scanner_init();
     Parser_init();
     Table_init();
+    Token_init();
+    Nonterminal_init();
+    Terminal_init();
+    Production_init();
+}
+
+int
+main(void) {
+    init();
     void * input = new(File, "src/example.syntax");
     void * content = File_read(input);
     void * scanner = new(Scanner, content);
@@ -24,9 +39,10 @@ main(void) {
     void * table = new(Table, nonterminals);
     void * output = new(File, "src/example.c");
     Table_write_to(table, output);
+    delete(table);
+    delete(output);
     delete(parser);
     delete(scanner);
     delete(input);
-    delete(output);
     return 0;
 }

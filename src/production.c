@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <libooc/hash.h>
+#include <libooc/array.h>
 
 #include "nonterminal.h"
 #include "production.struct.h"
@@ -14,8 +15,17 @@ def(ctor, void : va_list * @args_ptr) {
     self->done = false;
 }
 
+static void
+delete_each_token(void * null, void * token, size_t index) {
+    delete(token);
+}
+
 override
 def(dtor, void) {
+    Array_each(self->tokens, delete_each_token, NULL);
+    delete(self->tokens);
+    delete(self->first);
+    delete(self->follow);
     free(self);
 }
 
@@ -108,4 +118,10 @@ def(set_epsilon, void : bool @epsilon) {
 
 def(epsilon, bool) {
     return self->epsilon;
+}
+
+def(clear_set, void) {
+    delete(self->subset);
+    delete(self->union_set);
+    delete(self->traversed);
 }

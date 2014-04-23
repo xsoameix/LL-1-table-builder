@@ -45,7 +45,6 @@ def(ctor, void : va_list * @args_ptr) {
 
 override
 def(dtor, void) {
-    free(self->string);
     free(self);
 }
 

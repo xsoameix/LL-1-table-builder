@@ -1,7 +1,5 @@
 expr   : term expr'
-expr'  : {
-             int a = 1;
-         }
+expr'  : {}
          + term expr'
        | epsilon
 term   : factor term'
