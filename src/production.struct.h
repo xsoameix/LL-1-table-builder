@@ -9,6 +9,7 @@ struct Production {
     void * nonterminal;
     size_t no;
     void * tokens;
+    void * blocks;
     void * first;
     void * follow;
     enum NT_TYPE type;

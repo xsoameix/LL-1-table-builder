@@ -1,8 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <libooc/string.conflict.h>
 
+#include "scanner.h"
 #include "token.struct.h"
 
 static void
@@ -45,7 +47,17 @@ def(ctor, void : va_list * @args_ptr) {
 
 override
 def(dtor, void) {
+    char * chars = inspect(self->string);
+    if(!chars_allocated_by_ctor(self, chars)) {
+        free(chars);
+    }
     free(self);
+}
+
+private
+def(chars_allocated_by_ctor, bool : char * @chars) {
+    const struct ObjectClass * string_class = String;
+    return chars == (void *) self + sizeof(struct Token) + string_class->size;
 }
 
 override
@@ -67,6 +79,21 @@ def(type, enum TYPE) {
     return self->type;
 }
 
-def(string, void *) {
-    return self->string;
+def(set, void : void * @string) {
+    String_set(self->string, string);
+}
+
+def(strip, void) {
+    String_strip(self->string);
+}
+
+static bool
+alpha_p(void * null, char c) {
+    return isalpha(c);
+}
+
+def(lstrip, char *) {
+    char * chars = inspect(self->string);
+    size_t i = String_index(self->string, alpha_p, NULL);
+    return chars + i;
 }

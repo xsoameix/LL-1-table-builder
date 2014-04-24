@@ -6,6 +6,7 @@ ll1_SOURCES =       \
     parser.c        \
     nonterminal.c   \
     terminal.c      \
+    block.c         \
     production.c    \
     table.c
 ll1_CPPFLAGS = $(DEPS_CFLAGS)

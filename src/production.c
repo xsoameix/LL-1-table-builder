@@ -3,6 +3,7 @@
 #include <libooc/array.h>
 
 #include "nonterminal.h"
+#include "block.h"
 #include "production.struct.h"
 
 def_class(Production, Object)
@@ -11,6 +12,8 @@ override
 def(ctor, void : va_list * @args_ptr) {
     self->nonterminal = va_arg(* args_ptr, void *);
     self->no = va_arg(* args_ptr, size_t);
+    self->tokens = NULL;
+    self->blocks = NULL;
     self->epsilon = false;
     self->done = false;
 }
@@ -38,12 +41,36 @@ def(no, size_t) {
     return self->no;
 }
 
-def(set_tokens, void : void * @tokens) {
-    self->tokens = tokens;
+def(tokens, void *) {
+    if(self->tokens == NULL) {
+        self->tokens = new(Array);
+    }
+    return self->tokens;
 }
 
-def(tokens, void *) {
-    return self->tokens;
+def(add_token, void : void * @token) {
+    void * tokens = Production_tokens(self);
+    Array_push(tokens, token);
+}
+
+def(blocks, void *) {
+    if(self->blocks == NULL) {
+        self->blocks = new(Array);
+    }
+    return self->blocks;
+}
+
+def(create_block, void *) {
+    void * blocks = Production_blocks(self);
+    void * tokens = Production_tokens(self);
+    size_t len = Array_len(tokens);
+    void * block = new(Block, len);
+    Array_push(blocks, block);
+    return block;
+}
+
+def(has_blocks, bool) {
+    return self->blocks != NULL;
 }
 
 def(first_init, void) {

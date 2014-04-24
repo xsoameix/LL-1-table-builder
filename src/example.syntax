@@ -1,5 +1,7 @@
 expr   : term expr'
-expr'  : {}
+expr'  : {
+             int a = push();
+         }
          + term expr'
        | epsilon
 term   : factor term'

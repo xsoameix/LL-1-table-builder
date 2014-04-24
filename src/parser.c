@@ -6,6 +6,7 @@
 #include "scanner.h"
 #include "nonterminal.h"
 #include "production.h"
+#include "block.h"
 #include "parser.struct.h"
 
 def_class(Parser, Object)
@@ -43,10 +44,11 @@ def(parse, void *) {
 // TOKENS'''' : TOKEN TOKENS'
 //            | OR TOKENS
 // BLOCK      : OPEN_BRACE ANY_TOKEN CLOSE_BRACE
+// BLOCK'     : OPEN_BRACE ANY_TOKEN CLOSE_BRACE
 // ANY_TOKEN  : NONTERMINAL ANY_TOKEN
 //            | DEFINE      ANY_TOKEN
 //            | TOKEN       ANY_TOKEN
-//            | BLOCK       ANY_TOKEN
+//            | BLOCK'      ANY_TOKEN
 //            | OR          ANY_TOKEN
 //            | SPACE       ANY_TOKEN
 //            | PADDING     ANY_TOKEN
@@ -88,7 +90,8 @@ def(parse, void *) {
 // TOKENS'''  | epsilon                                                  PADD... epsilon
 // TOKENS'''' |                    TO...                        O.
 // BLOCK      |                          OPEN_BRACE
-// ANY_TOKEN  | NONTERMI... DEF... TO... BLOCK A... epsilon     O. SP... PADD...             NEXT_L...
+// BLOCK'     |                          OPEN_BRACE
+// ANY_TOKEN  | NONTERMI... DEF... TO... BLOCK' ... epsilon     O. SP... PADD...             NEXT_L...
 
 // NTS        : NT NTS
 //            | END_OF_FILE
@@ -110,8 +113,6 @@ def(parse_NT, void : void * @nonterminals) {
     if(self->type == NONTERMINAL) {
         void * nonterminal = new(Nonterminal, self->token);
         Array_push(nonterminals, nonterminal);
-        void * productions = new(Array);
-        Nonterminal_set_productions(nonterminal, productions);
         match(self, NONTERMINAL);
         discard(self, DEFINE);
         parse_TOKENS(self, nonterminal);
@@ -125,25 +126,15 @@ def(parse_NT, void : void * @nonterminals) {
 
 def(parse_TOKENS, void : void * @nonterminal) {
     if(self->type == TOKEN) {
-        void * productions = Nonterminal_productions(nonterminal);
-        size_t len = Array_len(productions);
-        void * production = new(Production, nonterminal, len);
-        Array_push(productions, production);
-        void * tokens = new(Array);
-        Production_set_tokens(production, tokens);
-        Array_push(tokens, self->token);
+        void * production = Nonterminal_create_production(nonterminal);
+        Production_add_token(production, self->token);
         match(self, TOKEN);
         parse_TOKENS_(self, nonterminal);
     } else if(self->type == OPEN_BRACE) {
-        void * productions = Nonterminal_productions(nonterminal);
-        size_t len = Array_len(productions);
-        void * production = new(Production, nonterminal, len);
-        Array_push(productions, production);
-        void * tokens = new(Array);
-        Production_set_tokens(production, tokens);
-        parse_BLOCK(self, productions);
+        void * production = Nonterminal_create_production(nonterminal);
+        parse_BLOCK(self, production);
         discard(self, PADDING);
-        Array_push(tokens, self->token);
+        Production_add_token(production, self->token);
         match(self, TOKEN);
         parse_TOKENS_(self, nonterminal);
     } else {
@@ -174,7 +165,8 @@ def(parse_TOKENS_, void : void * @nonterminal) {
 
 def(parse_TOKENS__, void : void * @nonterminal) {
     if(self->type == OPEN_BRACE) {
-        parse_BLOCK(self, nonterminal);
+        void * production = Nonterminal_last_production(nonterminal);
+        parse_BLOCK(self, production);
         parse_TOKENS___(self, nonterminal);
     } else if(self->type == TOKEN ||
             self->type == OR) {
@@ -203,10 +195,8 @@ def(parse_TOKENS___, void : void * @nonterminal) {
 
 def(parse_TOKENS____, void : void * @nonterminal) {
     if(self->type == TOKEN) {
-        void * productions = Nonterminal_productions(nonterminal);
-        void * production = Array_last(productions);
-        void * tokens = Production_tokens(production);
-        Array_push(tokens, self->token);
+        void * production = Nonterminal_last_production(nonterminal);
+        Production_add_token(production, self->token);
         match(self, TOKEN);
         parse_TOKENS_(self, nonterminal);
     } else if(self->type == OR) {
@@ -219,11 +209,26 @@ def(parse_TOKENS____, void : void * @nonterminal) {
 
 // BLOCK      : OPEN_BRACE ANY_TOKEN CLOSE_BRACE
 
-def(parse_BLOCK, void : void * @nonterminal) {
+def(parse_BLOCK, void : void * @production) {
     if(self->type == OPEN_BRACE) {
+        void * block = Production_create_block(production);
         discard(self, OPEN_BRACE);
-        parse_ANY_TOKEN(self, nonterminal);
+        parse_ANY_TOKEN(self, block);
         discard(self, CLOSE_BRACE);
+    } else {
+        syntax_error(self);
+    }
+}
+
+// BLOCK'     : OPEN_BRACE ANY_TOKEN CLOSE_BRACE
+
+def(parse_BLOCK_, void : void * @block) {
+    if(self->type == OPEN_BRACE) {
+        Block_add_token(block, self->token);
+        match(self, OPEN_BRACE);
+        parse_ANY_TOKEN(self, block);
+        Block_add_token(block, self->token);
+        match(self, CLOSE_BRACE);
     } else {
         syntax_error(self);
     }
@@ -232,38 +237,45 @@ def(parse_BLOCK, void : void * @nonterminal) {
 // ANY_TOKEN  : NONTERMINAL ANY_TOKEN
 //            | DEFINE      ANY_TOKEN
 //            | TOKEN       ANY_TOKEN
-//            | BLOCK       ANY_TOKEN
+//            | BLOCK'      ANY_TOKEN
 //            | OR          ANY_TOKEN
 //            | SPACE       ANY_TOKEN
 //            | PADDING     ANY_TOKEN
 //            | NEXT_LINE   ANY_TOKEN
 //            | epsilon
 
-def(parse_ANY_TOKEN, void : void * @nonterminal) {
+def(parse_ANY_TOKEN, void : void * @block) {
     if(self->type == NONTERMINAL) {
+        Block_add_token(block, self->token);
         match(self, NONTERMINAL);
-        parse_ANY_TOKEN(self, nonterminal);
+        parse_ANY_TOKEN(self, block);
     } else if(self->type == DEFINE) {
+        Block_add_token(block, self->token);
         match(self, DEFINE);
-        parse_ANY_TOKEN(self, nonterminal);
+        parse_ANY_TOKEN(self, block);
     } else if(self->type == TOKEN) {
+        Block_add_token(block, self->token);
         match(self, TOKEN);
-        parse_ANY_TOKEN(self, nonterminal);
+        parse_ANY_TOKEN(self, block);
     } else if(self->type == OPEN_BRACE) {
-        parse_BLOCK(self, nonterminal);
-        parse_ANY_TOKEN(self, nonterminal);
+        parse_BLOCK_(self, block);
+        parse_ANY_TOKEN(self, block);
     } else if(self->type == OR) {
+        Block_add_token(block, self->token);
         match(self, OR);
-        parse_ANY_TOKEN(self, nonterminal);
+        parse_ANY_TOKEN(self, block);
     } else if(self->type == SPACE) {
+        Block_add_token(block, self->token);
         match(self, SPACE);
-        parse_ANY_TOKEN(self, nonterminal);
+        parse_ANY_TOKEN(self, block);
     } else if(self->type == PADDING) {
+        Block_add_token(block, self->token);
         match(self, PADDING);
-        parse_ANY_TOKEN(self, nonterminal);
+        parse_ANY_TOKEN(self, block);
     } else if(self->type == NEXT_LINE) {
+        Block_add_token(block, self->token);
         match(self, NEXT_LINE);
-        parse_ANY_TOKEN(self, nonterminal);
+        parse_ANY_TOKEN(self, block);
     } else if(self->type == CLOSE_BRACE) {
     } else {
         syntax_error(self);

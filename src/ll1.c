@@ -9,6 +9,7 @@
 #include "terminal.h"
 #include "token.h"
 #include "production.h"
+#include "block.h"
 #include "table.h"
 
 static void
@@ -26,6 +27,7 @@ init(void) {
     Nonterminal_init();
     Terminal_init();
     Production_init();
+    Block_init();
 }
 
 int

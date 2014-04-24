@@ -19,6 +19,7 @@
     (_Parser_parse_TOKENS___), \
     (_Parser_parse_TOKENS____), \
     (_Parser_parse_BLOCK), \
+    (_Parser_parse_BLOCK_), \
     (_Parser_parse_ANY_TOKEN), \
     (_Parser_next), \
     (_Parser_syntax_error)
@@ -35,8 +36,9 @@
 #define _Parser_parse_TOKENS__ parse_TOKENS__, void, (void * nonterminal, nonterminal)
 #define _Parser_parse_TOKENS___ parse_TOKENS___, void, (void * nonterminal, nonterminal)
 #define _Parser_parse_TOKENS____ parse_TOKENS____, void, (void * nonterminal, nonterminal)
-#define _Parser_parse_BLOCK parse_BLOCK, void, (void * nonterminal, nonterminal)
-#define _Parser_parse_ANY_TOKEN parse_ANY_TOKEN, void, (void * nonterminal, nonterminal)
+#define _Parser_parse_BLOCK parse_BLOCK, void, (void * production, production)
+#define _Parser_parse_BLOCK_ parse_BLOCK_, void, (void * block, block)
+#define _Parser_parse_ANY_TOKEN parse_ANY_TOKEN, void, (void * block, block)
 #define _Parser_match match, void, (enum TYPE expected, expected)
 #define _Parser_discard discard, void, (enum TYPE expected, expected)
 #define _Parser_next next, void

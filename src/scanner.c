@@ -35,10 +35,9 @@ def(scan, void) {
             do {
                 lexeme_end += 1;
             } while(token_p(self, * lexeme_end));
-            forward = lexeme_end;
             do {
-                forward += 1;
-            } while(space_p(self, * forward));
+                lexeme_end += 1;
+            } while(space_p(self, * lexeme_end));
         } else {
             type = TOKEN;
             do {
@@ -79,14 +78,12 @@ def(scan, void) {
                     return;
                 } else if(token_p(self, * lexeme_end)) {
                     type = NONTERMINAL;
-                    lexeme_start = lexeme_end;
                     do {
                         lexeme_end += 1;
                     } while(token_p(self, * lexeme_end));
-                    forward = lexeme_end;
                     do {
-                        forward += 1;
-                    } while(space_p(self, * forward));
+                        lexeme_end += 1;
+                    } while(space_p(self, * lexeme_end));
                     goto accept;
                 } else if(space_p(self, * lexeme_end)) {
                     type = PADDING;

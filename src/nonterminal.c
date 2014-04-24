@@ -3,6 +3,7 @@
 #include <libooc/hash.h>
 
 #include "token.h"
+#include "production.h"
 #include "nonterminal.struct.h"
 
 def_class(Nonterminal, Object)
@@ -10,7 +11,9 @@ def_class(Nonterminal, Object)
 override
 def(ctor, void : va_list * @args_ptr) {
     self->self = va_arg(* args_ptr, void *);
+    self->productions = NULL;
     self->type = NOT_SET;
+    Token_strip(self->self);
 }
 
 static void
@@ -28,20 +31,31 @@ def(dtor, void) {
 
 override
 def(hash_code, size_t) {
-    void * string = Token_string(self->self);
-    return hash_code(string);
+    return hash_code(self->self);
 }
 
 def(token, void *) {
     return self->self;
 }
 
-def(set_productions, void : void * @productions) {
-    self->productions = productions;
+def(productions, void *) {
+    if(self->productions == NULL) {
+        self->productions = new(Array);
+    }
+    return self->productions;
 }
 
-def(productions, void *) {
-    return self->productions;
+def(create_production, void *) {
+    void * productions = Nonterminal_productions(self);
+    size_t len = Array_len(productions);
+    void * production = new(Production, self, len);
+    Array_push(productions, production);
+    return production;
+}
+
+def(last_production, void *) {
+    void * productions = Nonterminal_productions(self);
+    return Array_last(productions);
 }
 
 def(set_type, void : enum NT_TYPE @type) {

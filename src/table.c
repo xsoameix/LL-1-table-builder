@@ -9,6 +9,7 @@
 #include "terminal.h"
 #include "nonterminal.h"
 #include "production.h"
+#include "block.h"
 #include "table.struct.h"
 
 def_class(Table, Object)
@@ -714,9 +715,31 @@ def(follow_init, void) {
 // set production id
 
 static void
+set_id_each_token(void * null, void * token, size_t index) {
+    char * red = "\e[48;5;52m";
+    char * gray = "\e[48;5;235m";
+    char * color = index % 2 == 0 ? red : gray;
+    printf("%s%s", color, inspect(token));
+}
+
+static void
+set_id_each_block(void * null, void * block, size_t index) {
+    Block_expand(block);
+    void * tokens = Block_tokens(block);
+    printf("B[%zu]{", index);
+    Array_each(tokens, set_id_each_token, NULL);
+    char * reset = "\e[0m";
+    printf("%s}\n", reset);
+}
+
+static void
 set_id_each_prod(void * _production_id, void * production, size_t index) {
     size_t * production_id = _production_id;
     Production_set_id(production, * production_id);
+    if(Production_has_blocks(production)) {
+        void * blocks = Production_blocks(production);
+        Array_each(blocks, set_id_each_block, NULL);
+    }
     * production_id += 1;
 }
 

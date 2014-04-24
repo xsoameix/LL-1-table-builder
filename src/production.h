@@ -12,8 +12,11 @@
     (_Production_inspect)
 #define _Production_PUBLIC_METHODS \
     (_Production_no), \
-    (_Production_set_tokens), \
     (_Production_tokens), \
+    (_Production_add_token), \
+    (_Production_blocks), \
+    (_Production_create_block), \
+    (_Production_has_blocks), \
     (_Production_first_init), \
     (_Production_first), \
     (_Production_follow_init), \
@@ -36,8 +39,11 @@
 #define _Production_dtor dtor, void
 #define _Production_inspect inspect, char *
 #define _Production_no no, size_t
-#define _Production_set_tokens set_tokens, void, (void * tokens, tokens)
 #define _Production_tokens tokens, void *
+#define _Production_add_token add_token, void, (void * token, token)
+#define _Production_blocks blocks, void *
+#define _Production_create_block create_block, void *
+#define _Production_has_blocks has_blocks, bool
 #define _Production_first_init first_init, void
 #define _Production_first first, void *
 #define _Production_follow_init follow_init, void
