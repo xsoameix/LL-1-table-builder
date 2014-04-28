@@ -15,8 +15,15 @@ def(ctor, void : va_list * @args_ptr) {
     self->tokens = NULL;
 }
 
+static void
+delete_each_token(void * null, void * token, size_t index) {
+    delete(token);
+}
+
 override
 def(dtor, void) {
+    Array_each(self->tokens, delete_each_token, NULL);
+    delete(self->tokens);
     free(self);
 }
 
@@ -32,6 +39,10 @@ def(set_id, void : size_t @id) {
 
 def(id, size_t) {
     return self->id;
+}
+
+def(no, size_t) {
+    return self->no;
 }
 
 def(tokens, void *) {

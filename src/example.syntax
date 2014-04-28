@@ -1,8 +1,9 @@
+start  : expr EOF
 expr   : term expr'
-expr'  : {
+expr'  : + term {
              int a = push();
          }
-         + term expr'
+         expr'
        | epsilon
 term   : factor term'
 term'  : * factor term'

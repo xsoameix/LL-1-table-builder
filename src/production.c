@@ -23,10 +23,19 @@ delete_each_token(void * null, void * token, size_t index) {
     delete(token);
 }
 
+static void
+delete_each_block(void * null, void * block, size_t index) {
+    delete(block);
+}
+
 override
 def(dtor, void) {
     Array_each(self->tokens, delete_each_token, NULL);
     delete(self->tokens);
+    if(self->blocks != NULL) {
+        Array_each(self->blocks, delete_each_block, NULL);
+        delete(self->blocks);
+    }
     delete(self->first);
     delete(self->follow);
     free(self);
@@ -41,6 +50,10 @@ def(no, size_t) {
     return self->no;
 }
 
+def(reverse_each_token, void : void (* @iter)(void * _self_, void * obj, size_t index) . void * @_self_) {
+    Array_reverse_each(self->tokens, iter, _self_);
+}
+
 def(tokens, void *) {
     if(self->tokens == NULL) {
         self->tokens = new(Array);
@@ -48,16 +61,23 @@ def(tokens, void *) {
     return self->tokens;
 }
 
+def(tokens_size, size_t) {
+    return Array_len(self->tokens);
+}
+
 def(add_token, void : void * @token) {
     void * tokens = Production_tokens(self);
     Array_push(tokens, token);
 }
 
-def(blocks, void *) {
-    if(self->blocks == NULL) {
-        self->blocks = new(Array);
+def(block, void * : size_t @index) {
+    return self->blocks == NULL ? NULL : Array_get(self->blocks, index);
+}
+
+def(each_block, void : void (* @iter)(void * _self_, void * obj, size_t index) . void * @_self_) {
+    if(self->blocks != NULL) {
+        Array_each(self->blocks, iter, _self_);
     }
-    return self->blocks;
 }
 
 def(create_block, void *) {
@@ -69,8 +89,15 @@ def(create_block, void *) {
     return block;
 }
 
-def(has_blocks, bool) {
-    return self->blocks != NULL;
+def(blocks, void *) {
+    if(self->blocks == NULL) {
+        self->blocks = new(Array);
+    }
+    return self->blocks;
+}
+
+def(blocks_size, size_t) {
+    return self->blocks == NULL ? 0 : Array_len(self->blocks);
 }
 
 def(first_init, void) {
