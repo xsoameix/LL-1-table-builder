@@ -3,6 +3,7 @@
 
 #include <libooc/object.h>
 
+#include "nonterminal_type.h"
 
 #undef CLASS
 #define CLASS Production

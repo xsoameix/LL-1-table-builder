@@ -3,11 +3,7 @@
 
 #include <libooc/object.h>
 
-enum NT_TYPE {
-    NOT_SET,
-    PRESENT,
-    BLANK
-};
+#include "nonterminal_type.h"
 
 #undef CLASS
 #define CLASS Nonterminal
