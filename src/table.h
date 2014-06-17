@@ -10,14 +10,6 @@
     (_Table_ctor), \
     (_Table_dtor)
 #define _Table_PUBLIC_METHODS \
-    (_Table_NT_set_each_NT), \
-    (_Table_T_set_each_token), \
-    (_Table_T_set_each_prod), \
-    (_Table_T_set_each_NT), \
-    (_Table_Ts_each_T), \
-    (_Table_null_NT), \
-    (_Table_null_each_NT), \
-    (_Table_debug_Ts), \
     (_Table_write_to)
 #define _Table_PRIVATE_METHODS \
     (_Table_NT_set_init), \
@@ -28,8 +20,21 @@
     (_Table_T_p), \
     (_Table_T_of_token), \
     (_Table_Ts_init), \
+    (_Table_null_NT), \
     (_Table_null_init), \
+    (_Table_first_subset_init), \
+    (_Table_traverse_NTs), \
+    (_Table_first_init_after_traverse), \
+    (_Table_debug_Ts), \
+    (_Table_debug_first), \
+    (_Table_debug_subset), \
+    (_Table_debug_union), \
+    (_Table_debug_follow), \
     (_Table_first_init), \
+    (_Table_follow_Ts_init), \
+    (_Table_follow_subset_init), \
+    (_Table_follow_init_after_traverse), \
+    (_Table_follow_clear_set), \
     (_Table_follow_init), \
     (_Table_set_id), \
     (_Table_fill_table), \
@@ -41,24 +46,29 @@
     (_Table_save)
 #define _Table_ctor ctor, void, (va_list * args_ptr, args_ptr)
 #define _Table_dtor dtor, void
-#define _Table_NT_set_each_NT NT_set_each_NT, void, (void * nonterminal, nonterminal), (size_t index, index)
 #define _Table_NT_set_init NT_set_init, void
 #define _Table_NT_p NT_p, bool, (void * token, token)
 #define _Table_NT_of_token NT_of_token, void *, (void * token, token)
 #define _Table_production_epsilon production_epsilon, void
-#define _Table_T_set_each_token T_set_each_token, void, (void * token, token), (size_t index, index)
-#define _Table_T_set_each_prod T_set_each_prod, void, (void * production, production), (size_t index, index)
-#define _Table_T_set_each_NT T_set_each_NT, void, (void * nonterminal, nonterminal), (size_t index, index)
 #define _Table_T_set_init T_set_init, void
 #define _Table_T_p T_p, bool, (void * token, token)
 #define _Table_T_of_token T_of_token, void *, (void * token, token)
-#define _Table_Ts_each_T Ts_each_T, void, (void * token, token), (void * terminal, terminal)
 #define _Table_Ts_init Ts_init, void
 #define _Table_null_NT null_NT, void, (void * nonterminal, nonterminal)
-#define _Table_null_each_NT null_each_NT, void, (void * nonterminal, nonterminal), (size_t index, index)
 #define _Table_null_init null_init, void
+#define _Table_first_subset_init first_subset_init, void
+#define _Table_traverse_NTs traverse_NTs, void
+#define _Table_first_init_after_traverse first_init_after_traverse, void
 #define _Table_debug_Ts debug_Ts, void
+#define _Table_debug_first debug_first, void
+#define _Table_debug_subset debug_subset, void
+#define _Table_debug_union debug_union, void
+#define _Table_debug_follow debug_follow, void
 #define _Table_first_init first_init, void
+#define _Table_follow_Ts_init follow_Ts_init, void
+#define _Table_follow_subset_init follow_subset_init, void
+#define _Table_follow_init_after_traverse follow_init_after_traverse, void
+#define _Table_follow_clear_set follow_clear_set, void
 #define _Table_follow_init follow_init, void
 #define _Table_set_id set_id, void
 #define _Table_fill_table fill_table, void, (size_t * table, table)
