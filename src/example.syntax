@@ -1,0 +1,12 @@
+start  : expr EOF
+expr   : term expr'
+expr'  : + term {
+             int a = push();
+         }
+         expr'
+       | epsilon
+term   : factor term'
+term'  : * factor term'
+       | epsilon
+factor : ( expr )
+       | digit
