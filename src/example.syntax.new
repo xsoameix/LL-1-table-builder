@@ -1,0 +1,32 @@
+lookahead_type char *
+
+token
+    open_brace  /\(/
+    close_brace /\)/
+    mul         /\*/
+    add         /\+/
+    digit       /\d+/ {
+        lookahead = lex_text;
+    }
+    EOF         /u{0000}/
+end
+
+grammer
+
+    start  : expr EOF
+    expr   : term expr'
+    expr'  : add term {
+                 char * a = pop();
+                 char * b = pop();
+                 void * expr = new(ADD, a, b);
+                 push(expr);
+             }
+             expr'
+           | epsilon
+    term   : factor term'
+    term'  : mul factor term'
+           | epsilon
+    factor : open_brace expr close_brace
+           | digit
+
+end
