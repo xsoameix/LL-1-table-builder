@@ -26,15 +26,17 @@ def(dtor, void) {
 
 // NT set
 
-def(NT_set_each_NT, void : void * @nonterminal . size_t @index) {
-    void * token = Nonterminal_token(nonterminal);
-    Hash_set(self->nonterminal_set, token, nonterminal);
-}
-
 private
 def(NT_set_init, void) {
+
+    void each_NT(void * _self, void * nonterminal, size_t index) {
+        struct Table * self = _self;
+        void * token = Nonterminal_token(nonterminal);
+        Hash_set(self->nonterminal_set, token, nonterminal);
+    }
+
     self->nonterminal_set = new(Hash);
-    Array_each(self->nonterminals, Table_NT_set_each_NT, self);
+    Array_each(self->nonterminals, each_NT, self);
 }
 
 private
@@ -49,54 +51,55 @@ def(NT_of_token, void * : void * @token) {
 
 // production epsilon
 
-static void
-production_epsilon_each_prod(void * _self, void * production, size_t index) {
-    struct Table * self = _self;
-    void * tokens = Production_tokens(production);
-    if(Array_len(tokens) == 1) {
-        void * token = Array_get(tokens, 0);
-        if(!NT_p(self, token) && strcmp(inspect(token), "epsilon") == 0) {
-            Production_set_epsilon(production, true);
-        }
-    }
-}
-
-static void
-production_epsilon_each_NT(void * self, void * nonterminal, size_t index) {
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, production_epsilon_each_prod, self);
-}
-
 private
 def(production_epsilon, void) {
-    Array_each(self->nonterminals, production_epsilon_each_NT, self);
+
+    void each_prod(void * _self, void * production, size_t index) {
+        struct Table * self = _self;
+        void * tokens = Production_tokens(production);
+        if(Array_len(tokens) == 1) {
+            void * token = Array_get(tokens, 0);
+            if(!NT_p(self, token) && strcmp(inspect(token), "epsilon") == 0) {
+                Production_set_epsilon(production, true);
+            }
+        }
+    }
+
+    void each_NT(void * self, void * nonterminal, size_t index) {
+        void * productions = Nonterminal_productions(nonterminal);
+        Array_each(productions, each_prod, self);
+    }
+
+    Array_each(self->nonterminals, each_NT, self);
 }
 
 // T set
 
-def(T_set_each_token, void : void * @token . size_t @index) {
-    if(!NT_p(self, token)) {
-        void * terminal = new(Terminal, token);
-        Hash_set(self->terminal_set, token, terminal);
-    }
-}
-
-def(T_set_each_prod, void : void * @production . size_t @index) {
-    if(!Production_epsilon(production)) {
-        void * tokens = Production_tokens(production);
-        Array_each(tokens, Table_T_set_each_token, self);
-    }
-}
-
-def(T_set_each_NT, void : void * @nonterminal . size_t @index) {
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, Table_T_set_each_prod, self);
-}
-
 private
 def(T_set_init, void) {
+
+    void each_token(void * _self, void * token, size_t index) {
+        struct Table * self = _self;
+        if(!NT_p(self, token)) {
+            void * terminal = new(Terminal, token);
+            Hash_set(self->terminal_set, token, terminal);
+        }
+    }
+
+    void each_prod(void * self, void * production, size_t index) {
+        if(!Production_epsilon(production)) {
+            void * tokens = Production_tokens(production);
+            Array_each(tokens, each_token, self);
+        }
+    }
+
+    void each_NT(void * self, void * nonterminal, size_t index) {
+        void * productions = Nonterminal_productions(nonterminal);
+        Array_each(productions, each_prod, self);
+    }
+
     self->terminal_set = new(Hash);
-    Array_each(self->nonterminals, Table_T_set_each_NT, self);
+    Array_each(self->nonterminals, each_NT, self);
 }
 
 private
@@ -111,14 +114,16 @@ def(T_of_token, void * : void * @token) {
 
 // Ts
 
-def(Ts_each_T, void : void * @token . void * @terminal) {
-    Array_push(self->terminals, terminal);
-}
-
 private
 def(Ts_init, void) {
+
+    void each_T(void * _self, void * token, void * terminal) {
+        struct Table * self = _self;
+        Array_push(self->terminals, terminal);
+    }
+
     self->terminals = new(Array);
-    Hash_each(self->terminal_set, Table_Ts_each_T, self);
+    Hash_each(self->terminal_set, each_T, self);
 }
 
 // null ?
@@ -158,6 +163,7 @@ prod_blank_p(void * args, void * production, size_t index) {
     return !present;
 }
 
+private
 def(null_NT, void : void * @nonterminal) {
     enum NT_TYPE type = Nonterminal_type(nonterminal);
     if(type == NOT_SET) {
@@ -173,51 +179,44 @@ def(null_NT, void : void * @nonterminal) {
     }
 }
 
-def(null_each_NT, void : void * @nonterminal . size_t @index) {
-    null_NT(self, nonterminal);
-}
-
 private
 def(null_init, void) {
-    Array_each(self->nonterminals, Table_null_each_NT, self);
+
+    void each_NT(void * self, void * nonterminal, size_t index) {
+        null_NT(self, nonterminal);
+    }
+
+    Array_each(self->nonterminals, each_NT, self);
 }
 
 // traverse algorithm
 
-// traverse_add NT, prod
-
-static void
-traverse_add_each_prod(void * ancestor, void * production, size_t index) {
-    void * union_set = Production_union_set(ancestor);
-    Hash_set(union_set, production, production);
-    void * traversed = Production_traversed(production);
-    Hash_set(traversed, ancestor, ancestor);
-}
-
-static void
-traverse_add_each_NT(void * ancestor, void * production, void * data) {
-    void * union_set = Production_union_set(ancestor);
-    Hash_set(union_set, production, production);
-}
-
-static void
-traverse(void * nonterminal, void * ancestor);
-
-// traverse NT, prod
-
-static void
-traverse_each_prod(void * ancestor, void * production, size_t index) {
-    traverse(production, ancestor);
-}
-
-static void
-traverse_each_NT(void * ancestor, void * nonterminal, void * data) {
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, traverse_each_prod, ancestor);
-}
-
 static void
 traverse(void * production, void * ancestor) {
+
+    // traverse_add NT, prod
+
+    void add_prod_to_ancestor(void * ancestor, void * production, void * unused) {
+        void * union_set = Production_union_set(ancestor);
+        Hash_set(union_set, production, production);
+    }
+
+    void add_ancestor_to_prod(void * ancestor, void * production) {
+        void * traversed = Production_traversed(production);
+        Hash_set(traversed, ancestor, ancestor);
+    }
+
+    // traverse NT, prod
+
+    void each_prod(void * ancestor, void * production, size_t index) {
+        traverse(production, ancestor);
+    }
+
+    void each_NT(void * ancestor, void * nonterminal, void * data) {
+        void * productions = Nonterminal_productions(nonterminal);
+        Array_each(productions, each_prod, ancestor);
+    }
+
     printf("ancestor[%s][%zu] P[%s][%zu]\n",
             inspect(ancestor),
             Production_no(ancestor),
@@ -226,11 +225,12 @@ traverse(void * production, void * ancestor) {
     if(!Production_traversed_by_p(production, ancestor)) {
         if(Production_done_p(production)) {
             void * union_set = Production_union_set(production);
-            Hash_each(union_set, traverse_add_each_NT, ancestor);
+            Hash_each(union_set, add_prod_to_ancestor, ancestor);
         } else {
-            traverse_add_each_prod(ancestor, production, 0);
+            add_prod_to_ancestor(ancestor, production, 0);
+            add_ancestor_to_prod(ancestor, production);
             void * subset = Production_subset(production);
-            Hash_each(subset, traverse_each_NT, ancestor);
+            Hash_each(subset, each_NT, ancestor);
         }
     }
     printf("ancestor[%s][%zu] ---\n",
@@ -242,54 +242,61 @@ traverse(void * production, void * ancestor) {
 
 // set first{terminals} & subset{nonterminals}
 
-static bool
-first_subset_each_token(void * _args, void * token, size_t index) {
-    struct self_with_NT * args = _args;
-    void * nonterminal = NT_of_token(args->self, token);
-    void * terminal    =  T_of_token(args->self, token);
-    if(nonterminal != NULL) {
-        void * subset = Production_subset(args->production);
-        Hash_set(subset, nonterminal, nonterminal);
-        return Nonterminal_type(nonterminal) == PRESENT;
-    } else if(terminal != NULL) {
-        void * first = Production_first(args->production);
-        Hash_set(first, terminal, terminal);
-        return true;
-    } else {
-        return false;
+private
+def(first_subset_init, void) {
+
+    bool each_token(void * _args, void * token, size_t index) {
+        struct self_with_NT * args = _args;
+        void * nonterminal = NT_of_token(args->self, token);
+        void * terminal    =  T_of_token(args->self, token);
+        if(nonterminal != NULL) {
+            void * subset = Production_subset(args->production);
+            Hash_set(subset, nonterminal, nonterminal);
+            return Nonterminal_type(nonterminal) == PRESENT;
+        } else if(terminal != NULL) {
+            void * first = Production_first(args->production);
+            Hash_set(first, terminal, terminal);
+            return true;
+        } else {
+            return false;
+        }
     }
-}
 
-static void
-first_subset_each_prod(void * _args, void * production, size_t index) {
-    Production_first_init(production);
-    struct self_with_NT * args = _args;
-    args->production = production;
-    void * tokens = Production_tokens(production);
-    Array_any_p(tokens, first_subset_each_token, args);
-}
+    void each_prod(void * _args, void * production, size_t index) {
+        Production_first_init(production);
+        struct self_with_NT * args = _args;
+        args->production = production;
+        void * tokens = Production_tokens(production);
+        Array_any_p(tokens, each_token, args);
+    }
 
-static void
-first_subset_each_NT(void * self, void * nonterminal, size_t index) {
-    void * productions = Nonterminal_productions(nonterminal);
-    struct self_with_NT args;
-    args.self = self;
-    args.nonterminal = nonterminal;
-    Array_each(productions, first_subset_each_prod, &args);
+    void each_NT(void * self, void * nonterminal, size_t index) {
+        void * productions = Nonterminal_productions(nonterminal);
+        struct self_with_NT args;
+        args.self = self;
+        args.nonterminal = nonterminal;
+        Array_each(productions, each_prod, &args);
+    }
+
+    Array_each(self->nonterminals, each_NT, self);
 }
 
 // set union_set{productions}
 
-static void
-first_traverse_each_prod(void * null, void * production, size_t index) {
-    traverse(production, production);
-    Production_set_done(production, true);
-}
+private
+def(traverse_NTs, void) {
 
-static void
-first_traverse_each_NT(void * null, void * nonterminal, size_t index) {
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, first_traverse_each_prod, NULL);
+    void each_prod(void * unused, void * production, size_t index) {
+        traverse(production, production);
+        Production_set_done(production, true);
+    }
+
+    void each_NT(void * unused, void * nonterminal, size_t index) {
+        void * productions = Nonterminal_productions(nonterminal);
+        Array_each(productions, each_prod, NULL);
+    }
+
+    Array_each(self->nonterminals, each_NT, self);
 }
 
 // set first{terminals} by union_set{productions}
@@ -300,281 +307,298 @@ first_traverse_each_NT(void * null, void * nonterminal, size_t index) {
 // first_each_prod
 //    A  -> [B]
 
-static void
-first_each_terminal(void * ancestor, void * terminal, void * data) {
-    void * first = Production_first(ancestor);
-    Hash_set(first, terminal, terminal);
-}
+private
+def(first_init_after_traverse, void) {
 
-static void
-first_each_prod2(void * ancestor, void * production, void * data) {
-    void * first = Production_first(production);
-    Hash_each(first, first_each_terminal, ancestor);
-}
+    void each_T(void * ancestor, void * terminal, void * data) {
+        void * first = Production_first(ancestor);
+        Hash_set(first, terminal, terminal);
+    }
 
-static void
-first_each_prod(void * null, void * production, size_t index) {
-    void * union_set = Production_union_set(production);
-    Hash_each(union_set, first_each_prod2, production);
-}
+    void each_prod2(void * ancestor, void * production, void * data) {
+        void * first = Production_first(production);
+        Hash_each(first, each_T, ancestor);
+    }
 
-static void
-first_each_NT(void * null, void * nonterminal, size_t index) {
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, first_each_prod, NULL);
+    void each_prod(void * unused, void * production, size_t index) {
+        void * union_set = Production_union_set(production);
+        Hash_each(union_set, each_prod2, production);
+    }
+
+    void each_NT(void * unused, void * nonterminal, size_t index) {
+        void * productions = Nonterminal_productions(nonterminal);
+        Array_each(productions, each_prod, NULL);
+    }
+
+    Array_each(self->nonterminals, each_NT, self);
 }
 
 // debug: terminals
 
-static void
-debug_Ts_each_T(void * null, void * terminal, size_t index) {
-    printf("T: %s\n", inspect(terminal));
-}
-
+private
 def(debug_Ts, void) {
-    Array_each(self->terminals, debug_Ts_each_T, NULL);
+
+    void each_T(void * unused, void * terminal, size_t index) {
+        printf("T: %s\n", inspect(terminal));
+    }
+
+    Array_each(self->terminals, each_T, NULL);
 }
 
 // debug: first{terminals}
 
-static void
-debug_first_each_terminal(void * production, void * terminal, void * data) {
-    printf("first[%s][%zu][%s]: %s\n",
-            inspect(production),
-            Production_no(production),
-            Production_type(production) == PRESENT ? "T" : (
-                Production_type(production) == BLANK ? "F" : "?"),
-            inspect(terminal));
-}
+private
+def(debug_first, void) {
 
-static void
-debug_first_each_prod(void * null, void * production, size_t index) {
-    void * first = Production_first(production);
-    Hash_each(first, debug_first_each_terminal, production);
-}
+    void each_T(void * production, void * terminal, void * data) {
+        printf("first[%s][%zu][%s]: %s\n",
+                inspect(production),
+                Production_no(production),
+                Production_type(production) == PRESENT ? "T" : (
+                    Production_type(production) == BLANK ? "F" : "?"),
+                inspect(terminal));
+    }
 
-static void
-debug_first_each_NT(void * null, void * nonterminal, size_t index) {
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, debug_first_each_prod, NULL);
+    void each_prod(void * unused, void * production, size_t index) {
+        void * first = Production_first(production);
+        Hash_each(first, each_T, production);
+    }
+
+    void each_NT(void * unused, void * nonterminal, size_t index) {
+        void * productions = Nonterminal_productions(nonterminal);
+        Array_each(productions, each_prod, NULL);
+    }
+
+    Array_each(self->nonterminals, each_NT, self);
 }
 
 // debug: subset{nonterminals}
 
-static void
-debug_subset_each_token(void * production, void * token, void * data) {
-    printf("subset[%s][%zu](%p): %s\n",
-            inspect(production),
-            Production_no(production),
-            production,
-            inspect(Nonterminal_token(token)));
-}
+private
+def(debug_subset, void) {
 
-static void
-debug_subset_each_prod(void * null, void * production, size_t index) {
-    void * subset = Production_subset(production);
-    Hash_each(subset, debug_subset_each_token, production);
-}
+    void each_token(void * production, void * token, void * data) {
+        printf("subset[%s][%zu](%p): %s\n",
+                inspect(production),
+                Production_no(production),
+                production,
+                inspect(Nonterminal_token(token)));
+    }
 
-static void
-debug_subset_each_NT(void * null, void * nonterminal, size_t index) {
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, debug_subset_each_prod, NULL);
+    void each_prod(void * unused, void * production, size_t index) {
+        void * subset = Production_subset(production);
+        Hash_each(subset, each_token, production);
+    }
+
+    void each_NT(void * unused, void * nonterminal, size_t index) {
+        void * productions = Nonterminal_productions(nonterminal);
+        Array_each(productions, each_prod, NULL);
+    }
+
+    Array_each(self->nonterminals, each_NT, self);
 }
 
 // debug: union{productions}
 
-static void
-debug_union_each_token(void * production, void * token, void * data) {
-    printf("union[%s][%zu]: [%s][%zu]\n",
-            inspect(production),
-            Production_no(production),
-            inspect(token),
-            Production_no(token));
-}
+private
+def(debug_union, void) {
 
-static void
-debug_union_each_prod(void * null, void * production, size_t index) {
-    void * union_set = Production_union_set(production);
-    Hash_each(union_set, debug_union_each_token, production);
-}
+    void each_token(void * production, void * token, void * data) {
+        printf("union[%s][%zu]: [%s][%zu]\n",
+                inspect(production),
+                Production_no(production),
+                inspect(token),
+                Production_no(token));
+    }
 
-static void
-debug_union_each_NT(void * null, void * nonterminal, size_t index) {
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, debug_union_each_prod, NULL);
+    void each_prod(void * unused, void * production, size_t index) {
+        void * union_set = Production_union_set(production);
+        Hash_each(union_set, each_token, production);
+    }
+
+    void each_NT(void * unused, void * nonterminal, size_t index) {
+        void * productions = Nonterminal_productions(nonterminal);
+        Array_each(productions, each_prod, NULL);
+    }
+
+    Array_each(self->nonterminals, each_NT, self);
 }
 
 // debug: follow{terminals}
 
-static void
-debug_follow_each_terminal(void * production, void * terminal, void * data) {
-    printf("follow[%s][%zu][%s]: %s\n",
-            inspect(production),
-            Production_no(production),
-            Production_type(production) == PRESENT ? " " : (
-                Production_type(production) == BLANK ? "F" : "?"),
-            inspect(terminal));
-}
+private
+def(debug_follow, void) {
 
-static void
-debug_follow_each_prod(void * null, void * production, size_t index) {
-    void * follow = Production_follow(production);
-    Hash_each(follow, debug_follow_each_terminal, production);
-}
+    void each_T(void * production, void * terminal, void * data) {
+        printf("follow[%s][%zu][%s]: %s\n",
+                inspect(production),
+                Production_no(production),
+                Production_type(production) == PRESENT ? " " : (
+                    Production_type(production) == BLANK ? "F" : "?"),
+                inspect(terminal));
+    }
 
-static void
-debug_follow_each_NT(void * null, void * nonterminal, size_t index) {
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, debug_follow_each_prod, NULL);
+    void each_prod(void * unused, void * production, size_t index) {
+        void * follow = Production_follow(production);
+        Hash_each(follow, each_T, production);
+    }
+
+    void each_NT(void * unused, void * nonterminal, size_t index) {
+        void * productions = Nonterminal_productions(nonterminal);
+        Array_each(productions, each_prod, NULL);
+    }
+
+    Array_each(self->nonterminals, each_NT, self);
 }
 
 private
 def(first_init, void) {
-    Array_each(self->nonterminals, first_subset_each_NT, self);
-    Array_each(self->nonterminals, debug_first_each_NT, self);
-    Array_each(self->nonterminals, first_traverse_each_NT, self);
-    Array_each(self->nonterminals, first_each_NT, self);
-    Array_each(self->nonterminals, debug_union_each_NT, self);
-    Array_each(self->nonterminals, debug_first_each_NT, self);
+    first_subset_init(self);
+    debug_first(self);
+    traverse_NTs(self);
+    first_init_after_traverse(self);
+    debug_union(self);
+    debug_first(self);
 }
 
 // follow
 
 // init follow{terminals}
 
-static void
-follow_each_prod(void * null, void * production, size_t index) {
-    Production_follow_init(production);
-    Production_set_done(production, false);
-}
+private
+def(follow_Ts_init, void) {
 
-static void
-follow_each_NT(void * null, void * nonterminal, size_t index) {
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, follow_each_prod, NULL);
-}
-
-// merge next terminal into follow{terminals}
-
-static void
-follow_append_T_each_prod(void * next_terminal, void * production, size_t index) {
-    void * follow = Production_follow(production);
-    Hash_set(follow, next_terminal, next_terminal);
-    printf("  (%s)[%zu] << T[%s]\n",
-            inspect(production),
-            Production_no(production),
-            inspect(next_terminal));
-}
-
-// merge first{terminals} of next nonterminal into follow{terminals}
-
-static void
-follow_append_first_each_prod2(void * terminal, void * production, size_t index) {
-    void * follow = Production_follow(production);
-    Hash_set(follow, terminal, terminal);
-    printf("  (%s)[%zu] << T:first[%s]\n",
-            inspect(production),
-            Production_no(production),
-            inspect(terminal));
-}
-
-static void
-follow_append_first_each_NT(void * nonterminal, void * terminal, void * data) {
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, follow_append_first_each_prod2, terminal);
-}
-
-static void
-follow_append_first_each_prod(void * nonterminal, void * production, size_t index) {
-    void * first = Production_first(production);
-    Hash_each(first, follow_append_first_each_NT, nonterminal);
-}
-
-// merge next nonterminal into subset{nonterminals}
-
-static void
-follow_append_each_prod(void * next_nonterminal, void * production, size_t index) {
-    void * subset = Production_subset(production);
-    Hash_set(subset, next_nonterminal, next_nonterminal);
-    printf("  (%s)[%zu] << NT[%s]\n",
-            inspect(production),
-            Production_no(production),
-            inspect(Nonterminal_token(next_nonterminal)));
-}
-
-// merge the nonterminal on the left hand side into subset{nonterminals}
-
-static void
-follow_append_NT_each_prod(void * nonterminal, void * production, size_t index) {
-    void * subset = Production_subset(production);
-    Hash_set(subset, nonterminal, nonterminal);
-    printf("  (%s)[%zu] << NT:LHS[%s]\n",
-            inspect(production),
-            Production_no(production),
-            inspect(Nonterminal_token(nonterminal)));
-}
-
-// set follow{terminals} & subset{nonterminals}
-
-static void
-follow_subset_each_token(void * _args, void * token, size_t index) {
-    struct self_with_NT * args = _args;
-    void * nonterminal = NT_of_token(args->self, token);
-    if(nonterminal == NULL) {
-        return;
+    void each_prod(void * unused, void * production, size_t index) {
+        Production_follow_init(production);
+        Production_set_done(production, false);
     }
-    printf("  (%s)\n",
-            inspect(Nonterminal_token(nonterminal)));
-    void * tokens = Production_tokens(args->production);
-    size_t len = Array_len(tokens);
-    index += 1;
-    while(index < len) {
-        void * next_token = Array_get(tokens, index);
-        void * next_nonterminal = NT_of_token(args->self, next_token);
-        void * next_terminal    =  T_of_token(args->self, next_token);
-        if(next_nonterminal != NULL) {
-            // merge next nonterminal into subset{nonterminals}
-            void * productions = Nonterminal_productions(nonterminal);
-            Array_each(productions, follow_append_each_prod, next_nonterminal);
 
-            // merge first{terminals} of next nonterminal into follow{terminals}
-            productions = Nonterminal_productions(next_nonterminal);
-            Array_each(productions, follow_append_first_each_prod, nonterminal);
-            enum NT_TYPE type = Nonterminal_type(next_nonterminal);
-            if(type == PRESENT) {
-                return;
-            }
-        } else if(next_terminal != NULL) {
-            // merge next terminal into follow{terminals}
+    void each_NT(void * unused, void * nonterminal, size_t index) {
+        void * productions = Nonterminal_productions(nonterminal);
+        Array_each(productions, each_prod, NULL);
+    }
+
+    Array_each(self->nonterminals, each_NT, self);
+}
+
+private
+def(follow_subset_init, void) {
+
+    // merge next nonterminal into subset{nonterminals}
+
+    void add_next_NT_to_subset(void * next_nonterminal, void * production, size_t index) {
+        void * subset = Production_subset(production);
+        Hash_set(subset, next_nonterminal, next_nonterminal);
+        printf("  (%s)[%zu] << NT[%s]\n",
+                inspect(production),
+                Production_no(production),
+                inspect(Nonterminal_token(next_nonterminal)));
+    }
+
+    // merge first{terminals} of next nonterminal into follow{terminals}
+
+    void add_first_of_next_NT_to_follow(void * nonterminal, void * production, size_t index) {
+
+        void each_prod(void * terminal, void * production, size_t index) {
+            void * follow = Production_follow(production);
+            Hash_set(follow, terminal, terminal);
+            printf("  (%s)[%zu] << T:first[%s]\n",
+                    inspect(production),
+                    Production_no(production),
+                    inspect(terminal));
+        }
+
+        void each_NT(void * nonterminal, void * terminal, void * data) {
             void * productions = Nonterminal_productions(nonterminal);
-            Array_each(productions, follow_append_T_each_prod, next_terminal);
+            Array_each(productions, each_prod, terminal);
+        }
+
+        void * first = Production_first(production);
+        Hash_each(first, each_NT, nonterminal);
+    }
+
+    // merge next terminal into follow{terminals}
+
+    void add_next_T_to_follow(void * next_terminal, void * production, size_t index) {
+        void * follow = Production_follow(production);
+        Hash_set(follow, next_terminal, next_terminal);
+        printf("  (%s)[%zu] << T[%s]\n",
+                inspect(production),
+                Production_no(production),
+                inspect(next_terminal));
+    }
+
+    // merge the nonterminal on the left hand side into subset{nonterminals}
+
+    void add_LHS_NT_to_subset(void * nonterminal, void * production, size_t index) {
+        void * subset = Production_subset(production);
+        Hash_set(subset, nonterminal, nonterminal);
+        printf("  (%s)[%zu] << NT:LHS[%s]\n",
+                inspect(production),
+                Production_no(production),
+                inspect(Nonterminal_token(nonterminal)));
+    }
+
+    // set follow{terminals} & subset{nonterminals}
+
+    void each_token(void * _args, void * token, size_t index) {
+        struct self_with_NT * args = _args;
+        void * nonterminal = NT_of_token(args->self, token);
+        if(nonterminal == NULL) {
             return;
         }
+        printf("  (%s)\n",
+                inspect(Nonterminal_token(nonterminal)));
+        void * tokens = Production_tokens(args->production);
+        size_t len = Array_len(tokens);
         index += 1;
+        while(index < len) {
+            void * next_token = Array_get(tokens, index);
+            void * next_nonterminal = NT_of_token(args->self, next_token);
+            void * next_terminal    =  T_of_token(args->self, next_token);
+            if(next_nonterminal != NULL) {
+                // merge next nonterminal into subset{nonterminals}
+                void * productions = Nonterminal_productions(nonterminal);
+                Array_each(productions, add_next_NT_to_subset, next_nonterminal);
+
+                // merge first{terminals} of next nonterminal into follow{terminals}
+                productions = Nonterminal_productions(next_nonterminal);
+                Array_each(productions, add_first_of_next_NT_to_follow, nonterminal);
+                enum NT_TYPE type = Nonterminal_type(next_nonterminal);
+                if(type == PRESENT) {
+                    return;
+                }
+            } else if(next_terminal != NULL) {
+                // merge next terminal into follow{terminals}
+                void * productions = Nonterminal_productions(nonterminal);
+                Array_each(productions, add_next_T_to_follow, next_terminal);
+                return;
+            }
+            index += 1;
+        }
+        // merge the nonterminal on the left hand side into subset{nonterminals}
+        void * productions = Nonterminal_productions(nonterminal);
+        Array_each(productions, add_LHS_NT_to_subset, args->nonterminal);
     }
-    // merge the nonterminal on the left hand side into subset{nonterminals}
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, follow_append_NT_each_prod, args->nonterminal);
-}
 
-static void
-follow_subset_each_prod(void * _args, void * production, size_t index) {
-    struct self_with_NT * args = _args;
-    args->production = production;
-    void * tokens = Production_tokens(production);
-    Array_each(tokens, follow_subset_each_token, args);
-}
+    void each_prod(void * _args, void * production, size_t index) {
+        struct self_with_NT * args = _args;
+        args->production = production;
+        void * tokens = Production_tokens(production);
+        Array_each(tokens, each_token, args);
+    }
 
-static void
-follow_subset_each_NT(void * self, void * nonterminal, size_t index) {
-    printf("[%s]\n",
-            inspect(Nonterminal_token(nonterminal)));
-    void * productions = Nonterminal_productions(nonterminal);
-    struct self_with_NT args;
-    args.self = self;
-    args.nonterminal = nonterminal;
-    Array_each(productions, follow_subset_each_prod, &args);
+    void each_NT(void * self, void * nonterminal, size_t index) {
+        printf("[%s]\n",
+                inspect(Nonterminal_token(nonterminal)));
+        void * productions = Nonterminal_productions(nonterminal);
+        struct self_with_NT args;
+        args.self = self;
+        args.nonterminal = nonterminal;
+        Array_each(productions, each_prod, &args);
+    }
+
+    Array_each(self->nonterminals, each_NT, self);
 }
 
 // set follow{terminals} by union_set{productions}
@@ -585,55 +609,61 @@ follow_subset_each_NT(void * self, void * nonterminal, size_t index) {
 // follow_each_prod
 //    A  -> [B]
 
-static void
-follow_union_each_terminal(void * ancestor, void * terminal, void * data) {
-    void * follow = Production_follow(ancestor);
-    Hash_set(follow, terminal, terminal);
-}
+private
+def(follow_init_after_traverse, void) {
 
-static void
-follow_union_each_prod2(void * ancestor, void * production, void * data) {
-    void * follow = Production_follow(production);
-    Hash_each(follow, follow_union_each_terminal, ancestor);
-}
+    void each_T(void * ancestor, void * terminal, void * data) {
+        void * follow = Production_follow(ancestor);
+        Hash_set(follow, terminal, terminal);
+    }
 
-static void
-follow_union_each_prod(void * null, void * production, size_t index) {
-    void * union_set = Production_union_set(production);
-    Hash_each(union_set, follow_union_each_prod2, production);
-}
+    void each_prod2(void * ancestor, void * production, void * data) {
+        void * follow = Production_follow(production);
+        Hash_each(follow, each_T, ancestor);
+    }
 
-static void
-follow_union_each_NT(void * null, void * nonterminal, size_t index) {
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, follow_union_each_prod, NULL);
+    void each_prod(void * unused, void * production, size_t index) {
+        void * union_set = Production_union_set(production);
+        Hash_each(union_set, each_prod2, production);
+    }
+
+    void each_NT(void * unused, void * nonterminal, size_t index) {
+        void * productions = Nonterminal_productions(nonterminal);
+        Array_each(productions, each_prod, NULL);
+    }
+
+    Array_each(self->nonterminals, each_NT, self);
 }
 
 // follow clear set: subset, union_set, traversed
 
-static void
-follow_clear_set_each_prod(void * null, void * production, size_t index) {
-    Production_clear_set(production);
-}
+private
+def(follow_clear_set, void) {
 
-static void
-follow_clear_set_each_NT(void * null, void * nonterminal, size_t index) {
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, follow_clear_set_each_prod, NULL);
+    void each_prod(void * unused, void * production, size_t index) {
+        Production_clear_set(production);
+    }
+
+    void each_NT(void * unused, void * nonterminal, size_t index) {
+        void * productions = Nonterminal_productions(nonterminal);
+        Array_each(productions, each_prod, NULL);
+    }
+
+    Array_each(self->nonterminals, each_NT, self);
 }
 
 private
 def(follow_init, void) {
-    Array_each(self->nonterminals, follow_each_NT, self);
-    Array_each(self->nonterminals, follow_subset_each_NT, self);
-    Array_each(self->nonterminals, debug_follow_each_NT, self);
-    Array_each(self->nonterminals, debug_subset_each_NT, self);
-    Array_each(self->nonterminals, first_traverse_each_NT, self);
-    Array_each(self->nonterminals, debug_union_each_NT, self);
-    Array_each(self->nonterminals, follow_union_each_NT, self);
-    Array_each(self->nonterminals, follow_clear_set_each_NT, self);
-    Array_each(self->nonterminals, debug_follow_each_NT, self);
-    Array_each(self->nonterminals, debug_first_each_NT, self);
+    follow_Ts_init(self);
+    follow_subset_init(self);
+    debug_follow(self);
+    debug_subset(self);
+    traverse_NTs(self);
+    debug_union(self);
+    follow_init_after_traverse(self);
+    follow_clear_set(self);
+    debug_follow(self);
+    debug_first(self);
 }
 
 //          +                         *                           (                      )               digit
@@ -751,7 +781,7 @@ set_T_id_each_T(void * _i, void * terminal, size_t index) {
 // set block id (for cell in rhs)
 
 static void
-set_block_id_each_token(void * null, void * token, size_t index) {
+set_block_id_each_token(void * unused, void * token, size_t index) {
     char * red = "\e[48;5;52m";
     char * gray = "\e[48;5;235m";
     char * color = index % 2 == 0 ? red : gray;
@@ -1063,12 +1093,12 @@ def(make_rhs, void) {
 // delete nonterminals, terminals
 
 static void
-delete_each_NT(void * null, void * nonterminal, size_t index) {
+delete_each_NT(void * unused, void * nonterminal, size_t index) {
     delete(nonterminal);
 }
 
 static void
-delete_each_T(void * null, void * terminal, size_t index) {
+delete_each_T(void * unused, void * terminal, size_t index) {
     delete(terminal);
 }
 
