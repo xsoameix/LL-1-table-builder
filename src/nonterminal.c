@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <libooc/array.h>
 #include <libooc/hash.h>
+#include <libooc/inttype.h>
 
 #include "token.h"
 #include "production.h"
@@ -17,7 +18,7 @@ def(ctor, void : va_list * @args_ptr) {
 }
 
 static void
-delete_each_prod(void * null, void * production, size_t index) {
+delete_each_prod(void * null, void * production, uint_t index) {
     delete(production);
 }
 
@@ -30,7 +31,7 @@ def(dtor, void) {
 }
 
 override
-def(hash_code, size_t) {
+def(hash_code, uint_t) {
     return hash_code(self->self);
 }
 
@@ -47,7 +48,7 @@ def(productions, void *) {
 
 def(create_production, void *) {
     void * productions = Nonterminal_productions(self);
-    size_t len = Array_len(productions);
+    uint_t len = Array_len(productions);
     void * production = new(Production, self, len);
     Array_push(productions, production);
     return production;
@@ -66,10 +67,10 @@ def(type, enum NT_TYPE) {
     return self->type;
 }
 
-def(set_id, void : size_t @id) {
+def(set_id, void : uint_t @id) {
     self->id = id;
 }
 
-def(id, size_t) {
+def(id, uint_t) {
     return self->id;
 }

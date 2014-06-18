@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <libooc/inttype.h>
 
 #include "terminal.struct.h"
 
@@ -19,10 +20,10 @@ def(inspect, char *) {
     return inspect(self->self);
 }
 
-def(set_id, void : size_t @id) {
+def(set_id, void : uint_t @id) {
     self->id = id;
 }
 
-def(id, size_t) {
+def(id, uint_t) {
     return self->id;
 }

@@ -35,7 +35,7 @@ enum TYPE {
 #define _Token_dtor dtor, void
 #define _Token_chars_allocated_by_ctor chars_allocated_by_ctor, bool, (char * chars, chars)
 #define _Token_equals equals, bool, (void * obj, obj)
-#define _Token_hash_code hash_code, size_t
+#define _Token_hash_code hash_code, ooc_uint
 #define _Token_inspect inspect, char *
 #define _Token_type type, enum TYPE
 #define _Token_set set, void, (void * string, string)

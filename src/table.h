@@ -71,10 +71,10 @@
 #define _Table_follow_clear_set follow_clear_set, void
 #define _Table_follow_init follow_init, void
 #define _Table_set_id set_id, void
-#define _Table_fill_table fill_table, void, (size_t * table, table)
+#define _Table_fill_table fill_table, void, (ooc_uint * table, table)
 #define _Table_make_table make_table, void
-#define _Table_rhs_size rhs_size, size_t
-#define _Table_prhs_size prhs_size, size_t
+#define _Table_rhs_size rhs_size, ooc_uint
+#define _Table_prhs_size prhs_size, ooc_uint
 #define _Table_make_rhs make_rhs, void
 #define _Table_build build, void
 #define _Table_save save, void, (void * file, file)

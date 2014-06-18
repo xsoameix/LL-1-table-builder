@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <libooc/string.conflict.h>
+#include <libooc/inttype.h>
 
 #include "token.struct.h"
 #include "scanner.struct.h"
@@ -67,7 +68,7 @@ def(scan, void) {
         } while(space_p(self, * lexeme_end));
     } else if(next_line_p(self, * lexeme_end)) {
         lexeme_end += 1;
-        size_t state = 0;
+        uint_t state = 0;
         while(true) {
             switch(state) {
             case 0:

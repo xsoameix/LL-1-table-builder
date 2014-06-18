@@ -43,16 +43,16 @@
 #define _Production_ctor ctor, void, (va_list * args_ptr, args_ptr)
 #define _Production_dtor dtor, void
 #define _Production_inspect inspect, char *
-#define _Production_no no, size_t
-#define _Production_reverse_each_token reverse_each_token, void, (void (* iter)(void * _self_, void * obj, size_t index), iter), (void * _self_, _self_)
+#define _Production_no no, ooc_uint
+#define _Production_reverse_each_token reverse_each_token, void, (void (* iter)(void * _self_, void * obj, ooc_uint index), iter), (void * _self_, _self_)
 #define _Production_tokens tokens, void *
-#define _Production_tokens_size tokens_size, size_t
+#define _Production_tokens_size tokens_size, ooc_uint
 #define _Production_add_token add_token, void, (void * token, token)
-#define _Production_block block, void *, (size_t index, index)
-#define _Production_each_block each_block, void, (void (* iter)(void * _self_, void * obj, size_t index), iter), (void * _self_, _self_)
+#define _Production_block block, void *, (ooc_uint index, index)
+#define _Production_each_block each_block, void, (void (* iter)(void * _self_, void * obj, ooc_uint index), iter), (void * _self_, _self_)
 #define _Production_create_block create_block, void *
 #define _Production_blocks blocks, void *
-#define _Production_blocks_size blocks_size, size_t
+#define _Production_blocks_size blocks_size, ooc_uint
 #define _Production_first_init first_init, void
 #define _Production_first first, void *
 #define _Production_follow_init follow_init, void
@@ -65,8 +65,8 @@
 #define _Production_set_done set_done, void, (bool done, done)
 #define _Production_set_type set_type, void, (enum NT_TYPE type, type)
 #define _Production_type type, enum NT_TYPE
-#define _Production_set_id set_id, void, (size_t id, id)
-#define _Production_id id, size_t
+#define _Production_set_id set_id, void, (ooc_uint id, id)
+#define _Production_id id, ooc_uint
 #define _Production_set_epsilon set_epsilon, void, (bool epsilon, epsilon)
 #define _Production_epsilon epsilon, bool
 #define _Production_clear_set clear_set, void

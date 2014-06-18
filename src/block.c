@@ -3,6 +3,7 @@
 #include <string.h>
 #include <libooc/array.h>
 #include <libooc/string.conflict.h>
+#include <libooc/inttype.h>
 
 #include "token.h"
 #include "block.struct.h"
@@ -11,12 +12,12 @@ def_class(Block, Object)
 
 override
 def(ctor, void : va_list * @args_ptr) {
-    self->no = va_arg(* args_ptr, size_t);
+    self->no = va_arg(* args_ptr, uint_t);
     self->tokens = NULL;
 }
 
 static void
-delete_each_token(void * null, void * token, size_t index) {
+delete_each_token(void * null, void * token, uint_t index) {
     delete(token);
 }
 
@@ -33,15 +34,15 @@ def(inspect, char *) {
     return inspect(token);
 }
 
-def(set_id, void : size_t @id) {
+def(set_id, void : uint_t @id) {
     self->id = id;
 }
 
-def(id, size_t) {
+def(id, uint_t) {
     return self->id;
 }
 
-def(no, size_t) {
+def(no, uint_t) {
     return self->no;
 }
 
@@ -63,7 +64,7 @@ struct compare {
 };
 
 static void
-expand_each_token(void * null, void * token, size_t index) {
+expand_each_token(void * null, void * token, uint_t index) {
     enum TYPE type = Token_type(token);
     if(!(type == NONTERMINAL || type == TOKEN)) {
         return;
@@ -75,13 +76,13 @@ expand_each_token(void * null, void * token, size_t index) {
     };
     struct compare * scenario = scenarios;
     while(scenario->code != NULL) {
-        size_t len = strlen(scenario->code);
+        uint_t len = strlen(scenario->code);
         char * code = Token_lstrip(token);
         if(strncmp(code, scenario->code, len) == 0) {
-            size_t remain = strlen(code) - len;
-            size_t expand = strlen(scenario->expand);
+            uint_t remain = strlen(code) - len;
+            uint_t expand = strlen(scenario->expand);
             char * start = inspect(token);
-            size_t offset = code - start;
+            uint_t offset = code - start;
             char * chars = malloc(offset + expand + remain + 1);
             chars[0] = '\0';
             strncat(chars, start, offset);

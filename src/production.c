@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <libooc/hash.h>
 #include <libooc/array.h>
+#include <libooc/inttype.h>
 
 #include "nonterminal.h"
 #include "block.h"
@@ -11,7 +12,7 @@ def_class(Production, Object)
 override
 def(ctor, void : va_list * @args_ptr) {
     self->nonterminal = va_arg(* args_ptr, void *);
-    self->no = va_arg(* args_ptr, size_t);
+    self->no = va_arg(* args_ptr, uint_t);
     self->tokens = NULL;
     self->blocks = NULL;
     self->epsilon = false;
@@ -19,12 +20,12 @@ def(ctor, void : va_list * @args_ptr) {
 }
 
 static void
-delete_each_token(void * null, void * token, size_t index) {
+delete_each_token(void * null, void * token, uint_t index) {
     delete(token);
 }
 
 static void
-delete_each_block(void * null, void * block, size_t index) {
+delete_each_block(void * null, void * block, uint_t index) {
     delete(block);
 }
 
@@ -46,11 +47,11 @@ def(inspect, char *) {
     return Object_inspect(Nonterminal_token(self->nonterminal));
 }
 
-def(no, size_t) {
+def(no, uint_t) {
     return self->no;
 }
 
-def(reverse_each_token, void : void (* @iter)(void * _self_, void * obj, size_t index) . void * @_self_) {
+def(reverse_each_token, void : void (* @iter)(void * _self_, void * obj, uint_t index) . void * @_self_) {
     Array_reverse_each(self->tokens, iter, _self_);
 }
 
@@ -61,7 +62,7 @@ def(tokens, void *) {
     return self->tokens;
 }
 
-def(tokens_size, size_t) {
+def(tokens_size, uint_t) {
     return Array_len(self->tokens);
 }
 
@@ -70,11 +71,11 @@ def(add_token, void : void * @token) {
     Array_push(tokens, token);
 }
 
-def(block, void * : size_t @index) {
+def(block, void * : uint_t @index) {
     return self->blocks == NULL ? NULL : Array_get(self->blocks, index);
 }
 
-def(each_block, void : void (* @iter)(void * _self_, void * obj, size_t index) . void * @_self_) {
+def(each_block, void : void (* @iter)(void * _self_, void * obj, uint_t index) . void * @_self_) {
     if(self->blocks != NULL) {
         Array_each(self->blocks, iter, _self_);
     }
@@ -83,7 +84,7 @@ def(each_block, void : void (* @iter)(void * _self_, void * obj, size_t index) .
 def(create_block, void *) {
     void * blocks = Production_blocks(self);
     void * tokens = Production_tokens(self);
-    size_t len = Array_len(tokens);
+    uint_t len = Array_len(tokens);
     void * block = new(Block, len);
     Array_push(blocks, block);
     return block;
@@ -96,7 +97,7 @@ def(blocks, void *) {
     return self->blocks;
 }
 
-def(blocks_size, size_t) {
+def(blocks_size, uint_t) {
     return self->blocks == NULL ? 0 : Array_len(self->blocks);
 }
 
@@ -158,11 +159,11 @@ def(type, enum NT_TYPE) {
     return self->type;
 }
 
-def(set_id, void : size_t @id) {
+def(set_id, void : uint_t @id) {
     self->id = id;
 }
 
-def(id, size_t) {
+def(id, uint_t) {
     return self->id;
 }
 

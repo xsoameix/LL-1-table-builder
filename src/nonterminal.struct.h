@@ -9,7 +9,7 @@ struct Nonterminal {
     void * self;
     void * productions;
     enum NT_TYPE type;
-    size_t id;
+    ooc_uint id;
 };
 
 def_class_struct()

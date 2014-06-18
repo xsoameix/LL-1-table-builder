@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <libooc/string.conflict.h>
+#include <libooc/inttype.h>
 
 #include "scanner.h"
 #include "token.struct.h"
@@ -21,7 +22,7 @@ override
 def(ctor, void : va_list * @args_ptr) {
     enum TYPE type = va_arg(* args_ptr, enum TYPE);
     char * chars = va_arg(* args_ptr, char *);
-    size_t size = va_arg(* args_ptr, size_t);
+    uint_t size = va_arg(* args_ptr, uint_t);
     const struct ObjectClass * string_class = String;
     void * p = malloc(sizeof(struct Token) + string_class->size + size + 1);
 
@@ -66,7 +67,7 @@ def(equals, bool : void * @obj) {
 }
 
 override
-def(hash_code, size_t) {
+def(hash_code, uint_t) {
     return String_hash_code(self->string);
 }
 
@@ -94,6 +95,6 @@ alpha_p(void * null, char c) {
 
 def(lstrip, char *) {
     char * chars = inspect(self->string);
-    size_t i = String_index(self->string, alpha_p, NULL);
+    uint_t i = String_index(self->string, alpha_p, NULL);
     return chars + i;
 }

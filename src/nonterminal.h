@@ -23,15 +23,15 @@
 #define _Nonterminal_PRIVATE_METHODS
 #define _Nonterminal_ctor ctor, void, (va_list * args_ptr, args_ptr)
 #define _Nonterminal_dtor dtor, void
-#define _Nonterminal_hash_code hash_code, size_t
+#define _Nonterminal_hash_code hash_code, ooc_uint
 #define _Nonterminal_token token, void *
 #define _Nonterminal_productions productions, void *
 #define _Nonterminal_create_production create_production, void *
 #define _Nonterminal_last_production last_production, void *
 #define _Nonterminal_set_type set_type, void, (enum NT_TYPE type, type)
 #define _Nonterminal_type type, enum NT_TYPE
-#define _Nonterminal_set_id set_id, void, (size_t id, id)
-#define _Nonterminal_id id, size_t
+#define _Nonterminal_set_id set_id, void, (ooc_uint id, id)
+#define _Nonterminal_id id, ooc_uint
 def_public_methods()
 
 #endif

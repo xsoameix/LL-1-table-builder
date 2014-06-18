@@ -21,9 +21,9 @@
 #define _Block_ctor ctor, void, (va_list * args_ptr, args_ptr)
 #define _Block_dtor dtor, void
 #define _Block_inspect inspect, char *
-#define _Block_set_id set_id, void, (size_t id, id)
-#define _Block_id id, size_t
-#define _Block_no no, size_t
+#define _Block_set_id set_id, void, (ooc_uint id, id)
+#define _Block_id id, ooc_uint
+#define _Block_no no, ooc_uint
 #define _Block_tokens tokens, void *
 #define _Block_add_token add_token, void, (void * token, token)
 #define _Block_expand expand, void

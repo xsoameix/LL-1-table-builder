@@ -7,8 +7,8 @@
 struct Block {
     struct Object super;
     void * tokens;
-    size_t no;
-    size_t id;
+    ooc_uint no;
+    ooc_uint id;
 };
 
 def_class_struct()
