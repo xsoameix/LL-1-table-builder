@@ -26,7 +26,7 @@ enum TYPE {
 #define O_Token_OVERRIDE_METHOD_0 ctor, void, (va_list * args_ptr, args_ptr)
 #define O_Token_OVERRIDE_METHOD_1 dtor, void
 #define O_Token_OVERRIDE_METHOD_2 equals, bool, (void * obj, obj)
-#define O_Token_OVERRIDE_METHOD_3 hash_code, ooc_uint
+#define O_Token_OVERRIDE_METHOD_3 hash_code, o_uint
 #define O_Token_OVERRIDE_METHOD_4 inspect, char *
 #define O_Token_PUBLIC_METHOD_0 type, enum TYPE
 #define O_Token_PUBLIC_METHOD_1 set, void, (void * string, string)

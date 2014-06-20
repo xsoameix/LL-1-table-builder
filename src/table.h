@@ -39,10 +39,10 @@
 #define O_Table_PRIVATE_METHOD_22 follow_clear_set, void
 #define O_Table_PRIVATE_METHOD_23 follow_init, void
 #define O_Table_PRIVATE_METHOD_24 set_id, void
-#define O_Table_PRIVATE_METHOD_25 fill_table, void, (ooc_uint * table, table)
+#define O_Table_PRIVATE_METHOD_25 fill_table, void, (o_uint * table, table)
 #define O_Table_PRIVATE_METHOD_26 make_table, void
-#define O_Table_PRIVATE_METHOD_27 rhs_size, ooc_uint
-#define O_Table_PRIVATE_METHOD_28 prhs_size, ooc_uint
+#define O_Table_PRIVATE_METHOD_27 rhs_size, o_uint
+#define O_Table_PRIVATE_METHOD_28 prhs_size, o_uint
 #define O_Table_PRIVATE_METHOD_29 make_rhs, void
 #define O_Table_PRIVATE_METHOD_30 build, void
 #define O_Table_PRIVATE_METHOD_31 save, void, (void * file, file)

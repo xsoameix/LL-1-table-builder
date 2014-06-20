@@ -14,8 +14,8 @@
 #define O_Terminal_OVERRIDE_METHOD_0 ctor, void, (va_list * args_ptr, args_ptr)
 #define O_Terminal_OVERRIDE_METHOD_1 dtor, void
 #define O_Terminal_OVERRIDE_METHOD_2 inspect, char *
-#define O_Terminal_PUBLIC_METHOD_0 set_id, void, (ooc_uint id, id)
-#define O_Terminal_PUBLIC_METHOD_1 id, ooc_uint
+#define O_Terminal_PUBLIC_METHOD_0 set_id, void, (o_uint id, id)
+#define O_Terminal_PUBLIC_METHOD_1 id, o_uint
 #define O_Terminal_ctor O_Terminal_OVERRIDE_METHOD_0
 #define O_Terminal_dtor O_Terminal_OVERRIDE_METHOD_1
 #define O_Terminal_inspect O_Terminal_OVERRIDE_METHOD_2

@@ -14,15 +14,15 @@
 #define O_Nonterminal_PRIVATE_METHODS_LEN 0
 #define O_Nonterminal_OVERRIDE_METHOD_0 ctor, void, (va_list * args_ptr, args_ptr)
 #define O_Nonterminal_OVERRIDE_METHOD_1 dtor, void
-#define O_Nonterminal_OVERRIDE_METHOD_2 hash_code, ooc_uint
+#define O_Nonterminal_OVERRIDE_METHOD_2 hash_code, o_uint
 #define O_Nonterminal_PUBLIC_METHOD_0 token, void *
 #define O_Nonterminal_PUBLIC_METHOD_1 productions, void *
 #define O_Nonterminal_PUBLIC_METHOD_2 create_production, void *
 #define O_Nonterminal_PUBLIC_METHOD_3 last_production, void *
 #define O_Nonterminal_PUBLIC_METHOD_4 set_type, void, (enum NT_TYPE type, type)
 #define O_Nonterminal_PUBLIC_METHOD_5 type, enum NT_TYPE
-#define O_Nonterminal_PUBLIC_METHOD_6 set_id, void, (ooc_uint id, id)
-#define O_Nonterminal_PUBLIC_METHOD_7 id, ooc_uint
+#define O_Nonterminal_PUBLIC_METHOD_6 set_id, void, (o_uint id, id)
+#define O_Nonterminal_PUBLIC_METHOD_7 id, o_uint
 #define O_Nonterminal_ctor O_Nonterminal_OVERRIDE_METHOD_0
 #define O_Nonterminal_dtor O_Nonterminal_OVERRIDE_METHOD_1
 #define O_Nonterminal_hash_code O_Nonterminal_OVERRIDE_METHOD_2

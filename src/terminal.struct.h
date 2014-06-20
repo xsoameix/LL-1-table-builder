@@ -7,7 +7,7 @@
 struct Terminal {
     struct Object super;
     void * self;
-    ooc_uint id;
+    o_uint id;
 };
 
 O_DEF_CLASS_STRUCT()

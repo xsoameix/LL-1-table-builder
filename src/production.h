@@ -15,16 +15,16 @@
 #define O_Production_OVERRIDE_METHOD_0 ctor, void, (va_list * args_ptr, args_ptr)
 #define O_Production_OVERRIDE_METHOD_1 dtor, void
 #define O_Production_OVERRIDE_METHOD_2 inspect, char *
-#define O_Production_PUBLIC_METHOD_0 no, ooc_uint
-#define O_Production_PUBLIC_METHOD_1 reverse_each_token, void, (void (* iter)(void * _self_, void * obj, ooc_uint index), iter), (void * _self_, _self_)
+#define O_Production_PUBLIC_METHOD_0 no, o_uint
+#define O_Production_PUBLIC_METHOD_1 reverse_each_token, void, (void (* iter)(void * _self_, void * obj, o_uint index), iter), (void * _self_, _self_)
 #define O_Production_PUBLIC_METHOD_2 tokens, void *
-#define O_Production_PUBLIC_METHOD_3 tokens_size, ooc_uint
+#define O_Production_PUBLIC_METHOD_3 tokens_size, o_uint
 #define O_Production_PUBLIC_METHOD_4 add_token, void, (void * token, token)
-#define O_Production_PUBLIC_METHOD_5 block, void *, (ooc_uint index, index)
-#define O_Production_PUBLIC_METHOD_6 each_block, void, (void (* iter)(void * _self_, void * obj, ooc_uint index), iter), (void * _self_, _self_)
+#define O_Production_PUBLIC_METHOD_5 block, void *, (o_uint index, index)
+#define O_Production_PUBLIC_METHOD_6 each_block, void, (void (* iter)(void * _self_, void * obj, o_uint index), iter), (void * _self_, _self_)
 #define O_Production_PUBLIC_METHOD_7 create_block, void *
 #define O_Production_PUBLIC_METHOD_8 blocks, void *
-#define O_Production_PUBLIC_METHOD_9 blocks_size, ooc_uint
+#define O_Production_PUBLIC_METHOD_9 blocks_size, o_uint
 #define O_Production_PUBLIC_METHOD_10 first_init, void
 #define O_Production_PUBLIC_METHOD_11 first, void *
 #define O_Production_PUBLIC_METHOD_12 follow_init, void
@@ -37,8 +37,8 @@
 #define O_Production_PUBLIC_METHOD_19 set_done, void, (bool done, done)
 #define O_Production_PUBLIC_METHOD_20 set_type, void, (enum NT_TYPE type, type)
 #define O_Production_PUBLIC_METHOD_21 type, enum NT_TYPE
-#define O_Production_PUBLIC_METHOD_22 set_id, void, (ooc_uint id, id)
-#define O_Production_PUBLIC_METHOD_23 id, ooc_uint
+#define O_Production_PUBLIC_METHOD_22 set_id, void, (o_uint id, id)
+#define O_Production_PUBLIC_METHOD_23 id, o_uint
 #define O_Production_PUBLIC_METHOD_24 set_epsilon, void, (bool epsilon, epsilon)
 #define O_Production_PUBLIC_METHOD_25 epsilon, bool
 #define O_Production_PUBLIC_METHOD_26 clear_set, void

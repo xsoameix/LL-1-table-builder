@@ -14,9 +14,9 @@
 #define O_Block_OVERRIDE_METHOD_0 ctor, void, (va_list * args_ptr, args_ptr)
 #define O_Block_OVERRIDE_METHOD_1 dtor, void
 #define O_Block_OVERRIDE_METHOD_2 inspect, char *
-#define O_Block_PUBLIC_METHOD_0 set_id, void, (ooc_uint id, id)
-#define O_Block_PUBLIC_METHOD_1 id, ooc_uint
-#define O_Block_PUBLIC_METHOD_2 no, ooc_uint
+#define O_Block_PUBLIC_METHOD_0 set_id, void, (o_uint id, id)
+#define O_Block_PUBLIC_METHOD_1 id, o_uint
+#define O_Block_PUBLIC_METHOD_2 no, o_uint
 #define O_Block_PUBLIC_METHOD_3 tokens, void *
 #define O_Block_PUBLIC_METHOD_4 add_token, void, (void * token, token)
 #define O_Block_PUBLIC_METHOD_5 expand, void

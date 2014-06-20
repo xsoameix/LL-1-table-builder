@@ -7,13 +7,13 @@
 struct Production {
     struct Object super;
     void * nonterminal;
-    ooc_uint no;
+    o_uint no;
     void * tokens;
     void * blocks;
     void * first;
     void * follow;
     enum NT_TYPE type;
-    ooc_uint id;
+    o_uint id;
     bool epsilon;
 
     // for tree traverse

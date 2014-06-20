@@ -12,15 +12,15 @@ struct Table {
     void * terminal_set;
 
     // action table
-    ooc_uint * table;
-    ooc_uint   rows;
-    ooc_uint   cols;
+    o_uint * table;
+    o_uint   rows;
+    o_uint   cols;
 
-    ooc_uint * rhs;
-    ooc_uint   rhs_size;
+    o_uint * rhs;
+    o_uint   rhs_size;
 
-    ooc_uint * prhs;
-    ooc_uint   prhs_size;
+    o_uint * prhs;
+    o_uint   prhs_size;
 };
 
 O_DEF_CLASS_STRUCT()
