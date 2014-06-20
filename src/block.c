@@ -8,7 +8,7 @@
 #include "token.h"
 #include "block.struct.h"
 
-def_class(Block, Object)
+O_DEF_CLASS(Block, Object)
 
 override
 def(ctor, void : va_list * @args_ptr) {

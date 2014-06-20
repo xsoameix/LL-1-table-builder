@@ -7,7 +7,7 @@
 #include "production.h"
 #include "nonterminal.struct.h"
 
-def_class(Nonterminal, Object)
+O_DEF_CLASS(Nonterminal, Object)
 
 override
 def(ctor, void : va_list * @args_ptr) {

@@ -3,7 +3,7 @@
 
 #include "terminal.struct.h"
 
-def_class(Terminal, Object)
+O_DEF_CLASS(Terminal, Object)
 
 override
 def(ctor, void : va_list * @args_ptr) {

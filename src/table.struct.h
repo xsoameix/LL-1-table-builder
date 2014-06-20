@@ -23,6 +23,6 @@ struct Table {
     ooc_uint   prhs_size;
 };
 
-def_class_struct()
+O_DEF_CLASS_STRUCT()
 
 #endif

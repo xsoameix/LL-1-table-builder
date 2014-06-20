@@ -5,10 +5,10 @@
 #include <libooc/string.conflict.h>
 #include <libooc/inttype.h>
 
-#include "token.struct.h"
+#include "token.h"
 #include "scanner.struct.h"
 
-def_class(Scanner, Object)
+O_DEF_CLASS(Scanner, Object)
 
 override
 def(ctor, void : va_list * @args_ptr) {

@@ -16,7 +16,7 @@ ctor_call(void * self, ...) {
     va_end(args);
 }
 
-def_class(Token, Object, CLASS_SIZE_VARIABLE)
+O_DEF_CLASS(Token, Object, O_CLASS_SIZE_VARIABLE)
 
 override
 def(ctor, void : va_list * @args_ptr) {

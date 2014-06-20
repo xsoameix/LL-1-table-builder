@@ -10,6 +10,6 @@ struct Token {
     void * string;
 };
 
-def_class_struct()
+O_DEF_CLASS_STRUCT()
 
 #endif

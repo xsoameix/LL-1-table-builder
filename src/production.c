@@ -7,7 +7,7 @@
 #include "block.h"
 #include "production.struct.h"
 
-def_class(Production, Object)
+O_DEF_CLASS(Production, Object)
 
 override
 def(ctor, void : va_list * @args_ptr) {

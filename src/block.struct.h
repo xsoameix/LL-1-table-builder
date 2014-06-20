@@ -11,6 +11,6 @@ struct Block {
     ooc_uint id;
 };
 
-def_class_struct()
+O_DEF_CLASS_STRUCT()
 
 #endif

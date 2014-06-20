@@ -11,6 +11,6 @@ struct Parser {
     enum TYPE type;
 };
 
-def_class_struct()
+O_DEF_CLASS_STRUCT()
 
 #endif

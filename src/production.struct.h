@@ -23,6 +23,6 @@ struct Production {
     bool done;
 };
 
-def_class_struct()
+O_DEF_CLASS_STRUCT()
 
 #endif

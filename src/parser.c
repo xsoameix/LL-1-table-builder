@@ -9,7 +9,7 @@
 #include "block.h"
 #include "parser.struct.h"
 
-def_class(Parser, Object)
+O_DEF_CLASS(Parser, Object)
 
 override
 def(ctor, void : va_list * @args_ptr) {

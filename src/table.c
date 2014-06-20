@@ -13,7 +13,7 @@
 #include "block.h"
 #include "table.struct.h"
 
-def_class(Table, Object)
+O_DEF_CLASS(Table, Object)
 
 override
 def(ctor, void : va_list * @args_ptr) {

@@ -1,8 +1,7 @@
-#ifndef TOKEN_H
-#define TOKEN_H
+#ifndef O_TOKEN_H
+#define O_TOKEN_H
 
 #include <libooc/object.h>
-
 enum TYPE {
     NONTERMINAL = 256,
     DEFINE,
@@ -16,31 +15,34 @@ enum TYPE {
     NEXT_LINE
 };
 
-#undef CLASS
-#define CLASS Token
-#define _Token_PUBLIC_OVERRIDE_METHODS \
-    (_Token_ctor), \
-    (_Token_dtor), \
-    (_Token_equals), \
-    (_Token_hash_code), \
-    (_Token_inspect)
-#define _Token_PUBLIC_METHODS \
-    (_Token_type), \
-    (_Token_set), \
-    (_Token_strip), \
-    (_Token_lstrip)
-#define _Token_PRIVATE_METHODS \
-    (_Token_chars_allocated_by_ctor)
-#define _Token_ctor ctor, void, (va_list * args_ptr, args_ptr)
-#define _Token_dtor dtor, void
-#define _Token_chars_allocated_by_ctor chars_allocated_by_ctor, bool, (char * chars, chars)
-#define _Token_equals equals, bool, (void * obj, obj)
-#define _Token_hash_code hash_code, ooc_uint
-#define _Token_inspect inspect, char *
-#define _Token_type type, enum TYPE
-#define _Token_set set, void, (void * string, string)
-#define _Token_strip strip, void
-#define _Token_lstrip lstrip, char *
-def_public_methods()
+
+#undef O_CLASS
+#undef O_PARENT
+#define O_CLASS Token
+#define O_PARENT Object
+#define O_Token_OVERRIDE_METHODS_LEN 5
+#define O_Token_PUBLIC_METHODS_LEN 4
+#define O_Token_PRIVATE_METHODS_LEN 1
+#define O_Token_OVERRIDE_METHOD_0 ctor, void, (va_list * args_ptr, args_ptr)
+#define O_Token_OVERRIDE_METHOD_1 dtor, void
+#define O_Token_OVERRIDE_METHOD_2 equals, bool, (void * obj, obj)
+#define O_Token_OVERRIDE_METHOD_3 hash_code, ooc_uint
+#define O_Token_OVERRIDE_METHOD_4 inspect, char *
+#define O_Token_PUBLIC_METHOD_0 type, enum TYPE
+#define O_Token_PUBLIC_METHOD_1 set, void, (void * string, string)
+#define O_Token_PUBLIC_METHOD_2 strip, void
+#define O_Token_PUBLIC_METHOD_3 lstrip, char *
+#define O_Token_PRIVATE_METHOD_0 chars_allocated_by_ctor, bool, (char * chars, chars)
+#define O_Token_ctor O_Token_OVERRIDE_METHOD_0
+#define O_Token_dtor O_Token_OVERRIDE_METHOD_1
+#define O_Token_equals O_Token_OVERRIDE_METHOD_2
+#define O_Token_hash_code O_Token_OVERRIDE_METHOD_3
+#define O_Token_inspect O_Token_OVERRIDE_METHOD_4
+#define O_Token_type O_Token_PUBLIC_METHOD_0
+#define O_Token_set O_Token_PUBLIC_METHOD_1
+#define O_Token_strip O_Token_PUBLIC_METHOD_2
+#define O_Token_lstrip O_Token_PUBLIC_METHOD_3
+#define O_Token_chars_allocated_by_ctor O_Token_PRIVATE_METHOD_0
+O_DEF_GLOBAL_METHODS()
 
 #endif
