@@ -5,6 +5,9 @@
 #include <libooc/array.h>
 #include <libooc/file.h>
 #include <libooc/inttype.h>
+#include <libooc/object_type.h>
+#include <libooc/array_macro.h>
+#include <libooc/hash_macro.h>
 
 #include "token.h"
 #include "terminal.h"
@@ -13,11 +16,67 @@
 #include "block.h"
 #include "table.struct.h"
 
+#define SELF ((struct O_CLASS *) self)
+#define NT_SET SELF->nonterminal_set
+#define NTS SELF->nonterminals
+#define T_SET SELF->terminal_set
+#define TS SELF->terminals
+#define TABLE SELF->table
+#define ROWS SELF->rows
+#define COLS SELF->cols
+#define RHS SELF->rhs
+#define RHS_LEN SELF->rhs_len
+#define PRHS SELF->prhs
+#define PRHS_LEN SELF->prhs_len
+#define NT ITEM
+#define T ITEM
+#define TOK ITEM
+#define PROD ITEM
+#define BLOCK ITEM
+#define NT_P(token) NT_p(SELF, token)
+#define NT_OF(token) NT_of_token(self, token)
+#define T_OF(token) T_of_token(self, token)
+#define SET_NULL(nt) NT_set_null(self, nt)
+#define TYPE_OF_NT(nt) Nonterminal_type(nt)
+#define SET_NT_TYPE(...) Nonterminal_set_type(__VA_ARGS__)
+#define TOK_OF(...) Nonterminal_token(__VA_ARGS__)
+#define PRODS_OF(...) Nonterminal_productions(__VA_ARGS__)
+#define SET_ID_OF_NT(...) Nonterminal_set_id(__VA_ARGS__)
+#define ID_OF_NT(...) Nonterminal_id(__VA_ARGS__)
+#define SET_ID_OF_T(...) Terminal_set_id(__VA_ARGS__)
+#define ID_OF_T(...) Terminal_id(__VA_ARGS__)
+#define TOKS_OF(...) Production_tokens(__VA_ARGS__)
+#define SET_EPSILON(...) Production_set_epsilon(__VA_ARGS__)
+#define SET_PROD_TYPE(...) Production_set_type(__VA_ARGS__)
+#define SET_DONE(...) Production_set_done(__VA_ARGS__)
+#define SET_ID_OF_PROD(...) Production_set_id(__VA_ARGS__)
+#define ID_OF_PROD(...) Production_id(__VA_ARGS__)
+#define EPSILON_OF(...) Production_epsilon(__VA_ARGS__)
+#define INIT_FIRST_OF(...) Production_first_init(__VA_ARGS__)
+#define INIT_FOLLOW_OF(...) Production_follow_init(__VA_ARGS__)
+#define FIRST_OF(...) Production_first(__VA_ARGS__)
+#define FOLLOW_OF(...) Production_follow(__VA_ARGS__)
+#define SUBSET_OF(...) Production_subset(__VA_ARGS__)
+#define UNION_OF(...) Production_union_set(__VA_ARGS__)
+#define TRAVERSED_OF(...) Production_traversed(__VA_ARGS__)
+#define TRAVERSED_BY(...) Production_traversed_by_p(__VA_ARGS__)
+#define DONE_P(...) Production_done_p(__VA_ARGS__)
+#define TYPE_OF_PROD(...) Production_type(__VA_ARGS__)
+#define NO_OF(...) Production_no(__VA_ARGS__)
+#define CLEAR_SET(...) Production_clear_set(__VA_ARGS__)
+#define TOKS_LEN(...) Production_tokens_len(__VA_ARGS__)
+#define BLOCKS_LEN(...) Production_blocks_len(__VA_ARGS__)
+#define BLOCKS_P(...) Production_blocks_p(__VA_ARGS__)
+#define BLOCK_OF(...) Production_block(__VA_ARGS__)
+#define BLOCKS_OF(...) Production_blocks(__VA_ARGS__)
+
+typedef enum NT_TYPE TYPE;
+
 O_DEF_CLASS(Table, Object)
 
 override
 def(ctor, void : va_list * @args_ptr) {
-    self->nonterminals = va_arg(* args_ptr, void *);
+    NTS = va_arg(* args_ptr, o);
 }
 
 override
@@ -30,48 +89,45 @@ def(dtor, void) {
 private
 def(NT_set_init, void) {
 
-    void each_NT(void * _self, void * nonterminal, uint_t index) {
-        struct Table * self = _self;
-        void * token = Nonterminal_token(nonterminal);
-        Hash_set(self->nonterminal_set, token, nonterminal);
+    NT_SET = new(Hash);
+
+    ITOR(nt) {
+        Hash_set(NT_SET, TOK_OF(NT), NT);
     }
 
-    self->nonterminal_set = new(Hash);
-    Array_each(self->nonterminals, each_NT, self);
+    EACH(NTS, nt);
 }
 
 private
-def(NT_p, bool : void * @token) {
-    return Hash_get(self->nonterminal_set, token) != NULL;
+def(NT_p, bool : o @tok) {
+    return H_GET(NT_SET, tok) != NULL;
 }
 
 private
-def(NT_of_token, void * : void * @token) {
-    return Hash_get(self->nonterminal_set, token);
+def(NT_of_token, o : o @tok) {
+    o nt = H_GET(NT_SET, tok);
+    return nt == NULL ? 0 : nt;
 }
 
 // production epsilon
 
 private
-def(production_epsilon, void) {
+def(prod_epsilon, void) {
 
-    void each_prod(void * _self, void * production, uint_t index) {
-        struct Table * self = _self;
-        void * tokens = Production_tokens(production);
-        if(Array_len(tokens) == 1) {
-            void * token = Array_get(tokens, 0);
-            if(!NT_p(self, token) && strcmp(inspect(token), "epsilon") == 0) {
-                Production_set_epsilon(production, true);
-            }
+    ITOR(prod) {
+        o ts = TOKS_OF(PROD);
+        if(LEN(ts) != 1) return;
+        o t = GET(ts, 0);
+        if(!NT_P(t) && strcmp(inspect(t), "epsilon") == 0) {
+            SET_EPSILON(PROD, true);
         }
     }
 
-    void each_NT(void * self, void * nonterminal, uint_t index) {
-        void * productions = Nonterminal_productions(nonterminal);
-        Array_each(productions, each_prod, self);
+    ITOR(nt) {
+        EACH(PRODS_OF(NT), prod);
     }
 
-    Array_each(self->nonterminals, each_NT, self);
+    EACH(NTS, nt);
 }
 
 // T set
@@ -79,164 +135,137 @@ def(production_epsilon, void) {
 private
 def(T_set_init, void) {
 
-    void each_token(void * _self, void * token, uint_t index) {
-        struct Table * self = _self;
-        if(!NT_p(self, token)) {
-            void * terminal = new(Terminal, token);
-            Hash_set(self->terminal_set, token, terminal);
+    ITOR(tok) {
+        if(!NT_P(TOK)) {
+            o t = new(Terminal, TOK);
+            H_SET(T_SET, TOK, t);
         }
     }
 
-    void each_prod(void * self, void * production, uint_t index) {
-        if(!Production_epsilon(production)) {
-            void * tokens = Production_tokens(production);
-            Array_each(tokens, each_token, self);
+    ITOR(prod) {
+        if(!EPSILON_OF(PROD)) {
+            EACH(TOKS_OF(PROD), tok);
         }
     }
 
-    void each_NT(void * self, void * nonterminal, uint_t index) {
-        void * productions = Nonterminal_productions(nonterminal);
-        Array_each(productions, each_prod, self);
+    ITOR(nt) {
+        EACH(PRODS_OF(NT), prod);
     }
 
-    self->terminal_set = new(Hash);
-    Array_each(self->nonterminals, each_NT, self);
+    T_SET = new(Hash);
+    EACH(NTS, nt);
 }
 
 private
-def(T_p, bool : void * @token) {
-    return Hash_get(self->terminal_set, token) != NULL;
+def(T_p, bool : o @tok) {
+    return H_GET(T_SET, tok) != NULL;
 }
 
 private
-def(T_of_token, void * : void * @token) {
-    return Hash_get(self->terminal_set, token);
+def(T_of_token, o : o @tok) {
+    o t = H_GET(T_SET, tok);
+    return t == NULL ? 0 : t;
 }
 
 // Ts
 
 private
 def(Ts_init, void) {
-
-    void each_T(void * _self, void * token, void * terminal) {
-        struct Table * self = _self;
-        Array_push(self->terminals, terminal);
-    }
-
-    self->terminals = new(Array);
-    Hash_each(self->terminal_set, each_T, self);
+    TS = H_VALUES(T_SET);
 }
 
 // null ?
 
-struct self_with_NT {
-    struct Table * self;
-    void * nonterminal;
-    void * production;
-};
-
-static bool
-token_present_p(void * _args, void * token, uint_t index) {
-    struct self_with_NT * args = _args;
-    void * nonterminal = NT_of_token(args->self, token);
-    void * terminal    =  T_of_token(args->self, token);
-    if(nonterminal != NULL && nonterminal != args->nonterminal) {
-        printf("NT[%s]\n", inspect(token));
-        null_NT(args->self, nonterminal);
-        enum NT_TYPE type = Nonterminal_type(nonterminal);
-        if(type == PRESENT) {
-            return true;
-        }
-    } else if(terminal != NULL) {
-        printf("T[%s]\n", inspect(token));
-        return true;
-    } else {
-        printf("%s\n", inspect(token));
-    }
-    return false;
-}
-
-static bool
-prod_blank_p(void * args, void * production, uint_t index) {
-    void * tokens = Production_tokens(production);
-    bool present = Array_any_p(tokens, token_present_p, args);
-    Production_set_type(production, present ? PRESENT : BLANK);
-    return !present;
-}
-
 private
-def(null_NT, void : void * @nonterminal) {
-    enum NT_TYPE type = Nonterminal_type(nonterminal);
-    if(type == NOT_SET) {
-        void * productions = Nonterminal_productions(nonterminal);
-        struct self_with_NT args;
-        args.self = self;
-        args.nonterminal = nonterminal;
-        enum NT_TYPE nt_type = Array_any_p(productions, prod_blank_p, &args) ? BLANK : PRESENT;
-        Nonterminal_set_type(nonterminal, nt_type);
+def(set_NT_type, void : o @nt) {
+
+    ANY_P_ITOR(tok_present_p) {
+        o nt_, t;
+        if((nt_ = NT_OF(TOK)) && nt_ != nt) {
+            printf("NT[%s]\n", inspect(TOK));
+            set_NT_type(self, nt_);
+            if(TYPE_OF_NT(nt_) == PRESENT) return true;
+        } else if(t = T_OF(TOK)) {
+            printf("T[%s]\n", inspect(TOK));
+            return true;
+        } else {
+            printf("%s\n", inspect(TOK));
+        }
+        return false;
+    }
+
+    ANY_P_ITOR(prod_blank_p) {
+        bool present = ANY_P(TOKS_OF(PROD), tok_present_p);
+        SET_PROD_TYPE(PROD, present ? PRESENT : BLANK);
+        return !present;
+    }
+
+    if(TYPE_OF_NT(nt) == NOT_SET) {
+        TYPE type = ANY_P(PRODS_OF(nt), prod_blank_p) ? BLANK : PRESENT;
+        SET_NT_TYPE(nt, type);
         printf("--- %s %s ---\n",
-                inspect(Nonterminal_token(nonterminal)),
-                nt_type == PRESENT ? "T" : "F");
+                inspect(TOK_OF(nt)),
+                type == PRESENT ? "T" : "F");
     }
 }
 
 private
 def(null_init, void) {
 
-    void each_NT(void * self, void * nonterminal, uint_t index) {
-        null_NT(self, nonterminal);
+    ITOR(nt) {
+        set_NT_type(self, NT);
     }
 
-    Array_each(self->nonterminals, each_NT, self);
+    EACH(NTS, nt);
 }
 
 // traverse algorithm
+// anc: ancestor
 
 static void
-traverse(void * production, void * ancestor) {
+traverse(o prod, o anc) {
 
     // traverse_add NT, prod
 
-    void add_prod_to_ancestor(void * ancestor, void * production, void * unused) {
-        void * union_set = Production_union_set(ancestor);
-        Hash_set(union_set, production, production);
+    void add_prod_to_anc(o prod) {
+        H_SET(UNION_OF(anc), prod, prod);
     }
 
-    void add_ancestor_to_prod(void * ancestor, void * production) {
-        void * traversed = Production_traversed(production);
-        Hash_set(traversed, ancestor, ancestor);
+    H_ITOR(add_prod_to_anc) {
+        add_prod_to_anc(KEY);
+    }
+
+    void add_anc_to_prod(o prod) {
+        H_SET(TRAVERSED_OF(prod), anc, anc);
     }
 
     // traverse NT, prod
 
-    void each_prod(void * ancestor, void * production, uint_t index) {
-        traverse(production, ancestor);
+    ITOR(prod) {
+        traverse(PROD, anc);
     }
 
-    void each_NT(void * ancestor, void * nonterminal, void * data) {
-        void * productions = Nonterminal_productions(nonterminal);
-        Array_each(productions, each_prod, ancestor);
+    H_ITOR(nt) {
+        EACH(PRODS_OF(KEY), prod);
     }
 
     printf("ancestor[%s][%zu] P[%s][%zu]\n",
-            inspect(ancestor),
-            Production_no(ancestor),
-            inspect(production),
-            Production_no(production));
-    if(!Production_traversed_by_p(production, ancestor)) {
-        if(Production_done_p(production)) {
-            void * union_set = Production_union_set(production);
-            Hash_each(union_set, add_prod_to_ancestor, ancestor);
+            inspect(anc),
+            NO_OF(anc),
+            inspect(prod),
+            NO_OF(prod));
+    if(!TRAVERSED_BY(prod, anc)) {
+        if(DONE_P(prod)) {
+            H_EACH(UNION_OF(prod), add_prod_to_anc);
         } else {
-            add_prod_to_ancestor(ancestor, production, 0);
-            add_ancestor_to_prod(ancestor, production);
-            void * subset = Production_subset(production);
-            Hash_each(subset, each_NT, ancestor);
+            add_prod_to_anc(prod);
+            add_anc_to_prod(prod);
+            H_EACH(SUBSET_OF(prod), nt);
         }
     }
     printf("ancestor[%s][%zu] ---\n",
-            inspect(ancestor),
-            Production_no(ancestor));
+            inspect(anc),
+            NO_OF(anc));
 }
 
 // first
@@ -246,40 +275,29 @@ traverse(void * production, void * ancestor) {
 private
 def(first_subset_init, void) {
 
-    bool each_token(void * _args, void * token, uint_t index) {
-        struct self_with_NT * args = _args;
-        void * nonterminal = NT_of_token(args->self, token);
-        void * terminal    =  T_of_token(args->self, token);
-        if(nonterminal != NULL) {
-            void * subset = Production_subset(args->production);
-            Hash_set(subset, nonterminal, nonterminal);
-            return Nonterminal_type(nonterminal) == PRESENT;
-        } else if(terminal != NULL) {
-            void * first = Production_first(args->production);
-            Hash_set(first, terminal, terminal);
+    ANY_P_ITOR(tok, o prod) {
+        o nt, t;
+        if(nt = NT_OF(TOK)) {
+            H_SET(SUBSET_OF(prod), nt, nt);
+            return TYPE_OF_NT(nt) == PRESENT;
+        } else if(t = T_OF(TOK)) {
+            H_SET(FIRST_OF(prod), t, t);
             return true;
         } else {
             return false;
         }
     }
 
-    void each_prod(void * _args, void * production, uint_t index) {
-        Production_first_init(production);
-        struct self_with_NT * args = _args;
-        args->production = production;
-        void * tokens = Production_tokens(production);
-        Array_any_p(tokens, each_token, args);
+    ITOR(prod) {
+        INIT_FIRST_OF(PROD);
+        ANY_P(TOKS_OF(PROD), tok, PROD);
     }
 
-    void each_NT(void * self, void * nonterminal, uint_t index) {
-        void * productions = Nonterminal_productions(nonterminal);
-        struct self_with_NT args;
-        args.self = self;
-        args.nonterminal = nonterminal;
-        Array_each(productions, each_prod, &args);
+    ITOR(nt) {
+        EACH(PRODS_OF(NT), prod);
     }
 
-    Array_each(self->nonterminals, each_NT, self);
+    EACH(NTS, nt);
 }
 
 // set union_set{productions}
@@ -287,17 +305,16 @@ def(first_subset_init, void) {
 private
 def(traverse_NTs, void) {
 
-    void each_prod(void * unused, void * production, uint_t index) {
-        traverse(production, production);
-        Production_set_done(production, true);
+    ITOR(prod) {
+        traverse(PROD, PROD);
+        SET_DONE(PROD, true);
     }
 
-    void each_NT(void * unused, void * nonterminal, uint_t index) {
-        void * productions = Nonterminal_productions(nonterminal);
-        Array_each(productions, each_prod, NULL);
+    ITOR(nt) {
+        EACH(PRODS_OF(NT), prod);
     }
 
-    Array_each(self->nonterminals, each_NT, self);
+    EACH(NTS, nt);
 }
 
 // set first{terminals} by union_set{productions}
@@ -311,27 +328,23 @@ def(traverse_NTs, void) {
 private
 def(first_init_after_traverse, void) {
 
-    void each_T(void * ancestor, void * terminal, void * data) {
-        void * first = Production_first(ancestor);
-        Hash_set(first, terminal, terminal);
+    H_ITOR(t, o prod) {
+        H_SET(FIRST_OF(prod), KEY, KEY);
     }
 
-    void each_prod2(void * ancestor, void * production, void * data) {
-        void * first = Production_first(production);
-        Hash_each(first, each_T, ancestor);
+    H_ITOR(prod, o prod) {
+        H_EACH(FIRST_OF(KEY), t, prod);
     }
 
-    void each_prod(void * unused, void * production, uint_t index) {
-        void * union_set = Production_union_set(production);
-        Hash_each(union_set, each_prod2, production);
+    ITOR(prod) {
+        H_EACH(UNION_OF(PROD), prod, PROD);
     }
 
-    void each_NT(void * unused, void * nonterminal, uint_t index) {
-        void * productions = Nonterminal_productions(nonterminal);
-        Array_each(productions, each_prod, NULL);
+    ITOR(nt) {
+        EACH(PRODS_OF(NT), prod);
     }
 
-    Array_each(self->nonterminals, each_NT, self);
+    EACH(NTS, nt);
 }
 
 // debug: terminals
@@ -339,11 +352,11 @@ def(first_init_after_traverse, void) {
 private
 def(debug_Ts, void) {
 
-    void each_T(void * unused, void * terminal, uint_t index) {
-        printf("T: %s\n", inspect(terminal));
+    ITOR(t) {
+        printf("T: %s\n", inspect(T));
     }
 
-    Array_each(self->terminals, each_T, NULL);
+    EACH(TS, t);
 }
 
 // debug: first{terminals}
@@ -351,26 +364,24 @@ def(debug_Ts, void) {
 private
 def(debug_first, void) {
 
-    void each_T(void * production, void * terminal, void * data) {
+    H_ITOR(t, o prod) {
         printf("first[%s][%zu][%s]: %s\n",
-                inspect(production),
-                Production_no(production),
-                Production_type(production) == PRESENT ? "T" : (
-                    Production_type(production) == BLANK ? "F" : "?"),
-                inspect(terminal));
+                inspect(prod),
+                NO_OF(prod),
+                TYPE_OF_PROD(prod) == PRESENT ? "T" : (
+                    TYPE_OF_PROD(prod) == BLANK ? "F" : "?"),
+                inspect(KEY));
     }
 
-    void each_prod(void * unused, void * production, uint_t index) {
-        void * first = Production_first(production);
-        Hash_each(first, each_T, production);
+    ITOR(prod) {
+        H_EACH(FIRST_OF(PROD), t, PROD);
     }
 
-    void each_NT(void * unused, void * nonterminal, uint_t index) {
-        void * productions = Nonterminal_productions(nonterminal);
-        Array_each(productions, each_prod, NULL);
+    ITOR(nt) {
+        EACH(PRODS_OF(NT), prod);
     }
 
-    Array_each(self->nonterminals, each_NT, self);
+    EACH(NTS, nt);
 }
 
 // debug: subset{nonterminals}
@@ -378,25 +389,23 @@ def(debug_first, void) {
 private
 def(debug_subset, void) {
 
-    void each_token(void * production, void * token, void * data) {
+    H_ITOR(nt_of_subset, o prod) {
         printf("subset[%s][%zu](%p): %s\n",
-                inspect(production),
-                Production_no(production),
-                production,
-                inspect(Nonterminal_token(token)));
+                inspect(prod),
+                NO_OF(prod),
+                prod,
+                inspect(TOK_OF(KEY)));
     }
 
-    void each_prod(void * unused, void * production, uint_t index) {
-        void * subset = Production_subset(production);
-        Hash_each(subset, each_token, production);
+    ITOR(prod) {
+        H_EACH(SUBSET_OF(PROD), nt_of_subset, PROD);
     }
 
-    void each_NT(void * unused, void * nonterminal, uint_t index) {
-        void * productions = Nonterminal_productions(nonterminal);
-        Array_each(productions, each_prod, NULL);
+    ITOR(nt) {
+        EACH(PRODS_OF(NT), prod);
     }
 
-    Array_each(self->nonterminals, each_NT, self);
+    EACH(NTS, nt);
 }
 
 // debug: union{productions}
@@ -404,25 +413,23 @@ def(debug_subset, void) {
 private
 def(debug_union, void) {
 
-    void each_token(void * production, void * token, void * data) {
+    H_ITOR(tok, o prod) {
         printf("union[%s][%zu]: [%s][%zu]\n",
-                inspect(production),
-                Production_no(production),
-                inspect(token),
-                Production_no(token));
+                inspect(prod),
+                NO_OF(prod),
+                inspect(KEY),
+                NO_OF(KEY));
     }
 
-    void each_prod(void * unused, void * production, uint_t index) {
-        void * union_set = Production_union_set(production);
-        Hash_each(union_set, each_token, production);
+    ITOR(prod) {
+        H_EACH(UNION_OF(PROD), tok, PROD);
     }
 
-    void each_NT(void * unused, void * nonterminal, uint_t index) {
-        void * productions = Nonterminal_productions(nonterminal);
-        Array_each(productions, each_prod, NULL);
+    ITOR(nt) {
+        EACH(PRODS_OF(NT), prod);
     }
 
-    Array_each(self->nonterminals, each_NT, self);
+    EACH(NTS, nt);
 }
 
 // debug: follow{terminals}
@@ -430,26 +437,24 @@ def(debug_union, void) {
 private
 def(debug_follow, void) {
 
-    void each_T(void * production, void * terminal, void * data) {
+    H_ITOR(t, o prod) {
         printf("follow[%s][%zu][%s]: %s\n",
-                inspect(production),
-                Production_no(production),
-                Production_type(production) == PRESENT ? " " : (
-                    Production_type(production) == BLANK ? "F" : "?"),
-                inspect(terminal));
+                inspect(prod),
+                NO_OF(prod),
+                TYPE_OF_PROD(prod) == PRESENT ? " " : (
+                    TYPE_OF_PROD(prod) == BLANK ? "F" : "?"),
+                inspect(KEY));
     }
 
-    void each_prod(void * unused, void * production, uint_t index) {
-        void * follow = Production_follow(production);
-        Hash_each(follow, each_T, production);
+    ITOR(prod) {
+        H_EACH(FOLLOW_OF(PROD), t, PROD);
     }
 
-    void each_NT(void * unused, void * nonterminal, uint_t index) {
-        void * productions = Nonterminal_productions(nonterminal);
-        Array_each(productions, each_prod, NULL);
+    ITOR(nt) {
+        EACH(PRODS_OF(NT), prod);
     }
 
-    Array_each(self->nonterminals, each_NT, self);
+    EACH(NTS, nt);
 }
 
 private
@@ -469,17 +474,16 @@ def(first_init, void) {
 private
 def(follow_Ts_init, void) {
 
-    void each_prod(void * unused, void * production, uint_t index) {
-        Production_follow_init(production);
-        Production_set_done(production, false);
+    ITOR(prod) {
+        INIT_FOLLOW_OF(PROD);
+        SET_DONE(PROD, false);
     }
 
-    void each_NT(void * unused, void * nonterminal, uint_t index) {
-        void * productions = Nonterminal_productions(nonterminal);
-        Array_each(productions, each_prod, NULL);
+    ITOR(nt) {
+        EACH(PRODS_OF(NT), prod);
     }
 
-    Array_each(self->nonterminals, each_NT, self);
+    EACH(NTS, nt);
 }
 
 private
@@ -487,119 +491,94 @@ def(follow_subset_init, void) {
 
     // merge next nonterminal into subset{nonterminals}
 
-    void add_next_NT_to_subset(void * next_nonterminal, void * production, uint_t index) {
-        void * subset = Production_subset(production);
-        Hash_set(subset, next_nonterminal, next_nonterminal);
+    ITOR(add_next_NT_to_subset, o nt) {
+        H_SET(SUBSET_OF(PROD), nt, nt);
         printf("  (%s)[%zu] << NT[%s]\n",
-                inspect(production),
-                Production_no(production),
-                inspect(Nonterminal_token(next_nonterminal)));
+                inspect(PROD),
+                NO_OF(PROD),
+                inspect(TOK_OF(nt)));
     }
 
     // merge first{terminals} of next nonterminal into follow{terminals}
 
-    void add_first_of_next_NT_to_follow(void * nonterminal, void * production, uint_t index) {
+    ITOR(add_first_of_next_NT_to_follow, o nt) {
 
-        void each_prod(void * terminal, void * production, uint_t index) {
-            void * follow = Production_follow(production);
-            Hash_set(follow, terminal, terminal);
+        ITOR(prod, o t) {
+            H_SET(FOLLOW_OF(PROD), t, t);
             printf("  (%s)[%zu] << T:first[%s]\n",
-                    inspect(production),
-                    Production_no(production),
-                    inspect(terminal));
+                    inspect(PROD),
+                    NO_OF(PROD),
+                    inspect(t));
         }
 
-        void each_NT(void * nonterminal, void * terminal, void * data) {
-            void * productions = Nonterminal_productions(nonterminal);
-            Array_each(productions, each_prod, terminal);
+        H_ITOR(nt, o nt) {
+            EACH(PRODS_OF(nt), prod, KEY);
         }
 
-        void * first = Production_first(production);
-        Hash_each(first, each_NT, nonterminal);
+        H_EACH(FIRST_OF(PROD), nt, nt);
     }
 
     // merge next terminal into follow{terminals}
 
-    void add_next_T_to_follow(void * next_terminal, void * production, uint_t index) {
-        void * follow = Production_follow(production);
-        Hash_set(follow, next_terminal, next_terminal);
+    ITOR(add_next_T_to_follow, o t) {
+        H_SET(FOLLOW_OF(PROD), t, t);
         printf("  (%s)[%zu] << T[%s]\n",
-                inspect(production),
-                Production_no(production),
-                inspect(next_terminal));
+                inspect(PROD),
+                NO_OF(PROD),
+                inspect(t));
     }
 
     // merge the nonterminal on the left hand side into subset{nonterminals}
 
-    void add_LHS_NT_to_subset(void * nonterminal, void * production, uint_t index) {
-        void * subset = Production_subset(production);
-        Hash_set(subset, nonterminal, nonterminal);
+    ITOR(add_LHS_NT_to_subset, o nt) {
+        H_SET(SUBSET_OF(PROD), nt, nt);
         printf("  (%s)[%zu] << NT:LHS[%s]\n",
-                inspect(production),
-                Production_no(production),
-                inspect(Nonterminal_token(nonterminal)));
+                inspect(PROD),
+                NO_OF(PROD),
+                inspect(TOK_OF(nt)));
     }
 
     // set follow{terminals} & subset{nonterminals}
 
-    void each_token(void * _args, void * token, uint_t index) {
-        struct self_with_NT * args = _args;
-        void * nonterminal = NT_of_token(args->self, token);
-        if(nonterminal == NULL) {
-            return;
-        }
-        printf("  (%s)\n",
-                inspect(Nonterminal_token(nonterminal)));
-        void * tokens = Production_tokens(args->production);
-        uint_t len = Array_len(tokens);
-        index += 1;
-        while(index < len) {
-            void * next_token = Array_get(tokens, index);
-            void * next_nonterminal = NT_of_token(args->self, next_token);
-            void * next_terminal    =  T_of_token(args->self, next_token);
-            if(next_nonterminal != NULL) {
+    ITOR(tok, o nt, o prod) {
+        o nt_of_tok = NT_OF(TOK);
+        if(!nt_of_tok) return;
+        printf("  (%s)\n", inspect(TOK_OF(nt_of_tok)));
+        o toks = TOKS_OF(prod);
+        uint_t len = LEN(toks);
+        INDEX += 1;
+        while(INDEX < len) {
+            o next_tok = GET(toks, INDEX);
+            o next_nt, next_t;
+            if(next_nt = NT_OF(next_tok)) {
                 // merge next nonterminal into subset{nonterminals}
-                void * productions = Nonterminal_productions(nonterminal);
-                Array_each(productions, add_next_NT_to_subset, next_nonterminal);
+                EACH(PRODS_OF(nt_of_tok), add_next_NT_to_subset, next_nt);
 
                 // merge first{terminals} of next nonterminal into follow{terminals}
-                productions = Nonterminal_productions(next_nonterminal);
-                Array_each(productions, add_first_of_next_NT_to_follow, nonterminal);
-                enum NT_TYPE type = Nonterminal_type(next_nonterminal);
-                if(type == PRESENT) {
-                    return;
-                }
-            } else if(next_terminal != NULL) {
+                EACH(PRODS_OF(next_nt), add_first_of_next_NT_to_follow, nt_of_tok);
+
+                if(TYPE_OF_NT(next_nt) == PRESENT) return;
+            } else if(next_t = T_OF(next_tok)) {
                 // merge next terminal into follow{terminals}
-                void * productions = Nonterminal_productions(nonterminal);
-                Array_each(productions, add_next_T_to_follow, next_terminal);
+                EACH(PRODS_OF(nt_of_tok), add_next_T_to_follow, next_t);
                 return;
             }
-            index += 1;
+            INDEX += 1;
         }
         // merge the nonterminal on the left hand side into subset{nonterminals}
-        void * productions = Nonterminal_productions(nonterminal);
-        Array_each(productions, add_LHS_NT_to_subset, args->nonterminal);
+        EACH(PRODS_OF(nt_of_tok), add_LHS_NT_to_subset, nt);
     }
 
-    void each_prod(void * _args, void * production, uint_t index) {
-        struct self_with_NT * args = _args;
-        args->production = production;
-        void * tokens = Production_tokens(production);
-        Array_each(tokens, each_token, args);
+    ITOR(prod, o nt) {
+        EACH(TOKS_OF(PROD), tok, nt, PROD);
     }
 
-    void each_NT(void * self, void * nonterminal, uint_t index) {
-        printf("[%s]\n",
-                inspect(Nonterminal_token(nonterminal)));
-        void * productions = Nonterminal_productions(nonterminal);
-        struct self_with_NT args;
-        args.self = self;
-        args.nonterminal = nonterminal;
-        Array_each(productions, each_prod, &args);
+    ITOR(nt) {
+        printf("[%s]\n", inspect(TOK_OF(NT)));
+        EACH(PRODS_OF(NT), prod, NT);
     }
 
-    Array_each(self->nonterminals, each_NT, self);
+    EACH(NTS, nt);
 }
 
 // set follow{terminals} by union_set{productions}
@@ -613,27 +592,23 @@ def(follow_subset_init, void) {
 private
 def(follow_init_after_traverse, void) {
 
-    void each_T(void * ancestor, void * terminal, void * data) {
-        void * follow = Production_follow(ancestor);
-        Hash_set(follow, terminal, terminal);
+    H_ITOR(t, o prod) {
+        H_SET(FOLLOW_OF(prod), KEY, KEY);
     }
 
-    void each_prod2(void * ancestor, void * production, void * data) {
-        void * follow = Production_follow(production);
-        Hash_each(follow, each_T, ancestor);
+    H_ITOR(prod, o prod) {
+        H_EACH(FOLLOW_OF(KEY), t, prod);
     }
 
-    void each_prod(void * unused, void * production, uint_t index) {
-        void * union_set = Production_union_set(production);
-        Hash_each(union_set, each_prod2, production);
+    ITOR(prod) {
+        H_EACH(UNION_OF(PROD), prod, PROD);
     }
 
-    void each_NT(void * unused, void * nonterminal, uint_t index) {
-        void * productions = Nonterminal_productions(nonterminal);
-        Array_each(productions, each_prod, NULL);
+    ITOR(nt) {
+        EACH(PRODS_OF(NT), prod);
     }
 
-    Array_each(self->nonterminals, each_NT, self);
+    EACH(NTS, nt);
 }
 
 // follow clear set: subset, union_set, traversed
@@ -641,16 +616,15 @@ def(follow_init_after_traverse, void) {
 private
 def(follow_clear_set, void) {
 
-    void each_prod(void * unused, void * production, uint_t index) {
-        Production_clear_set(production);
+    ITOR(prod) {
+        CLEAR_SET(PROD);
     }
 
-    void each_NT(void * unused, void * nonterminal, uint_t index) {
-        void * productions = Nonterminal_productions(nonterminal);
-        Array_each(productions, each_prod, NULL);
+    ITOR(nt) {
+        EACH(PRODS_OF(NT), prod);
     }
 
-    Array_each(self->nonterminals, each_NT, self);
+    EACH(NTS, nt);
 }
 
 private
@@ -761,362 +735,291 @@ def(follow_init, void) {
 
 // set id
 
-// set nonterminal id (for row index of table, cell in rhs)
-
-static void
-set_NT_id_each_NT(void * _i, void * nonterminal, uint_t index) {
-    uint_t * i = _i;
-    Nonterminal_set_id(nonterminal, * i);
-    * i += 1;
-}
-
-// set terminal id (for col index of table, cell in rhs)
-
-static void
-set_T_id_each_T(void * _i, void * terminal, uint_t index) {
-    uint_t * i = _i;
-    Terminal_set_id(terminal, * i);
-    * i += 1;
-}
-
-// set block id (for cell in rhs)
-
-static void
-set_block_id_each_token(void * unused, void * token, uint_t index) {
-    char * red = "\e[48;5;52m";
-    char * gray = "\e[48;5;235m";
-    char * color = index % 2 == 0 ? red : gray;
-    printf("%s%s", color, inspect(token));
-}
-
-static void
-set_block_id_each_block(void * _i, void * block, uint_t index) {
-    uint_t * i = _i;
-    Block_set_id(block, * i);
-    * i += 1;
-    Block_expand(block);
-
-    // debug
-    void * tokens = Block_tokens(block);
-    printf("B[%zu]{", index);
-    Array_each(tokens, set_block_id_each_token, NULL);
-    char * reset = "\e[0m";
-    printf("%s}\n", reset);
-}
-
-static void
-set_block_id_each_prod(void * i, void * production, uint_t index) {
-    Production_each_block(production, set_block_id_each_block, i);
-}
-
-static void
-set_block_id_each_NT(void * i, void * nonterminal, uint_t index) {
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, set_block_id_each_prod, i);
-}
-
-// set production id (for row of prhs)
-
-static void
-set_prod_id_each_prod(void * _production_i, void * production, uint_t index) {
-    uint_t * production_i = _production_i;
-    Production_set_id(production, * production_i);
-    * production_i += 1;
-}
-
-static void
-set_prod_id_each_NT(void * production_i, void * nonterminal, uint_t index) {
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, set_prod_id_each_prod, production_i);
-}
-
 private
 def(set_id, void) {
+
+    // set nonterminal id (for row index of table, cell in rhs)
+
+    ITOR(set_NT_id, o _i) {
+        uint_t * i = _i;
+        SET_ID_OF_NT(NT, * i);
+        * i += 1;
+    }
+
+    // set terminal id (for col index of table, cell in rhs)
+
+    ITOR(set_T_id, o _i) {
+        uint_t * i = _i;
+        SET_ID_OF_T(T, * i);
+        * i += 1;
+    }
+
+    // set block id (for cell in rhs)
+
+    ITOR(set_block_id, o i) {
+
+        ITOR(tok) {
+            char * red = "\e[48;5;52m";
+            char * gray = "\e[48;5;235m";
+            char * color = INDEX % 2 == 0 ? red : gray;
+            printf("%s%s", color, inspect(TOK));
+        }
+
+        ITOR(block, o _i) {
+            uint_t * i = _i;
+            Block_set_id(BLOCK, * i);
+            * i += 1;
+            Block_expand(BLOCK);
+
+            // debug
+            printf("B[%zu]{", INDEX);
+            EACH(Block_tokens(BLOCK), tok);
+            char * reset = "\e[0m";
+            printf("%s}\n", reset);
+        }
+
+        ITOR(prod, o i) {
+            if(BLOCKS_P(PROD)) EACH(BLOCKS_OF(PROD), block, i);
+        }
+
+        EACH(PRODS_OF(NT), prod, i);
+    }
+
+    // set production id (for row of prhs)
+
+    ITOR(set_prod_id, o i) {
+
+        ITOR(prod, o _i) {
+            uint_t * i = _i;
+            SET_ID_OF_PROD(PROD, * i);
+            * i += 1;
+        }
+
+        EACH(PRODS_OF(NT), prod, i);
+    }
+
     uint_t i = 0;
-    Array_each(self->nonterminals, set_NT_id_each_NT,  &i);
-    Array_each(self->terminals,    set_T_id_each_T,   &i);
-    Array_each(self->nonterminals, set_block_id_each_NT, &i);
-    uint_t production_i = 0;
-    Array_each(self->nonterminals, set_prod_id_each_NT, &production_i);
+    EACH(NTS, set_NT_id,    (o) &i);
+    EACH(TS,  set_T_id,     (o) &i);
+    EACH(NTS, set_block_id, (o) &i);
+    i = 0;
+    EACH(NTS, set_prod_id,  (o) &i);
 }
 
 // make table
 
-static void
-clear_table(uint_t * table, uint_t rows, uint_t cols) {
-    for(uint_t row_i = 0; row_i < rows; row_i += 1) {
-        for(uint_t col_i = 0; col_i < cols; col_i += 1) {
-            table[row_i * rows + col_i] = -1;
+private
+def(clear_table, void) {
+    for(uint_t row_i = 0; row_i < ROWS; row_i += 1) {
+        for(uint_t col_i = 0; col_i < COLS; col_i += 1) {
+            TABLE[row_i * ROWS + col_i] = -1;
         }
-    }
-}
-
-struct table {
-    uint_t * table;
-    uint_t rows;
-    void * nonterminal;
-    void * production;
-};
-
-// fill table by first{terminals}
-
-static void
-fill_table_first_each_T(void * _args, void * terminal, void * data) {
-    struct table * args = _args;
-    uint_t row_i = Nonterminal_id(args->nonterminal);
-    uint_t col_i = Terminal_id(terminal) - args->rows;
-    uint_t id = Production_id(args->production);
-    printf("first  [%s][%s]: %zu\n",
-            inspect(Nonterminal_token(args->nonterminal)),
-            inspect(terminal),
-            id);
-    args->table[row_i * args->rows + col_i] = id;
-}
-
-static void
-fill_table_first_each_prod(void * _args, void * production, uint_t index) {
-    struct table * args = _args;
-    args->production = production;
-    void * first = Production_first(production);
-    Hash_each(first, fill_table_first_each_T, args);
-}
-
-// fill table by follow{terminals}
-
-static void
-fill_table_follow_each_T(void * _args, void * terminal, void * data) {
-    struct table * args = _args;
-    uint_t row_i = Nonterminal_id(args->nonterminal);
-    uint_t col_i = Terminal_id(terminal) - args->rows;
-    uint_t id = Production_id(args->production);
-    printf("follow [%s][%s]: %zu\n",
-            inspect(Nonterminal_token(args->nonterminal)),
-            inspect(terminal),
-            id);
-    args->table[row_i * args->rows + col_i] = id;
-}
-
-static void
-fill_table_follow_each_prod(void * _args, void * production, uint_t index) {
-    if(Production_type(production) == BLANK) {
-        struct table * args = _args;
-        args->production = production;
-        void * follow = Production_follow(production);
-        Hash_each(follow, fill_table_follow_each_T, args);
     }
 }
 
 // fill table
 
-static void
-fill_table_each_NT(void * _args, void * nonterminal, uint_t index) {
-    struct table * args = _args;
-    args->nonterminal = nonterminal;
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, fill_table_follow_each_prod, args);
-    Array_each(productions, fill_table_first_each_prod, args);
-}
-
 private
-def(fill_table, void : uint_t * @table) {
-    struct table args;
-    args.table = table;
-    args.rows = self->rows;
-    Array_each(self->nonterminals, fill_table_each_NT, &args);
+def(fill_table, void) {
+
+    // fill table by first{terminals}
+
+    ITOR(first, o nt) {
+
+        H_ITOR(t, o nt, o prod) {
+            uint_t row_i = ID_OF_NT(nt);
+            uint_t col_i = ID_OF_T(KEY) - ROWS;
+            uint_t id = ID_OF_PROD(prod);
+            printf("first  [%s][%s]: %zu\n",
+                    inspect(TOK_OF(nt)),
+                    inspect(KEY),
+                    id);
+            TABLE[row_i * ROWS + col_i] = id;
+        }
+
+        H_EACH(FIRST_OF(PROD), t, nt, PROD);
+    }
+
+    // fill table by follow{terminals}
+
+    ITOR(follow, o nt) {
+
+        H_ITOR(t, o nt, o prod) {
+            uint_t row_i = ID_OF_NT(nt);
+            uint_t col_i = ID_OF_T(KEY) - ROWS;
+            uint_t id = ID_OF_PROD(prod);
+            printf("follow [%s][%s]: %zu\n",
+                    inspect(TOK_OF(nt)),
+                    inspect(KEY),
+                    id);
+            TABLE[row_i * ROWS + col_i] = id;
+        }
+
+        if(TYPE_OF_PROD(PROD) == BLANK) {
+            H_EACH(FOLLOW_OF(PROD), t, nt, PROD);
+        }
+    }
+
+    ITOR(nt) {
+        o prods = PRODS_OF(NT);
+        EACH(prods, follow, NT);
+        EACH(prods, first, NT);
+    }
+
+    EACH(NTS, nt);
 }
 
 private
 def(make_table, void) {
-    uint_t rows = Array_len(self->nonterminals);
-    uint_t cols = Array_len(self->terminals);
-    uint_t * table = malloc(rows * cols * sizeof(uint_t));
-    self->rows = rows;
-    self->cols = cols;
-    self->table = table;
-    clear_table(table, rows, cols);
-    fill_table(self, table);
+    ROWS = LEN(NTS);
+    COLS = LEN(TS);
+    TABLE = malloc(ROWS * COLS * sizeof(uint_t));
+    clear_table(self);
+    fill_table(self);
 }
 
 // make rhs
 
-struct self_with_token {
-    struct Table * self;
-    uint_t token_i;
-    uint_t block_i;
-    uint_t production_i;
-    void * production;
-    uint_t * rhs;
-    uint_t * prhs;
-};
-
 // rhs size
-
-static void
-rhs_size_each_prod(void * _args, void * production, uint_t index) {
-    if(!Production_epsilon(production)) {
-        struct self_with_token * args = _args;
-        args->token_i += Production_tokens_size(production);
-        args->token_i += Production_blocks_size(production);
-        args->token_i += 1; // 1 cell == -1
-    }
-}
-
-static void
-rhs_size_each_NT(void * args, void * nonterminal, uint_t index) {
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, rhs_size_each_prod, args);
-}
 
 private
 def(rhs_size, uint_t) {
-    struct self_with_token args;
-    args.self = self;
-    args.token_i = 0;
-    Array_each(self->nonterminals, rhs_size_each_NT, &args);
-    return args.token_i;
+
+    ITOR(prod, o _i) {
+        if(!EPSILON_OF(PROD)) {
+            uint_t * i = _i;
+            * i += (TOKS_LEN(PROD) +
+                    BLOCKS_LEN(PROD) +
+                    1); // 1 cell == -1
+        }
+    }
+
+    ITOR(nt, o i) {
+        EACH(PRODS_OF(NT), prod, i);
+    }
+
+    uint_t i = 0;
+    EACH(NTS, nt, (o) &i);
+    return i;
 }
 
 // prhs size
 
-static void
-prhs_size_each_NT(void * _args, void * nonterminal, uint_t index) {
-    struct self_with_token * args = _args;
-    void * productions = Nonterminal_productions(nonterminal);
-    args->token_i += Array_len(productions);
-}
-
 private
 def(prhs_size, uint_t) {
-    struct self_with_token args;
-    args.self = self;
-    args.token_i = 0;
-    Array_each(self->nonterminals, prhs_size_each_NT, &args);
-    return args.token_i;
+
+    ITOR(nt, o _i) {
+        uint_t * i = _i;
+        * i += LEN(PRODS_OF(NT));
+    }
+
+    uint_t i = 0;
+    EACH(NTS, nt, (o) &i);
+    return i;
 }
 
 // make rhs & prhs
 
-static void
-make_rhs_each_token_NT_or_T(void * _args, void * token) {
-    struct self_with_token * args = _args;
-    uint_t token_id = 0;
-    void * nonterminal = NT_of_token(args->self, token);
-    void * terminal    =  T_of_token(args->self, token);
-    if(nonterminal != NULL) {
-        token_id = Nonterminal_id(nonterminal);
-    } else if(terminal != NULL) {
-        token_id = Terminal_id(terminal);
-    }
-    args->rhs[args->token_i] = token_id;
-    args->token_i += 1;
-}
-
-static void
-make_rhs_each_token_block(void * _args, uint_t index) {
-    struct self_with_token * args = _args;
-    uint_t tokens_size = Production_tokens_size(args->production);
-    uint_t blocks_size = Production_blocks_size(args->production);
-    uint_t block_i = blocks_size - args->block_i - 1;
-    void * block = Production_block(args->production, block_i);
-    if(block != NULL && index == tokens_size - Block_no(block)) {
-        uint_t token_id = Block_id(block);
-        printf("token id %zu, block no %zu\n", token_id, Block_no(block));
-        args->rhs[args->token_i] = token_id;
-        args->token_i += 1;
-        args->block_i += 1;
-    }
-}
-
-static void
-make_rhs_each_token(void * args, void * token, uint_t index) {
-    make_rhs_each_token_block(args, index);
-    make_rhs_each_token_NT_or_T(args, token);
-}
-
-static void
-make_rhs_each_prod(void * _args, void * production, uint_t index) {
-    struct self_with_token * args = _args;
-    uint_t token_i = args->token_i;
-    if(!Production_epsilon(production)) {
-        args->production = production;
-        args->block_i = 0;
-        Production_reverse_each_token(production, make_rhs_each_token, args);
-        uint_t size = Production_tokens_size(production);
-        make_rhs_each_token_block(args, size);
-        args->rhs[args->token_i] = -1;
-        args->token_i += 1;
-    } else {
-        token_i -= 1;
-    }
-    args->prhs[args->production_i] = token_i;
-    args->production_i += 1;
-}
-
-static void
-make_rhs_each_NT(void * args, void * nonterminal, uint_t index) {
-    void * productions = Nonterminal_productions(nonterminal);
-    Array_each(productions, make_rhs_each_prod, args);
-}
-
 private
 def(make_rhs, void) {
-    uint_t   size =  rhs_size(self);
-    uint_t p_size = prhs_size(self);
-    uint_t *  rhs = malloc(size * sizeof(uint_t));
-    uint_t * prhs = malloc(p_size * sizeof(uint_t));
-    struct self_with_token args;
-    args.self = self;
-    args.token_i = 0;
-    args.production_i = 0;
-    args.rhs = rhs;
-    args.prhs = prhs;
-    self->rhs = rhs;
-    self->prhs = prhs;
-    self->rhs_size = size;
-    self->prhs_size = p_size;
-    Array_each(self->nonterminals, make_rhs_each_NT, &args);
-    for(uint_t i = 0; i < size; i++) {
-        if(rhs[i] == -1) {
-            printf("rhs[  ]\n");
-        } else if(rhs[i] < self->rows) {
-            printf("rhs[%s]\n", inspect(Nonterminal_token(Array_get(self->nonterminals, rhs[i]))));
-        } else if(rhs[i] < self->rows + self->cols) {
-            printf("rhs[%s]\n", inspect(Array_get(self->terminals, rhs[i] - self->rows)));
-        } else {
-            printf("rhs[block %zu]\n", rhs[i] - self->rows - self->cols);
+
+    void NT_or_T(o tok, uint_t * i) {
+        o nt, t;
+        if(nt = NT_OF(tok)) {
+            RHS[* i] = ID_OF_NT(nt);
+        } else if(t = T_OF(tok)) {
+            RHS[* i] = ID_OF_T(t);
+        }
+        * i += 1;
+    }
+
+    void block(uint_t reverse_i, o prod, uint_t * i, uint_t * block_i) {
+        o block = BLOCK_OF(prod, - (* block_i) - 1);
+        if(block && reverse_i + Block_no(block) == TOKS_LEN(prod)) {
+            printf("token id %zu, block no %zu\n", Block_id(block), Block_no(block));
+            RHS[* i] = Block_id(block);
+            * i += 1;
+            * block_i += 1;
         }
     }
-    for(uint_t i = 0; i < p_size; i++) {
-        printf("prhs[%zu]\n", prhs[i]);
+
+    ITOR(tok, o prod, o _tok_i, o _block_i) {
+        uint_t * tok_i = _tok_i;
+        uint_t * block_i = _block_i;
+
+        // block is the following of NT_or_T.
+        block(INDEX, prod, tok_i, block_i);
+        NT_or_T(TOK, tok_i);
+    }
+
+    ITOR(prod, o _prod_i, o _tok_i) {
+        uint_t * prod_i = _prod_i;
+        uint_t * tok_i = _tok_i;
+        PRHS[* prod_i] = * tok_i;
+        if(!EPSILON_OF(PROD)) {
+            uint_t block_i = 0;
+            REVERSE_EACH(TOKS_OF(PROD), tok, PROD, tok_i, &block_i);
+            block(TOKS_LEN(PROD), PROD, tok_i, &block_i);
+            RHS[* tok_i] = -1;
+            * tok_i += 1;
+        } else {
+            PRHS[* prod_i] -= 1;
+        }
+        * prod_i += 1;
+    }
+
+    ITOR(nt, o prod_i, o tok_i) {
+        EACH(PRODS_OF(NT), prod, prod_i, tok_i);
+    }
+
+    RHS_LEN  = rhs_size(self);
+    PRHS_LEN = prhs_size(self);
+    RHS = malloc(RHS_LEN * sizeof(uint_t));
+    PRHS = malloc(PRHS_LEN * sizeof(uint_t));
+    uint_t prod_i = 0;
+    uint_t tok_i = 0;
+    EACH(NTS, nt, &prod_i, &tok_i);
+    for(uint_t i = 0; i < RHS_LEN; i++) {
+        if(RHS[i] == -1) {
+            printf("rhs[  ]\n");
+        } else if(RHS[i] < ROWS) {
+            printf("rhs[%s]\n", inspect(TOK_OF(GET(NTS, RHS[i]))));
+        } else if(RHS[i] < ROWS + COLS) {
+            printf("rhs[%s]\n", inspect(GET(TS, RHS[i] - ROWS)));
+        } else {
+            printf("rhs[block %zu]\n", RHS[i] - ROWS - COLS);
+        }
+    }
+    for(uint_t i = 0; i < PRHS_LEN; i++) {
+        printf("prhs[%zu]\n", PRHS[i]);
     }
 }
 
 // delete nonterminals, terminals
 
-static void
-delete_each_NT(void * unused, void * nonterminal, uint_t index) {
-    delete(nonterminal);
-}
+private
+def(delete_NT_and_T_and_sets, void) {
 
-static void
-delete_each_T(void * unused, void * terminal, uint_t index) {
-    delete(terminal);
-}
+    ITOR(nt) {
+        delete(NT);
+    }
 
-static void
-delete_NT_and_T_and_sets(struct Table * self) {
-    Array_each(self->nonterminals, delete_each_NT, NULL);
-    Array_each(self->terminals, delete_each_T, NULL);
-    delete(self->nonterminals);
-    delete(self->nonterminal_set);
-    delete(self->terminals);
-    delete(self->terminal_set);
+    ITOR(t) {
+        delete(T);
+    }
+
+    EACH(NTS, nt);
+    EACH(TS, t);
+    delete(NTS);
+    delete(NT_SET);
+    delete(TS);
+    delete(T_SET);
 }
 
 private
 def(build, void) {
     NT_set_init(self);
-    production_epsilon(self);
+    prod_epsilon(self);
     T_set_init(self);
     Ts_init(self);
     debug_Ts(self);
@@ -1131,99 +1034,88 @@ def(build, void) {
 
 // save table
 
-static void
-save_col(void * file, uint_t col) {
-    if(col == -1) {
-        File_puts(file, " -1");
-    } else {
-        File_printf(file, "%3zu", col);
-    }
-}
+private
+def(save_table, void : o @file) {
 
-static void
-save_row(void * file, uint_t * table,
-        uint_t rows, uint_t row_i, uint_t cols, char * line_feed) {
-    File_puts(file, "    {");
-    for(uint_t col_i = 0; col_i + 1 < cols; col_i++) {
-        uint_t col = table[row_i * rows + col_i];
-        save_col(file, col);
-        File_puts(file, ", ");
+    void save_col(o file, uint_t col) {
+        if(col == -1) {
+            File_puts(file, " -1");
+        } else {
+            File_printf(file, "%3zu", col);
+        }
     }
-    if(cols > 0) {
-        uint_t col = table[row_i * rows + cols - 1];
-        save_col(file, col);
-    }
-    File_puts(file, "}");
-    File_puts(file, line_feed);
-}
 
-static void
-save_table(struct Table * self, void * file) {
-    uint_t * table = self->table;
-    uint_t rows = self->rows;
-    uint_t cols = self->cols;
-    File_printf(file, "static int act[%zu][%zu] = {\n", rows, cols);
-    for(uint_t row_i = 0; row_i + 1 < rows; row_i++) {
-        save_row(file, table, rows, row_i, cols, ",\n");
+    void save_row(o file, uint_t row_i, char * line_feed) {
+        File_puts(file, "    {");
+        for(uint_t col_i = 0; col_i + 1 < COLS; col_i++) {
+            save_col(file, TABLE[row_i * ROWS + col_i]);
+            File_puts(file, ", ");
+        }
+        if(COLS > 0) {
+            save_col(file, TABLE[row_i * ROWS + COLS - 1]);
+        }
+        File_puts(file, "}");
+        File_puts(file, line_feed);
     }
-    if(rows > 0) {
-        save_row(file, table, rows, rows - 1, cols, "\n");
+
+    File_printf(file, "static int act[%zu][%zu] = {\n", ROWS, COLS);
+    for(uint_t row_i = 0; row_i + 1 < ROWS; row_i++) {
+        save_row(file, row_i, ",\n");
+    }
+    if(ROWS > 0) {
+        save_row(file, ROWS - 1, "\n");
     }
     File_puts(file, "};\n\n");
 }
 
 // save prhs
 
-static void
-save_prhs(struct Table * self, void * file) {
-    uint_t size = self->prhs_size;
-    File_printf(file, "static int prhs[%zu] = {\n", size);
-    for(uint_t i = 0; i + 1 < size; i++) {
-        File_printf(file, "    %zu,\n", self->prhs[i]);
+private
+def(save_prhs, void : o @file) {
+    File_printf(file, "static int prhs[%zu] = {\n", PRHS_LEN);
+    for(uint_t i = 0; i + 1 < PRHS_LEN; i++) {
+        File_printf(file, "    %zu,\n", PRHS[i]);
     }
-    if(size > 0) {
-        File_printf(file, "    %zu\n", self->prhs[size - 1]);
+    if(PRHS_LEN > 0) {
+        File_printf(file, "    %zu\n",  PRHS[PRHS_LEN - 1]);
     }
     File_puts(file, "};\n\n");
 }
 
 // save rhs
 
-static void
-save_rhs(struct Table * self, void * file) {
-    uint_t * rhs = self->rhs;
-    uint_t size = self->rhs_size;
-    File_printf(file, "static int rhs[%zu] = {\n    ", size);
-    for(uint_t i = 0; i + 1 < size; i += 1) {
-        if(rhs[i] == -1) {
-            File_puts(file, " -1,\n    ");
+private
+def(save_rhs, void : o @file) {
+    File_printf(file, "static int rhs[%zu] = {\n    ", RHS_LEN);
+    for(uint_t i = 0; i + 1 < RHS_LEN; i += 1) {
+        if(RHS[i] == -1) {
+            File_printf(file, " -1,\n    ");
         } else {
-            File_printf(file, "%3zu, ", rhs[i]);
+            File_printf(file, "%3zu, ", RHS[i]);
         }
     }
-    if(size > 0) {
+    if(RHS_LEN > 0) {
         File_puts(file, " -1\n");
     }
     File_puts(file, "};\n\n");
 }
 
-static void
-open_file(void * _self, void * file) {
-    struct Table * self = _self;
-    save_table(self, file);
-    save_prhs(self, file);
-    save_rhs(self, file);
-    free(self->table);
-    free(self->rhs);
-    free(self->prhs);
-}
-
 private
-def(save, void : void * @file) {
-    File_open(file, "w", open_file, self);
+def(save, void : o @file) {
+
+    void open_file(o file) {
+        save_table(self, file);
+        save_prhs(self, file);
+        save_rhs(self, file);
+        free(TABLE);
+        free(RHS);
+        free(PRHS);
+    }
+
+    File_open(file, "w", open_file);
 }
 
-def(write_to, void : void * @file) {
+def(write_to, void : o @file) {
     build(self);
     save(self, file);
 }

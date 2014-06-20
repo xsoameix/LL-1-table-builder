@@ -17,14 +17,14 @@ def(ctor, void : va_list * @args_ptr) {
     Token_strip(self->self);
 }
 
-static void
-delete_each_prod(void * null, void * production, uint_t index) {
-    delete(production);
-}
-
 override
 def(dtor, void) {
-    Array_each(self->productions, delete_each_prod, NULL);
+
+    void delete_each_prod(void * production, uint_t index) {
+        delete(production);
+    }
+
+    Array_each(self->productions, delete_each_prod);
     delete(self->productions);
     delete(self->self);
     free(self);

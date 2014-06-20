@@ -16,14 +16,14 @@ def(ctor, void : va_list * @args_ptr) {
     self->tokens = NULL;
 }
 
-static void
-delete_each_token(void * null, void * token, uint_t index) {
-    delete(token);
-}
-
 override
 def(dtor, void) {
-    Array_each(self->tokens, delete_each_token, NULL);
+
+    void delete_each_token(void * token, uint_t index) {
+        delete(token);
+    }
+
+    Array_each(self->tokens, delete_each_token);
     delete(self->tokens);
     free(self);
 }
@@ -63,38 +63,38 @@ struct compare {
     char * expand;
 };
 
-static void
-expand_each_token(void * null, void * token, uint_t index) {
-    enum TYPE type = Token_type(token);
-    if(!(type == NONTERMINAL || type == TOKEN)) {
-        return;
-    }
-    struct compare scenarios[] = {
-        {"pop()",  "Array_pop(as)"},
-        {"push()", "Array_push(as, symbol)"},
-        {NULL, NULL}
-    };
-    struct compare * scenario = scenarios;
-    while(scenario->code != NULL) {
-        uint_t len = strlen(scenario->code);
-        char * code = Token_lstrip(token);
-        if(strncmp(code, scenario->code, len) == 0) {
-            uint_t remain = strlen(code) - len;
-            uint_t expand = strlen(scenario->expand);
-            char * start = inspect(token);
-            uint_t offset = code - start;
-            char * chars = malloc(offset + expand + remain + 1);
-            chars[0] = '\0';
-            strncat(chars, start, offset);
-            strcat(chars, scenario->expand);
-            strcat(chars, code + len);
-            Token_set(token, chars);
-            break;
-        }
-        scenario += 1;
-    }
-}
-
 def(expand, void) {
-    Array_each(self->tokens, expand_each_token, NULL);
+
+    void expand_each_token(void * token, uint_t index) {
+        enum TYPE type = Token_type(token);
+        if(!(type == NONTERMINAL || type == TOKEN)) {
+            return;
+        }
+        struct compare scenarios[] = {
+            {"pop()",  "Array_pop(as)"},
+            {"push()", "Array_push(as, symbol)"},
+            {NULL, NULL}
+        };
+        struct compare * scenario = scenarios;
+        while(scenario->code != NULL) {
+            uint_t len = strlen(scenario->code);
+            char * code = Token_lstrip(token);
+            if(strncmp(code, scenario->code, len) == 0) {
+                uint_t remain = strlen(code) - len;
+                uint_t expand = strlen(scenario->expand);
+                char * start = inspect(token);
+                uint_t offset = code - start;
+                char * chars = malloc(offset + expand + remain + 1);
+                chars[0] = '\0';
+                strncat(chars, start, offset);
+                strcat(chars, scenario->expand);
+                strcat(chars, code + len);
+                Token_set(token, chars);
+                break;
+            }
+            scenario += 1;
+        }
+    }
+
+    Array_each(self->tokens, expand_each_token);
 }

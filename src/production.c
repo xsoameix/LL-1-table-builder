@@ -2,6 +2,7 @@
 #include <libooc/hash.h>
 #include <libooc/array.h>
 #include <libooc/inttype.h>
+#include <libooc/object_type.h>
 
 #include "nonterminal.h"
 #include "block.h"
@@ -19,22 +20,21 @@ def(ctor, void : va_list * @args_ptr) {
     self->done = false;
 }
 
-static void
-delete_each_token(void * null, void * token, uint_t index) {
-    delete(token);
-}
-
-static void
-delete_each_block(void * null, void * block, uint_t index) {
-    delete(block);
-}
-
 override
 def(dtor, void) {
-    Array_each(self->tokens, delete_each_token, NULL);
+
+    void delete_each_token(void * token, uint_t index) {
+        delete(token);
+    }
+
+    void delete_each_block(void * block, uint_t index) {
+        delete(block);
+    }
+
+    Array_each(self->tokens, delete_each_token);
     delete(self->tokens);
     if(self->blocks != NULL) {
-        Array_each(self->blocks, delete_each_block, NULL);
+        Array_each(self->blocks, delete_each_block);
         delete(self->blocks);
     }
     delete(self->first);
@@ -51,10 +51,6 @@ def(no, uint_t) {
     return self->no;
 }
 
-def(reverse_each_token, void : void (* @iter)(void * _self_, void * obj, uint_t index) . void * @_self_) {
-    Array_reverse_each(self->tokens, iter, _self_);
-}
-
 def(tokens, void *) {
     if(self->tokens == NULL) {
         self->tokens = new(Array);
@@ -62,7 +58,7 @@ def(tokens, void *) {
     return self->tokens;
 }
 
-def(tokens_size, uint_t) {
+def(tokens_len, uint_t) {
     return Array_len(self->tokens);
 }
 
@@ -72,13 +68,9 @@ def(add_token, void : void * @token) {
 }
 
 def(block, void * : uint_t @index) {
-    return self->blocks == NULL ? NULL : Array_get(self->blocks, index);
-}
-
-def(each_block, void : void (* @iter)(void * _self_, void * obj, uint_t index) . void * @_self_) {
-    if(self->blocks != NULL) {
-        Array_each(self->blocks, iter, _self_);
-    }
+    if(self->blocks == NULL) return 0;
+    o block = Array_get(self->blocks, index);
+    return block == NULL ? 0 : block;
 }
 
 def(create_block, void *) {
@@ -97,7 +89,11 @@ def(blocks, void *) {
     return self->blocks;
 }
 
-def(blocks_size, uint_t) {
+def(blocks_p, bool) {
+    return self->blocks != NULL;
+}
+
+def(blocks_len, uint_t) {
     return self->blocks == NULL ? 0 : Array_len(self->blocks);
 }
 

@@ -17,10 +17,10 @@ struct Table {
     o_uint   cols;
 
     o_uint * rhs;
-    o_uint   rhs_size;
+    o_uint   rhs_len;
 
     o_uint * prhs;
-    o_uint   prhs_size;
+    o_uint   prhs_len;
 };
 
 O_DEF_CLASS_STRUCT()
