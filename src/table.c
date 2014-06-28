@@ -551,13 +551,13 @@ def(follow_subset_init, void) {
             o next_tok = GET(toks, INDEX);
             o next_nt, next_t;
             if(next_nt = NT_OF(next_tok)) {
-                // merge next nonterminal into subset{nonterminals}
-                EACH(PRODS_OF(nt_of_tok), add_next_NT_to_subset, next_nt);
-
                 // merge first{terminals} of next nonterminal into follow{terminals}
                 EACH(PRODS_OF(next_nt), add_first_of_next_NT_to_follow, nt_of_tok);
 
                 if(TYPE_OF_NT(next_nt) == PRESENT) return;
+
+                // merge next nonterminal into subset{nonterminals}
+                EACH(PRODS_OF(nt_of_tok), add_next_NT_to_subset, next_nt);
             } else if(next_t = T_OF(next_tok)) {
                 // merge next terminal into follow{terminals}
                 EACH(PRODS_OF(nt_of_tok), add_next_T_to_follow, next_t);
@@ -812,7 +812,7 @@ private
 def(clear_table, void) {
     for(uint_t row_i = 0; row_i < ROWS; row_i += 1) {
         for(uint_t col_i = 0; col_i < COLS; col_i += 1) {
-            TABLE[row_i * ROWS + col_i] = -1;
+            TABLE[row_i * COLS + col_i] = -1;
         }
     }
 }
@@ -834,7 +834,7 @@ def(fill_table, void) {
                     inspect(TOK_OF(nt)),
                     inspect(KEY),
                     id);
-            TABLE[row_i * ROWS + col_i] = id;
+            TABLE[row_i * COLS + col_i] = id;
         }
 
         H_EACH(FIRST_OF(PROD), t, nt, PROD);
@@ -852,7 +852,13 @@ def(fill_table, void) {
                     inspect(TOK_OF(nt)),
                     inspect(KEY),
                     id);
-            TABLE[row_i * ROWS + col_i] = id;
+            uint_t col = row_i * COLS + col_i;
+            if(TABLE[col] == -1) {
+                TABLE[col] = id;
+            } else if(TABLE[col] != id) {
+                printf("Follow conflict P[%zu], P[%zu]\n", TABLE[col], id);
+                exit(EXIT_FAILURE);
+            }
         }
 
         if(TYPE_OF_PROD(PROD) == BLANK) {
@@ -862,8 +868,8 @@ def(fill_table, void) {
 
     ITOR(nt) {
         o prods = PRODS_OF(NT);
-        EACH(prods, follow, NT);
         EACH(prods, first, NT);
+        EACH(prods, follow, NT);
     }
 
     EACH(NTS, nt);
@@ -1048,11 +1054,11 @@ def(save_table, void : o @file) {
     void save_row(o file, uint_t row_i, char * line_feed) {
         File_puts(file, "    {");
         for(uint_t col_i = 0; col_i + 1 < COLS; col_i++) {
-            save_col(file, TABLE[row_i * ROWS + col_i]);
+            save_col(file, TABLE[row_i * COLS + col_i]);
             File_puts(file, ", ");
         }
         if(COLS > 0) {
-            save_col(file, TABLE[row_i * ROWS + COLS - 1]);
+            save_col(file, TABLE[row_i * COLS + COLS - 1]);
         }
         File_puts(file, "}");
         File_puts(file, line_feed);
