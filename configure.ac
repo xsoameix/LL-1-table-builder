@@ -10,6 +10,8 @@ AC_CONFIG_HEADERS([config.h])
 # Checks for programs.
 AC_PROG_CC
 
+AC_PROG_RANLIB
+
 # Checks for libraries.
 PKG_CHECK_MODULES([DEPS], [libooc-0.0.1 >= 0.0.1])
 
@@ -26,5 +28,13 @@ AM_PROG_CC_C_O
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([memset])
 
-AC_CONFIG_FILES([Makefile src/Makefile])
+# Test Framework
+PKG_CHECK_MODULES([CHECK], [check >= 0.9.4])
+
+AC_CONFIG_FILES([
+Makefile
+src/Makefile
+tests/Makefile
+])
+
 AC_OUTPUT

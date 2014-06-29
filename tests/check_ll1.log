@@ -1,0 +1,53 @@
+Running suite(s): ll1
+ Table
+FollowConflictError: P[1], P[2]
+T: C
+NT[b]
+T[C]
+epsilon
+--- b F ---
+T[C]
+--- a T ---
+first[a][0][T]: C
+first[b][0][T]: C
+ancestor[a][0] P[a][0]
+ancestor[a][0] P[b][0]
+ancestor[a][0] ---
+ancestor[a][0] P[b][1]
+ancestor[a][0] ---
+ancestor[a][0] ---
+ancestor[b][0] P[b][0]
+ancestor[b][0] ---
+ancestor[b][1] P[b][1]
+ancestor[b][1] ---
+union[a][0]: [b][1]
+union[a][0]: [a][0]
+union[a][0]: [b][0]
+union[b][0]: [b][0]
+union[b][1]: [b][1]
+first[a][0][T]: C
+first[b][0][T]: C
+[a]
+  (b)
+  (b)[0] << T[C]
+  (b)[1] << T[C]
+[b]
+follow[b][0][ ]: C
+follow[b][1][F]: C
+ancestor[a][0] P[a][0]
+ancestor[a][0] ---
+ancestor[b][0] P[b][0]
+ancestor[b][0] ---
+ancestor[b][1] P[b][1]
+ancestor[b][1] ---
+union[a][0]: [a][0]
+union[b][0]: [b][0]
+union[b][1]: [b][1]
+follow[b][0][ ]: C
+follow[b][1][F]: C
+first[a][0][T]: C
+first[b][0][T]: C
+first  [a][C]: 0
+first  [b][C]: 1
+follow [b][C]: 2
+100%: Checks: 1, Failures: 0, Errors: 0

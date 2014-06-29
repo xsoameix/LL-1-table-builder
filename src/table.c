@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <signal.h>
 #include <libooc/hash.h>
 #include <libooc/array.h>
 #include <libooc/file.h>
@@ -856,8 +857,8 @@ def(fill_table, void) {
             if(TABLE[col] == -1) {
                 TABLE[col] = id;
             } else if(TABLE[col] != id) {
-                printf("Follow conflict P[%zu], P[%zu]\n", TABLE[col], id);
-                exit(EXIT_FAILURE);
+                fprintf(stderr, "FollowConflictError: P[%zu], P[%zu]\n", TABLE[col], id);
+                raise(SIGABRT);
             }
         }
 
