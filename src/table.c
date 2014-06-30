@@ -835,7 +835,13 @@ def(fill_table, void) {
                     inspect(TOK_OF(nt)),
                     inspect(KEY),
                     id);
-            TABLE[row_i * COLS + col_i] = id;
+            uint_t col = row_i * COLS + col_i;
+            if(TABLE[col] == -1) {
+                TABLE[col] = id;
+            } else if(TABLE[col] != id) {
+                fprintf(stderr, "FirstConflictError: P[%zu], P[%zu]\n", TABLE[col], id);
+                raise(SIGABRT);
+            }
         }
 
         H_EACH(FIRST_OF(PROD), t, nt, PROD);
@@ -1046,9 +1052,9 @@ def(save_table, void : o @file) {
 
     void save_col(o file, uint_t col) {
         if(col == -1) {
-            File_puts(file, " -1");
+            File_puts(file, "-1");
         } else {
-            File_printf(file, "%3zu", col);
+            File_printf(file, "%2zu", col);
         }
     }
 
@@ -1056,7 +1062,7 @@ def(save_table, void : o @file) {
         File_puts(file, "    {");
         for(uint_t col_i = 0; col_i + 1 < COLS; col_i++) {
             save_col(file, TABLE[row_i * COLS + col_i]);
-            File_puts(file, ", ");
+            File_puts(file, ",");
         }
         if(COLS > 0) {
             save_col(file, TABLE[row_i * COLS + COLS - 1]);
